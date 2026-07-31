@@ -1,25 +1,29 @@
-{% extends 'admin/layout.html' %}
+{% extends "admin/layout.html" %}
 
 {% block content %}
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="page-title mb-0">Manage Members</h1>
+
+    <h1 class="page-title mb-0">
+        Manage Members
+    </h1>
 
     <a href="{{ url_for('admin.add_member') }}"
        class="btn btn-info">
         ➕ Add Member
     </a>
+
 </div>
 
 <div class="panel-card">
 
     <div class="table-responsive">
 
-        <table class="table table-dark align-middle">
+        <table class="table table-dark table-hover align-middle">
 
             <thead>
                 <tr>
-                    <th>Photo</th>
+                    <th style="width:90px;">Photo</th>
                     <th>Name</th>
                     <th>Team</th>
                     <th>Role</th>
@@ -43,15 +47,15 @@
 
                                 <img
                                     src="{{ member.photo }}"
-                                    class="table-avatar"
-                                    alt="{{ member.full_name }}">
+                                    alt="{{ member.full_name }}"
+                                    class="table-avatar rounded-circle">
 
                             {% else %}
 
                                 <img
                                     src="{{ url_for('static', filename=member.photo) }}"
-                                    class="table-avatar"
-                                    alt="{{ member.full_name }}">
+                                    alt="{{ member.full_name }}"
+                                    class="table-avatar rounded-circle">
 
                             {% endif %}
 
@@ -59,14 +63,18 @@
 
                             <img
                                 src="{{ url_for('static', filename='img/placeholders/member_placeholder.jpg') }}"
-                                class="table-avatar"
-                                alt="{{ member.full_name }}">
+                                alt="{{ member.full_name }}"
+                                class="table-avatar rounded-circle">
 
                         {% endif %}
 
                     </td>
 
-                    <td>{{ member.full_name }}</td>
+                    <td>
+
+                        <strong>{{ member.full_name }}</strong>
+
+                    </td>
 
                     <td>
 
@@ -78,7 +86,11 @@
 
                     </td>
 
-                    <td>{{ member.role or "—" }}</td>
+                    <td>
+
+                        {{ member.role or "—" }}
+
+                    </td>
 
                     <td>
 
@@ -95,7 +107,7 @@
 
                         {% else %}
 
-                            —
+                            <span class="text-muted">—</span>
 
                         {% endif %}
 
@@ -116,7 +128,7 @@
 
                         {% else %}
 
-                            —
+                            <span class="text-muted">—</span>
 
                         {% endif %}
 
@@ -125,7 +137,7 @@
                     <td class="text-end">
 
                         <a href="{{ url_for('admin.edit_member', member_id=member.id) }}"
-                           class="btn btn-sm btn-outline-info">
+                           class="btn btn-sm btn-outline-info me-2">
 
                             Edit
 
@@ -137,7 +149,7 @@
                             class="d-inline"
                             onsubmit="return confirm('Delete {{ member.full_name }}?');">
 
-                            {{ csrf_token() if csrf_token }}
+                            {{ csrf_token() }}
 
                             <button
                                 type="submit"
@@ -158,12 +170,17 @@
                 <tr>
 
                     <td colspan="7"
-                        class="text-center text-muted py-4">
+                        class="text-center text-muted py-5">
 
                         No members found.
 
-                        <a href="{{ url_for('admin.add_member') }}">
-                            Add one now
+                        <br><br>
+
+                        <a href="{{ url_for('admin.add_member') }}"
+                           class="btn btn-info">
+
+                            Add First Member
+
                         </a>
 
                     </td>
