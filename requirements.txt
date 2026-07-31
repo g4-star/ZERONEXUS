@@ -23,6 +23,8 @@ MarkupSafe==3.0.3
 mdurl==0.1.2
 ordered-set==4.1.0
 packaging==26.2
+psycopg==3.3.4
+psycopg-binary==3.3.4
 Pygments==2.20.0
 python-dotenv==1.0.1
 rich==13.9.4

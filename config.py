@@ -6,46 +6,47 @@ load_dotenv()
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-
 class Config:
     # -------------------------------------------------
     # Core Flask Settings
     # -------------------------------------------------
-    SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret')
+    SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret")
 
     # -------------------------------------------------
-    # Database
+    # Database Configuration
     # -------------------------------------------------
     DATABASE_URL = os.getenv("DATABASE_URL")
 
     if DATABASE_URL:
-        # Fix for PostgreSQL URLs
-        DATABASE_URL = DATABASE_URL.replace(
-            "postgres://",
-            "postgresql://",
-            1
-        )
+        # Some providers still use postgres://
+        if DATABASE_URL.startswith("postgres://"):
+            DATABASE_URL = DATABASE_URL.replace(
+                "postgres://",
+                "postgresql://",
+                1
+            )
 
         SQLALCHEMY_DATABASE_URI = DATABASE_URL
 
-   else:
-        # Local development only
+    else:
+        # Local SQLite database
         SQLALCHEMY_DATABASE_URI = (
             f"sqlite:///{os.path.join(BASE_DIR, 'zeronexus.db')}"
         )
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
     # -------------------------------------------------
     # Mail Configuration
     # -------------------------------------------------
-    MAIL_SERVER = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
-    MAIL_PORT = int(os.getenv('MAIL_PORT', 587))
-    MAIL_USE_TLS = os.getenv('MAIL_USE_TLS', 'True') == 'True'
-    MAIL_USE_SSL = os.getenv('MAIL_USE_SSL', 'False') == 'True'
-    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
-    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
+    MAIL_SERVER = os.getenv("MAIL_SERVER", "smtp.gmail.com")
+    MAIL_PORT = int(os.getenv("MAIL_PORT", 587))
+    MAIL_USE_TLS = os.getenv("MAIL_USE_TLS", "True") == "True"
+    MAIL_USE_SSL = os.getenv("MAIL_USE_SSL", "False") == "True"
+    MAIL_USERNAME = os.getenv("MAIL_USERNAME")
+    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
     MAIL_DEFAULT_SENDER = os.getenv(
-        'MAIL_DEFAULT_SENDER',
+        "MAIL_DEFAULT_SENDER",
         MAIL_USERNAME
     )
 
@@ -54,23 +55,23 @@ class Config:
     # -------------------------------------------------
     UPLOAD_FOLDER = os.path.join(
         BASE_DIR,
-        'app',
-        'static',
-        'uploads'
+        "app",
+        "static",
+        "uploads"
     )
 
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5 MB
 
     ALLOWED_IMAGE_EXTENSIONS = {
-        'png',
-        'jpg',
-        'jpeg',
-        'gif',
-        'webp'
+        "png",
+        "jpg",
+        "jpeg",
+        "gif",
+        "webp"
     }
 
     ALLOWED_DOCUMENT_EXTENSIONS = {
-        'pdf'
+        "pdf"
     }
 
     # -------------------------------------------------
@@ -78,35 +79,33 @@ class Config:
     # -------------------------------------------------
     SESSION_COOKIE_HTTPONLY = True
     REMEMBER_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_SAMESITE = 'Lax'
+    SESSION_COOKIE_SAMESITE = "Lax"
 
-    # Set True in production when using HTTPS
     SESSION_COOKIE_SECURE = os.getenv(
-        'SESSION_COOKIE_SECURE',
-        'False'
-    ) == 'True'
+        "SESSION_COOKIE_SECURE",
+        "False"
+    ) == "True"
 
     REMEMBER_COOKIE_SECURE = os.getenv(
-        'REMEMBER_COOKIE_SECURE',
-        'False'
-    ) == 'True'
+        "REMEMBER_COOKIE_SECURE",
+        "False"
+    ) == "True"
 
     WTF_CSRF_TIME_LIMIT = None
 
     # -------------------------------------------------
     # Admin Settings
     # -------------------------------------------------
-    ADMIN_USERNAME = os.getenv('ADMIN_USERNAME')
-    ADMIN_EMAIL = os.getenv('ADMIN_EMAIL')
-    ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
+    ADMIN_USERNAME = os.getenv("ADMIN_USERNAME")
+    ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
+    ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 
     # -------------------------------------------------
     # Public Site URL
-    # Used when generating email links
     # -------------------------------------------------
     SITE_URL = os.getenv(
-        'SITE_URL',
-        'http://127.0.0.1:5000'
+        "SITE_URL",
+        "http://127.0.0.1:5000"
     )
 
 

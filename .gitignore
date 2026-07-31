@@ -67,3 +67,5 @@ Thumbs.db
 *.egg-info/
 dist/
 build/
+.vercel
+.env*
