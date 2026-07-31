@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class='team-banner rounded-4 overflow-hidden mb-4 border border-info'>
+    <img src='{{ url_for("static", filename=team.banner_image) }}'
+         class='img-fluid w-100 banner-img'
+         alt='Banner'>
+</div>
+
+<div class='row align-items-center mb-5'>
+
+    <div class='col-md-3 text-center'>
+        <img src='{{ url_for("static", filename=team.lead_image) }}'
+             class='lead-profile-image'
+             alt='Lead'>
+    </div>
+
+    <div class='col-md-9'>
+        <h1 class='text-info fw-bold'>{{ team.name }}</h1>
+        <h5 class='text-light'>{{ team.lead_name }} — {{ team.lead_role }}</h5>
+        <p class='text-light mt-3'>{{ team.description }}</p>
+    </div>
+
+</div>
+
+<hr class='border-secondary my-5'>
+
+<h2 class='text-info mb-4'>Projects</h2>
+
+<div class='row g-4 mb-5'>
+
+    {% for project in team.projects %}
+    <div class='col-md-6 col-lg-4'>
+
+        <div class='card bg-black text-light border-info h-100'>
+
+            <img src='{{ url_for("static", filename=project.image) }}'
+                 class='card-img-top project-image' alt=''>
+
+            <div class='card-body d-flex flex-column'>
+                <h5 class='text-info'>{{ project.title }}</h5>
+                <p class='small text-light flex-grow-1'>{{ project.description }}</p>
+            </div>
+
+        </div>
+
+    </div>
+    {% endfor %}
+
+</div>
+
+<hr class='border-secondary my-5'>
+
+<h2 class='text-info mb-4'>Team Members</h2>
+
+<div class='row g-4'>
+
+    {% for member in team.members %}
+    <div class='col-md-6 col-lg-4'>
+
+        <div class='card member-card bg-black text-light border-info h-100 text-center p-3'>
+
+            <img src='{{ url_for("static", filename=member.photo) }}'
+                 class='member-avatar mx-auto mb-3'
+                 alt='Member'>
+
+            <h5 class='text-info mb-1'>{{ member.full_name }}</h5>
+            <p class='text-secondary small mb-3'>{{ member.role }}</p>
+
+            <a href='{{ url_for("main.member_profile", member_id=member.id) }}'
+               class='btn btn-info btn-sm mt-2'>
+                View Portfolio
+            </a>
+
+        </div>
+
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

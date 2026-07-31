@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class='row justify-content-center'>
+
+    <div class='col-lg-8'>
+
+        <div class='card bg-black text-light border-info p-4 shadow-lg'>
+
+            <div class='text-center mb-4'>
+
+                <img src='{{ url_for("static", filename=member.photo) }}'
+                     class='portfolio-photo mb-3'
+                     alt='Member'>
+
+                <h1 class='text-info fw-bold'>{{ member.full_name }}</h1>
+                <h5 class='text-light'>{{ member.role }}</h5>
+                <p class='text-secondary'>{{ member.team.name }}</p>
+
+            </div>
+
+            <h4 class='text-info'>About</h4>
+            <p class='text-light'>{{ member.bio }}</p>
+
+            <h4 class='text-info mt-4'>Skills</h4>
+            <p class='text-light'>{{ member.skills }}</p>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

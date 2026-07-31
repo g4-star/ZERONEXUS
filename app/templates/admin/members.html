@@ -1,0 +1,66 @@
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+
+<div class='d-flex justify-content-between align-items-center mb-4'>
+    <h1 class='page-title mb-0'>Manage Members</h1>
+    <a href='{{ url_for("admin.add_member") }}' class='btn btn-info'>➕ Add Member</a>
+</div>
+
+<div class='panel-card'>
+
+    <div class='table-responsive'>
+
+        <table class='table table-dark align-middle'>
+
+            <thead>
+                <tr>
+                    <th>Photo</th>
+                    <th>Name</th>
+                    <th>Team</th>
+                    <th>Role</th>
+                    <th>LinkedIn</th>
+                    <th>GitHub</th>
+                    <th class='text-end'>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for member in members %}
+                <tr>
+                    <td>
+                        <img src='{{ url_for("static", filename=member.photo) }}'
+                             class='table-avatar' alt=''>
+                    </td>
+                    <td>{{ member.full_name }}</td>
+                    <td>{{ member.team.name }}</td>
+                    <td>{{ member.role }}</td>
+                    <td>
+                        {% if member.linkedin_url %}
+                        <a href='{{ member.linkedin_url }}' target='_blank' class='text-info'>LinkedIn</a>
+                        {% else %}
+                        —
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if member.github_url %}
+                        <a href='{{ member.github_url }}' target='_blank' class='text-info'>GitHub</a>
+                        {% else %}
+                        —
+                        {% endif %}
+                    </td>
+                    <td class='text-end'>
+                        <a href='#' class='btn btn-sm btn-outline-info'>Edit</a>
+                        <a href='#' class='btn btn-sm btn-outline-danger'>Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

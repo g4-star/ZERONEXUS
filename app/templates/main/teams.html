@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class='text-center mb-5'>
+    <h1 class='text-info fw-bold'>All Teams</h1>
+    <p class='text-light'>Explore our cybersecurity engineering groups.</p>
+</div>
+
+<div class='row g-4'>
+
+    {% for team in teams %}
+    <div class='col-md-6 col-lg-4'>
+
+        <div class='card team-card h-100 bg-black text-light border-info'>
+
+            <img src='{{ url_for("static", filename=team.lead_image) }}'
+                 class='card-img-top team-image' alt=''>
+
+            <div class='card-body d-flex flex-column'>
+                <h4 class='text-info'>{{ team.name }}</h4>
+                <p class='small text-light flex-grow-1'>{{ team.short_description }}</p>
+
+                <a href='{{ url_for("main.team_detail", slug=team.slug) }}'
+                   class='btn btn-info mt-auto'>
+                    Open Team Portal
+                </a>
+            </div>
+        </div>
+
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}
