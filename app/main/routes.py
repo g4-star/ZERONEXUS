@@ -67,29 +67,8 @@ def edit_member(token):
 
     if form.validate_on_submit():
 
-        # -----------------------------------------
-        # Handle profile photo upload
-        # -----------------------------------------
-        if form.photo.data:
+        # Skip file upload on Vercel (read-only filesystem)
 
-            filename = secure_filename(
-                form.photo.data.filename
-            )
-
-            upload_folder = current_app.config['UPLOAD_FOLDER']
-
-            os.makedirs(upload_folder, exist_ok=True)
-
-            filepath = os.path.join(upload_folder, filename)
-
-            form.photo.data.save(filepath)
-
-            # Save relative path in database
-            member.photo = f'uploads/{filename}'
-
-        # -----------------------------------------
-        # Update member details
-        # -----------------------------------------
         member.full_name = form.full_name.data
         member.role = form.role.data
         member.bio = form.bio.data
@@ -107,9 +86,8 @@ def edit_member(token):
             'success'
         )
 
-        return redirect(
-            url_for('main.edit_member', token=token)
-        )
+        # Redirect user to homepage after saving
+        return redirect(url_for('main.index'))
 
     return render_template(
         'main/edit_member.html',
