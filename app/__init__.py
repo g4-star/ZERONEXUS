@@ -27,7 +27,8 @@ def create_app(config_name=None):
     )
 
     # Ensure instance folder exists
-    os.makedirs(app.instance_path, exist_ok=True)
+    if not os.environ.get("VERCEL"):
+        os.makedirs(app.instance_path, exist_ok=True)
 
     # Ensure upload directories exist
     os.makedirs(
