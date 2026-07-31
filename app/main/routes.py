@@ -56,9 +56,8 @@ def member_profile(member_id):
 # -------------------------------------------------
 # Private Member Edit Link
 # -------------------------------------------------
-@main_bp.route('/member/edit/<token>', methods=['GET', 'POST'])
+@main_bp.route("/member/edit/<token>", methods=["GET", "POST"])
 def edit_member(token):
-
     from flask import flash, redirect, render_template, url_for, session
     import cloudinary.uploader
 
@@ -74,13 +73,33 @@ def edit_member(token):
         # Upload profile picture to Cloudinary
         # -----------------------------------------
         if form.photo.data:
+            try:
+                upload_result = cloudinary.uploader.upload(
+                    form.photo.data,
+                    folder="zeronexus/members"
+                )
 
-            upload_result = cloudinary.uploader.upload(
-                form.photo.data,
-                folder="zeronexus/members"
-            )
+                print("========== CLOUDINARY RESULT ==========")
+                print(upload_result)
+                print("=======================================")
 
-            member.photo = upload_result["secure_url"]
+                member.photo = upload_result.get("secure_url")
+
+            except Exception as e:
+                print("========== CLOUDINARY ERROR ==========")
+                print(str(e))
+                print("======================================")
+
+                flash(
+                    f"Image upload failed: {str(e)}",
+                    "danger"
+                )
+
+                return render_template(
+                    "main/edit_member.html",
+                    form=form,
+                    member=member
+                )
 
         # -----------------------------------------
         # Update member information
@@ -95,17 +114,38 @@ def edit_member(token):
         member.whatsapp_number = form.whatsapp_number.data
         member.skills = form.skills.data
 
-        db.session.commit()
+        # -----------------------------------------
+        # Save changes
+        # -----------------------------------------
+        try:
+            db.session.commit()
 
-        # Remove previous admin flash messages
-        session.pop("_flashes", None)
+            session.pop("_flashes", None)
 
-        flash(
-            "Your profile has been updated successfully.",
-            "success"
-        )
+            flash(
+                "Your profile has been updated successfully.",
+                "success"
+            )
 
-        return redirect(url_for("main.index"))
+            return redirect(url_for("main.index"))
+
+        except Exception as e:
+            db.session.rollback()
+
+            print("========== DATABASE ERROR ==========")
+            print(str(e))
+            print("====================================")
+
+            flash(
+                f"Database error: {str(e)}",
+                "danger"
+            )
+
+    else:
+        if form.errors:
+            print("========== FORM ERRORS ==========")
+            print(form.errors)
+            print("=================================")
 
     return render_template(
         "main/edit_member.html",
