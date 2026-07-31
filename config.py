@@ -13,13 +13,28 @@ class Config:
     # -------------------------------------------------
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret')
 
+    # -------------------------------------------------
     # Database
-    SQLALCHEMY_DATABASE_URI = os.getenv(
-        'DATABASE_URL',
-        f'sqlite:///{os.path.join(BASE_DIR, "zeronexus.db")}'
-    )
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # -------------------------------------------------
+    DATABASE_URL = os.getenv("DATABASE_URL")
 
+    if DATABASE_URL:
+        # Fix for PostgreSQL URLs
+        DATABASE_URL = DATABASE_URL.replace(
+            "postgres://",
+            "postgresql://",
+            1
+        )
+
+        SQLALCHEMY_DATABASE_URI = DATABASE_URL
+
+   else:
+        # Local development only
+        SQLALCHEMY_DATABASE_URI = (
+            f"sqlite:///{os.path.join(BASE_DIR, 'zeronexus.db')}"
+        )
+
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     # -------------------------------------------------
     # Mail Configuration
     # -------------------------------------------------
