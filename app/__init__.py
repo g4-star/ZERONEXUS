@@ -12,6 +12,7 @@ from app.extensions import (
 )
 
 from app.cloudinary_config import configure_cloudinary
+from app.academy import academy
 
 
 def create_app(config_name=None):
@@ -82,6 +83,8 @@ def create_app(config_name=None):
     app.register_blueprint(main_bp)
 
     app.register_blueprint(admin_bp)
+    
+    app.register_blueprint(academy)
 
     # -------------------------------------------------
     # Error Handlers

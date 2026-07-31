@@ -4,3 +4,7 @@ from .member_profile import MemberProfile
 from .project import Project
 from .site_setting import SiteSetting
 from .blog_post import BlogPost
+from .course import Course
+from .lesson import Lesson
+from .quiz import Quiz
+from .progress import UserProgress
