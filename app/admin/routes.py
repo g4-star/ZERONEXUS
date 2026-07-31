@@ -7,6 +7,7 @@ from .forms import AdminLoginForm
 from .member_forms import AddMemberForm
 from .team_forms import EditTeamForm
 from app.models import SiteSetting, BlogPost
+from app.email import send_member_welcome
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -100,7 +101,6 @@ def add_member():
     form.team_id.choices = [(team.id, team.name) for team in teams]
 
     if form.validate_on_submit():
-        team = Team.query.get(form.team_id.data)
 
         member = MemberProfile(
             full_name=form.full_name.data,
@@ -118,13 +118,27 @@ def add_member():
         db.session.add(member)
         db.session.commit()
 
-        flash('Member added successfully.', 'success')
+        # Send welcome email
+        try:
+            send_member_welcome(member)
+            flash(
+                'Member added successfully and welcome email sent.',
+                'success'
+            )
+        except Exception as e:
+            print(f"Email Error: {e}")
+            flash(
+                'Member added successfully, but the welcome email could not be sent.',
+                'warning'
+            )
+
         return redirect(url_for('admin.manage_members'))
 
     return render_template(
         'admin/add_member.html',
         form=form
     )
+    
 @admin_bp.route('/projects')
 @login_required
 def manage_projects():
