@@ -1,11 +1,11 @@
 import os
 from dotenv import load_dotenv
 
-
-# Load environment variables from .env
+# Load environment variables
 load_dotenv()
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
 
 class Config:
     # -------------------------------------------------
@@ -24,7 +24,7 @@ class Config:
             DATABASE_URL = DATABASE_URL.replace(
                 "postgres://",
                 "postgresql://",
-                1
+                1,
             )
 
         SQLALCHEMY_DATABASE_URI = DATABASE_URL
@@ -36,11 +36,18 @@ class Config:
         )
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    
+
+    # Keep database connections healthy on Vercel
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "pool_pre_ping": True,
+        "pool_recycle": 300,
+    }
+
+    # -------------------------------------------------
+    # Cloudinary Configuration
+    # -------------------------------------------------
     CLOUDINARY_CLOUD_NAME = os.getenv("CLOUDINARY_CLOUD_NAME")
-
     CLOUDINARY_API_KEY = os.getenv("CLOUDINARY_API_KEY")
-
     CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET")
 
     # -------------------------------------------------
@@ -54,7 +61,7 @@ class Config:
     MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
     MAIL_DEFAULT_SENDER = os.getenv(
         "MAIL_DEFAULT_SENDER",
-        MAIL_USERNAME
+        MAIL_USERNAME,
     )
 
     # -------------------------------------------------
@@ -64,7 +71,7 @@ class Config:
         BASE_DIR,
         "app",
         "static",
-        "uploads"
+        "uploads",
     )
 
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5 MB
@@ -74,11 +81,11 @@ class Config:
         "jpg",
         "jpeg",
         "gif",
-        "webp"
+        "webp",
     }
 
     ALLOWED_DOCUMENT_EXTENSIONS = {
-        "pdf"
+        "pdf",
     }
 
     # -------------------------------------------------
@@ -88,15 +95,13 @@ class Config:
     REMEMBER_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
 
-    SESSION_COOKIE_SECURE = os.getenv(
-        "SESSION_COOKIE_SECURE",
-        "False"
-    ) == "True"
+    SESSION_COOKIE_SECURE = (
+        os.getenv("SESSION_COOKIE_SECURE", "False") == "True"
+    )
 
-    REMEMBER_COOKIE_SECURE = os.getenv(
-        "REMEMBER_COOKIE_SECURE",
-        "False"
-    ) == "True"
+    REMEMBER_COOKIE_SECURE = (
+        os.getenv("REMEMBER_COOKIE_SECURE", "False") == "True"
+    )
 
     WTF_CSRF_TIME_LIMIT = None
 
@@ -112,7 +117,7 @@ class Config:
     # -------------------------------------------------
     SITE_URL = os.getenv(
         "SITE_URL",
-        "http://127.0.0.1:5000"
+        "http://127.0.0.1:5000",
     )
 
 
@@ -129,7 +134,7 @@ class ProductionConfig(Config):
 
 
 config_map = {
-    'development': DevelopmentConfig,
-    'production': ProductionConfig,
-    'default': DevelopmentConfig,
+    "development": DevelopmentConfig,
+    "production": ProductionConfig,
+    "default": DevelopmentConfig,
 }
