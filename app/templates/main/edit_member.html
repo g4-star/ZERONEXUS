@@ -6,87 +6,108 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
 
-```
-        <div class="card bg-dark text-light border-info shadow-lg">
+            <div class="card bg-dark text-light border-info shadow-lg">
 
-            <div class="card-header border-info">
-                <h2 class="mb-0 text-info">
-                    Update Your ZeroNexus Profile
-                </h2>
-            </div>
+                <div class="card-header border-info">
+                    <h2 class="mb-0 text-info">
+                        Update Your ZeroNexus Profile
+                    </h2>
+                </div>
 
-            <div class="card-body">
+                <div class="card-body">
 
-                <p class="text-secondary">
-                    Welcome, <strong>{{ member.full_name }}</strong>.
-                    Use this private page to update your profile information.
-                </p>
+                    <p class="text-secondary">
+                        Welcome, <strong>{{ member.full_name }}</strong>.
+                        Use this private page to update your profile information.
+                    </p>
 
-                <form method="POST">
-                    {{ form.hidden_tag() }}
+                    <form method="POST" enctype="multipart/form-data">
 
-                    <div class="mb-3">
-                        {{ form.full_name.label(class_='form-label') }}
-                        {{ form.full_name(class_='form-control') }}
-                    </div>
+                        {{ form.hidden_tag() }}
 
-                    <div class="mb-3">
-                        {{ form.role.label(class_='form-label') }}
-                        {{ form.role(class_='form-control') }}
-                    </div>
+                        <!-- Profile Picture Preview -->
+                        <div class="text-center mb-4">
 
-                    <div class="mb-3">
-                        {{ form.bio.label(class_='form-label') }}
-                        {{ form.bio(class_='form-control', rows='5') }}
-                    </div>
+                            <img src="{{ url_for('static', filename=member.photo) }}"
+                                 class="rounded-circle border border-info mb-3 shadow"
+                                 width="140"
+                                 height="140"
+                                 style="object-fit:cover;"
+                                 alt="Profile Picture">
 
-                    <div class="mb-3">
-                        {{ form.linkedin_url.label(class_='form-label') }}
-                        {{ form.linkedin_url(class_='form-control') }}
-                    </div>
+                            <div class="mb-3">
+                                {{ form.photo.label(class_='form-label d-block text-info') }}
+                                {{ form.photo(class_='form-control') }}
+                                <div class="form-text text-secondary">
+                                    Upload a JPG, PNG, WEBP, or GIF image.
+                                </div>
+                            </div>
 
-                    <div class="mb-3">
-                        {{ form.github_url.label(class_='form-label') }}
-                        {{ form.github_url(class_='form-control') }}
-                    </div>
+                        </div>
 
-                    <div class="mb-3">
-                        {{ form.portfolio_url.label(class_='form-label') }}
-                        {{ form.portfolio_url(class_='form-control') }}
-                    </div>
+                        <hr class="border-info">
 
-                    <div class="mb-3">
-                        {{ form.email.label(class_='form-label') }}
-                        {{ form.email(class_='form-control') }}
-                    </div>
+                        <div class="mb-3">
+                            {{ form.full_name.label(class_='form-label') }}
+                            {{ form.full_name(class_='form-control') }}
+                        </div>
 
-                    <div class="mb-3">
-                        {{ form.whatsapp_number.label(class_='form-label') }}
-                        {{ form.whatsapp_number(class_='form-control') }}
-                    </div>
+                        <div class="mb-3">
+                            {{ form.role.label(class_='form-label') }}
+                            {{ form.role(class_='form-control') }}
+                        </div>
 
-                    <div class="mb-3">
-                        {{ form.skills.label(class_='form-label') }}
-                        {{ form.skills(class_='form-control', rows='4') }}
-                    </div>
+                        <div class="mb-3">
+                            {{ form.bio.label(class_='form-label') }}
+                            {{ form.bio(class_='form-control', rows='5') }}
+                        </div>
 
-                    <div class="d-grid">
-                        {{ form.submit(class_='btn btn-info btn-lg') }}
-                    </div>
+                        <div class="mb-3">
+                            {{ form.linkedin_url.label(class_='form-label') }}
+                            {{ form.linkedin_url(class_='form-control') }}
+                        </div>
 
-                </form>
+                        <div class="mb-3">
+                            {{ form.github_url.label(class_='form-label') }}
+                            {{ form.github_url(class_='form-control') }}
+                        </div>
 
-            </div>
+                        <div class="mb-3">
+                            {{ form.portfolio_url.label(class_='form-label') }}
+                            {{ form.portfolio_url(class_='form-control') }}
+                        </div>
 
-            <div class="card-footer text-secondary small border-info">
-                This link is private. Do not share it with others.
+                        <div class="mb-3">
+                            {{ form.email.label(class_='form-label') }}
+                            {{ form.email(class_='form-control') }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.whatsapp_number.label(class_='form-label') }}
+                            {{ form.whatsapp_number(class_='form-control') }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.skills.label(class_='form-label') }}
+                            {{ form.skills(class_='form-control', rows='4') }}
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            {{ form.submit(class_='btn btn-info btn-lg fw-bold') }}
+                        </div>
+
+                    </form>
+
+                </div>
+
+                <div class="card-footer text-secondary small border-info">
+                    This link is private. Do not share it with others.
+                </div>
+
             </div>
 
         </div>
-
     </div>
 </div>
-```
 
-</div>
 {% endblock %}
