@@ -22,3 +22,35 @@ def team_detail(slug):
 def member_profile(member_id):
     member = MemberProfile.query.get_or_404(member_id)
     return render_template('main/member_profile.html', member=member)
+
+@main_bp.route('/member/edit/<token>', methods=['GET', 'POST'])
+def edit_member(token):
+    from app.models.member_profile import MemberProfile
+    from app.main.forms import MemberProfileForm
+    from app.extensions import db
+    from flask import flash, redirect, render_template, url_for
+
+    member = MemberProfile.query.filter_by(
+        profile_token=token
+    ).first_or_404()
+
+    form = MemberProfileForm(obj=member)
+
+    if form.validate_on_submit():
+        form.populate_obj(member)
+        db.session.commit()
+
+        flash(
+            'Your profile has been updated successfully.',
+            'success'
+        )
+
+        return redirect(
+            url_for('main.edit_member', token=token)
+        )
+
+    return render_template(
+        'main/edit_member.html',
+        form=form,
+        member=member
+    )
