@@ -350,3 +350,10 @@ def logout():
     logout_user()
     return redirect(url_for('main.index'))
 
+@admin_bp.context_processor
+def inject_settings():
+    from app.models import SiteSetting
+
+    return {
+        "settings": SiteSetting.query.first()
+    }
