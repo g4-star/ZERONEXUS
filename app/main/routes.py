@@ -4,14 +4,13 @@ from flask import (
     flash,
     redirect,
     url_for,
-    current_app
+    current_app,
+    session
 )
+
 from app.models import Team, MemberProfile
 from app.main.forms import MemberProfileForm
 from app.extensions import db
-
-import os
-from werkzeug.utils import secure_filename
 
 
 main_bp = Blueprint('main', __name__)
@@ -36,7 +35,7 @@ def teams():
 
 
 # -------------------------------------------------
-# Team Detail
+# Team Detail Page
 # -------------------------------------------------
 @main_bp.route('/teams/<slug>')
 def team_detail(slug):
@@ -67,8 +66,15 @@ def edit_member(token):
 
     if form.validate_on_submit():
 
-        # Skip file upload on Vercel (read-only filesystem)
+        # -------------------------------------------------
+        # NOTE:
+        # Image uploads are disabled on Vercel because the
+        # filesystem is read-only. Profile pictures will be
+        # supported later using Cloudinary or another cloud
+        # storage provider.
+        # -------------------------------------------------
 
+        # Update member information
         member.full_name = form.full_name.data
         member.role = form.role.data
         member.bio = form.bio.data
@@ -81,12 +87,16 @@ def edit_member(token):
 
         db.session.commit()
 
+        # Remove any previous admin flash messages
+        session.pop('_flashes', None)
+
+        # Show only the member success message
         flash(
             'Your profile has been updated successfully.',
             'success'
         )
 
-        # Redirect user to homepage after saving
+        # Redirect member to homepage
         return redirect(url_for('main.index'))
 
     return render_template(
