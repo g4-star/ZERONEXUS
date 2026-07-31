@@ -12,40 +12,39 @@ from app.extensions import (
 )
 
 
+
 def create_app(config_name=None):
     """Application factory for ZeroNexus."""
 
+    import os
+    from flask import Flask
+
     # Determine environment configuration
     if config_name is None:
-        config_name = os.getenv('FLASK_ENV', 'default')
+        config_name = os.getenv("FLASK_ENV", "default")
 
     app = Flask(__name__, instance_relative_config=True)
 
     # Load configuration
     app.config.from_object(
-        config_map.get(config_name, config_map['default'])
+        config_map.get(config_name, config_map["default"])
     )
 
-    # Ensure instance folder exists
+    # Skip directory creation on Vercel (read-only filesystem)
     if not os.environ.get("VERCEL"):
+
+        # Create instance folder
         os.makedirs(app.instance_path, exist_ok=True)
 
-    # Ensure upload directories exist
-    os.makedirs(
-        os.path.join(app.root_path, 'static', 'uploads'),
-        exist_ok=True
-    )
+        # Create upload folders
+        upload_root = os.path.join(app.root_path, "static", "uploads")
 
-    os.makedirs(
-        os.path.join(app.root_path, 'static', 'uploads', 'members'),
-        exist_ok=True
-    )
-
-    os.makedirs(
-        os.path.join(app.root_path, 'static', 'uploads', 'teams'),
-        exist_ok=True
-    )
-
+        os.makedirs(upload_root, exist_ok=True)
+        os.makedirs(os.path.join(upload_root, "members"), exist_ok=True)
+        os.makedirs(os.path.join(upload_root, "teams"), exist_ok=True)
+        os.makedirs(os.path.join(upload_root, "projects"), exist_ok=True)
+        os.makedirs(os.path.join(upload_root, "blog"), exist_ok=True)
+        os.makedirs(os.path.join(upload_root, "avatars"), exist_ok=True)
     # -------------------------------------------------
     # Initialize Flask extensions
     # -------------------------------------------------
