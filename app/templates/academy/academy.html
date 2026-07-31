@@ -1,93 +1,201 @@
 {% extends "base.html" %}
 
-
 {% block content %}
 
+<section class="academy-container">
 
-<section class="academy">
+    <div class="academy-hero text-center mb-5">
 
-<h1>
-🤖 ZeroNexus AI Academy
-</h1>
+        <h1 class="display-5 fw-bold">
+            🤖 ZeroNexus AI Academy
+        </h1>
 
+        <p class="lead text-secondary">
+            Learn Programming, Web Development, Cybersecurity and Artificial Intelligence
+            through practical lessons, projects and AI-powered learning.
+        </p>
 
-<p>
-Learn programming, cybersecurity,
-AI and modern technology with your
-personal AI tutor.
-</p>
+        <div class="academy-stats">
 
+            <span class="badge bg-info me-2">📚 4 Courses</span>
+            <span class="badge bg-success me-2">🏆 Certificates</span>
+            <span class="badge bg-warning text-dark">👨‍💻 Beginner Friendly</span>
 
-<div class="courses">
+        </div>
 
+    </div>
 
-<div class="course-card">
+    <div class="row g-4">
 
-<h2>
-🐍 Python For Beginners
-</h2>
+        <!-- Python -->
 
-<p>
-Learn Python from zero knowledge.
-</p>
+        <div class="col-md-6 col-xl-3">
 
+            <div class="course-card h-100">
 
-<a href="/academy/python">
-Start Learning
-</a>
+                <div class="course-icon">🐍</div>
 
-</div>
+                <h4>Python Fundamentals</h4>
 
+                <p>
+                    Learn Python from zero knowledge to automation and scripting.
+                </p>
 
+                <div class="small text-secondary mb-2">
+                    📚 24 Lessons
+                    <br>
+                    ⏱ 12 Hours
+                    <br>
+                    🟢 Beginner
+                </div>
 
-<div class="course-card">
+                <div class="progress mb-3">
 
-<h2>
-🌐 HTML & CSS
-</h2>
+                    <div class="progress-bar bg-info"
+                         style="width:15%;">
 
-<p>
-Build beautiful websites.
-</p>
+                        15%
 
+                    </div>
 
-</div>
+                </div>
 
+                <a href="/academy/python"
+                   class="btn btn-info w-100">
 
+                    Continue Learning
 
-<div class="course-card">
+                </a>
 
-<h2>
-🛡 Cybersecurity
-</h2>
+            </div>
 
-<p>
-Become a cybersecurity professional.
-</p>
+        </div>
 
+        <!-- HTML CSS JS -->
 
-</div>
+        <div class="col-md-6 col-xl-3">
 
+            <div class="course-card h-100">
 
+                <div class="course-icon">🌐</div>
 
-<div class="course-card">
+                <h4>HTML • CSS • JavaScript</h4>
 
-<h2>
-🤖 Artificial Intelligence
-</h2>
+                <p>
+                    Build beautiful, responsive and interactive websites.
+                </p>
 
-<p>
-Understand modern AI technology.
-</p>
+                <div class="small text-secondary mb-2">
+                    📚 30 Lessons
+                    <br>
+                    ⏱ 15 Hours
+                    <br>
+                    🟢 Beginner
+                </div>
 
+                <div class="progress mb-3">
 
-</div>
+                    <div class="progress-bar bg-success"
+                         style="width:0%;">
 
+                        0%
 
-</div>
+                    </div>
 
+                </div>
+
+                <button class="btn btn-outline-info w-100">
+                    Coming Soon
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- Cybersecurity -->
+
+        <div class="col-md-6 col-xl-3">
+
+            <div class="course-card h-100">
+
+                <div class="course-icon">🛡</div>
+
+                <h4>Cybersecurity</h4>
+
+                <p>
+                    Ethical hacking, Blue Team, SOC and Digital Forensics.
+                </p>
+
+                <div class="small text-secondary mb-2">
+                    📚 40 Lessons
+                    <br>
+                    ⏱ 20 Hours
+                    <br>
+                    🟡 Intermediate
+                </div>
+
+                <div class="progress mb-3">
+
+                    <div class="progress-bar bg-warning"
+                         style="width:0%;">
+
+                        0%
+
+                    </div>
+
+                </div>
+
+                <button class="btn btn-outline-info w-100">
+                    Coming Soon
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- AI -->
+
+        <div class="col-md-6 col-xl-3">
+
+            <div class="course-card h-100">
+
+                <div class="course-icon">🤖</div>
+
+                <h4>Artificial Intelligence</h4>
+
+                <p>
+                    Learn prompt engineering, machine learning and modern AI tools.
+                </p>
+
+                <div class="small text-secondary mb-2">
+                    📚 18 Lessons
+                    <br>
+                    ⏱ 10 Hours
+                    <br>
+                    🟢 Beginner
+                </div>
+
+                <div class="progress mb-3">
+
+                    <div class="progress-bar bg-primary"
+                         style="width:0%;">
+
+                        0%
+
+                    </div>
+
+                </div>
+
+                <button class="btn btn-outline-info w-100">
+                    Coming Soon
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </section>
-
 
 {% endblock %}

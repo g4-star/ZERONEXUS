@@ -1,53 +1,135 @@
 {% extends "base.html" %}
 
-
 {% block content %}
 
+<div class="container py-5">
 
-<h1>
-🐍 Python For Beginners
-</h1>
+    <!-- Course Header -->
+
+    <div class="course-header mb-5">
+
+        <span class="badge bg-success mb-2">
+            Beginner
+        </span>
+
+        <h1 class="fw-bold">
+            🐍 Python Fundamentals
+        </h1>
+
+        <p class="text-secondary">
+            Master Python from beginner to advanced through practical coding exercises,
+            projects and AI-assisted learning.
+        </p>
+
+        <div class="d-flex gap-3 flex-wrap">
+
+            <span>📚 12 Modules</span>
+            <span>⏱ 12 Hours</span>
+            <span>🏆 Certificate</span>
+
+        </div>
+
+        <div class="progress mt-4">
+
+            <div class="progress-bar bg-info"
+                 style="width:12%">
+
+                12%
+
+            </div>
+
+        </div>
+
+    </div>
 
 
-<h3>
-Roadmap
-</h3>
+    <!-- Modules -->
 
+    <div class="card bg-dark border-info shadow-lg">
 
-<ul>
+        <div class="card-header">
 
-<li>What is Python?</li>
+            <h4 class="mb-0">
+                📚 Course Roadmap
+            </h4>
 
-<li>Installing Python</li>
+        </div>
 
-<li>Variables</li>
+        <div class="card-body">
 
-<li>Data Types</li>
+            <div class="list-group">
 
-<li>Conditions</li>
+                <a class="list-group-item list-group-item-action bg-dark text-light border-secondary">
+                    ✅ Module 1 — What is Python?
+                </a>
 
-<li>Loops</li>
+                <a class="list-group-item list-group-item-action bg-dark text-light border-secondary">
+                    ⏳ Module 2 — Installing Python
+                </a>
 
-<li>Functions</li>
+                <a class="list-group-item list-group-item-action bg-dark text-light border-secondary">
+                    ⏳ Module 3 — Variables
+                </a>
 
-<li>Lists</li>
+                <a class="list-group-item list-group-item-action bg-dark text-light border-secondary">
+                    ⏳ Module 4 — Data Types
+                </a>
 
-<li>Dictionaries</li>
+                <a class="list-group-item list-group-item-action bg-dark text-light border-secondary">
+                    ⏳ Module 5 — Conditions
+                </a>
 
-<li>File Handling</li>
+                <a class="list-group-item list-group-item-action bg-dark text-light border-secondary">
+                    ⏳ Module 6 — Loops
+                </a>
 
-<li>Object Oriented Programming</li>
+                <a class="list-group-item list-group-item-action bg-dark text-light border-secondary">
+                    ⏳ Module 7 — Functions
+                </a>
 
-<li>Projects</li>
+                <a class="list-group-item list-group-item-action bg-dark text-light border-secondary">
+                    ⏳ Module 8 — Lists
+                </a>
 
-</ul>
+                <a class="list-group-item list-group-item-action bg-dark text-light border-secondary">
+                    ⏳ Module 9 — Dictionaries
+                </a>
 
+                <a class="list-group-item list-group-item-action bg-dark text-light border-secondary">
+                    ⏳ Module 10 — File Handling
+                </a>
 
-<a href="/academy/tutor">
+                <a class="list-group-item list-group-item-action bg-dark text-light border-secondary">
+                    ⏳ Module 11 — Object-Oriented Programming
+                </a>
 
-Ask Nexus AI Tutor 🤖
+                <a class="list-group-item list-group-item-action bg-dark text-light border-secondary">
+                    🚀 Module 12 — Final Project
+                </a>
 
-</a>
+            </div>
 
+        </div>
+
+    </div>
+
+    <div class="mt-4 d-flex gap-3 flex-wrap">
+
+        <a href="/academy/tutor"
+           class="btn btn-info">
+
+            🤖 Ask Nexus AI Tutor
+
+        </a>
+
+        <button class="btn btn-outline-success">
+
+            ▶ Continue Course
+
+        </button>
+
+    </div>
+
+</div>
 
 {% endblock %}
