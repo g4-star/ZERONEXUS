@@ -1,64 +1,129 @@
 {% extends "base.html" %}
 
-
 {% block content %}
 
+<div class="container py-5">
 
-<h1>
-🤖 Nexus AI Tutor
-</h1>
+    <!-- Header -->
+    <div class="text-center mb-5">
 
+        <h1 class="display-5 fw-bold text-info">
+            🤖 Nexus AI Tutor
+        </h1>
 
-<div class="chat-box">
+        <p class="text-secondary">
+            Your personal AI instructor for Python, HTML, CSS, JavaScript,
+            Cybersecurity and Artificial Intelligence.
+        </p>
 
+        {% if course %}
+            <span class="badge bg-info me-2">
+                {{ course }}
+            </span>
+        {% endif %}
 
-<p>
-<b>Student:</b>
-</p>
+        {% if lesson %}
+            <span class="badge bg-success">
+                {{ lesson }}
+            </span>
+        {% endif %}
 
-<p>
-I don't understand loops
-</p>
+    </div>
 
+    <!-- Chat Card -->
+    <div class="card bg-dark border-info shadow-lg">
 
-<hr>
+        <div class="card-header text-info fw-bold">
+            💬 Chat with Nexus AI
+        </div>
 
+        <div class="card-body">
 
-<p>
-<b>Nexus AI:</b>
-</p>
+            {% if answer %}
 
+            <div class="card bg-black border-info mb-4">
 
-<p>
+                <div class="card-header text-info fw-bold">
+                    🤖 Nexus AI
+                </div>
 
-No problem.
+                <div class="card-body">
 
-Imagine you have a robot that repeats
-the same task every morning.
+                    <pre style="
+                        white-space: pre-wrap;
+                        word-wrap: break-word;
+                        color: #ffffff;
+                        font-size: 16px;
+                        line-height: 1.7;
+                        font-family: Consolas, monospace;
+                        margin:0;
+                    ">{{ answer }}</pre>
 
-A loop allows your computer to repeat
-instructions automatically.
+                </div>
 
-</p>
+            </div>
 
+            {% else %}
 
-<pre>
+            <div class="alert alert-secondary">
 
-for i in range(5):
-    print("Python")
+                👋 <strong>Welcome!</strong><br><br>
 
-</pre>
+                Ask me anything about this lesson.
 
+                <br><br>
+
+                I can:
+
+                <ul class="mt-2 mb-0">
+                    <li>Explain concepts step by step</li>
+                    <li>Generate coding exercises</li>
+                    <li>Create quizzes</li>
+                    <li>Debug Python code</li>
+                    <li>Teach like a real instructor</li>
+                </ul>
+
+            </div>
+
+            {% endif %}
+
+            <form method="POST">
+
+                {{ csrf_token() }}
+
+                <textarea
+                    class="form-control bg-dark text-light"
+                    name="question"
+                    rows="6"
+                    placeholder="Example: Explain Python variables like I'm a beginner."
+                    required></textarea>
+
+                <div class="mt-3">
+
+                    <button
+                        type="submit"
+                        class="btn btn-info">
+
+                        🚀 Ask Nexus AI
+
+                    </button>
+
+                    <a
+                        href="/academy/python"
+                        class="btn btn-outline-secondary">
+
+                        ← Back to Course
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
 
 </div>
-
-
-<input placeholder="Ask Nexus AI">
-
-
-<button>
-Send
-</button>
-
 
 {% endblock %}
