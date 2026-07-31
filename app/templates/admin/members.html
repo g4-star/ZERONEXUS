@@ -8,11 +8,8 @@
 </div>
 
 <div class='panel-card'>
-
     <div class='table-responsive'>
-
         <table class='table table-dark align-middle'>
-
             <thead>
                 <tr>
                     <th>Photo</th>
@@ -24,43 +21,75 @@
                     <th class='text-end'>Actions</th>
                 </tr>
             </thead>
-
             <tbody>
                 {% for member in members %}
                 <tr>
                     <td>
+                        {% if member.photo %}
                         <img src='{{ url_for("static", filename=member.photo) }}'
-                             class='table-avatar' alt=''>
+                             class='table-avatar' alt='{{ member.full_name }}'>
+                        {% else %}
+                        <img src='{{ url_for("static", filename="img/default_avatar.png") }}'
+                             class='table-avatar' alt='{{ member.full_name }}'>
+                        {% endif %}
                     </td>
                     <td>{{ member.full_name }}</td>
-                    <td>{{ member.team.name }}</td>
+                    <td>
+                        {% if member.team %}
+                        {{ member.team.name }}
+                        {% else %}
+                        <span class='text-muted'>—</span>
+                        {% endif %}
+                    </td>
                     <td>{{ member.role }}</td>
                     <td>
                         {% if member.linkedin_url %}
-                        <a href='{{ member.linkedin_url }}' target='_blank' class='text-info'>LinkedIn</a>
+                        <a href='{{ member.linkedin_url }}' target='_blank' rel='noopener noreferrer' class='text-info'>
+                            LinkedIn
+                        </a>
                         {% else %}
                         —
                         {% endif %}
                     </td>
                     <td>
                         {% if member.github_url %}
-                        <a href='{{ member.github_url }}' target='_blank' class='text-info'>GitHub</a>
+                        <a href='{{ member.github_url }}' target='_blank' rel='noopener noreferrer' class='text-info'>
+                            GitHub
+                        </a>
                         {% else %}
                         —
                         {% endif %}
                     </td>
                     <td class='text-end'>
-                        <a href='#' class='btn btn-sm btn-outline-info'>Edit</a>
-                        <a href='#' class='btn btn-sm btn-outline-danger'>Delete</a>
+                        <a href="{{ url_for('admin.edit_member', member_id=member.id) }}"
+                           class="btn btn-sm btn-outline-info">
+                            Edit
+                        </a>
+
+                        <form method="POST"
+                              action="{{ url_for('admin.delete_member', member_id=member.id) }}"
+                              class="d-inline"
+                              onsubmit="return confirm('Delete {{ member.full_name }}?');">
+                            {% if csrf_token %}
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            {% endif %}
+                            <button type="submit"
+                                    class="btn btn-sm btn-outline-danger">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">
+                        No members found. <a href='{{ url_for("admin.add_member") }}'>Add one now</a>.
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
-
         </table>
-
     </div>
-
 </div>
 
 {% endblock %}

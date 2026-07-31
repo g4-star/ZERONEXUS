@@ -139,6 +139,47 @@ def add_member():
         form=form
     )
     
+@admin_bp.route('/members/<int:member_id>/edit', methods=['GET', 'POST'])
+def edit_member(member_id):
+    from app.models.member_profile import MemberProfile
+    from app.main.forms import MemberProfileForm
+    from app.extensions import db
+    from flask import flash, redirect, render_template, url_for
+
+    member = MemberProfile.query.get_or_404(member_id)
+
+    form = MemberProfileForm(obj=member)
+
+    if form.validate_on_submit():
+        form.populate_obj(member)
+        db.session.commit()
+
+        flash('Member updated successfully.', 'success')
+
+        return redirect(url_for('admin.manage_members'))
+
+    return render_template(
+        'admin/edit_member.html',
+        form=form,
+        member=member
+    )
+
+
+@admin_bp.route('/members/<int:member_id>/delete', methods=['POST'])
+def delete_member(member_id):
+    from app.models.member_profile import MemberProfile
+    from app.extensions import db
+    from flask import flash, redirect, url_for
+
+    member = MemberProfile.query.get_or_404(member_id)
+
+    db.session.delete(member)
+    db.session.commit()
+
+    flash('Member deleted successfully.', 'success')
+
+    return redirect(url_for('admin.manage_members'))
+    
 @admin_bp.route('/projects')
 @login_required
 def manage_projects():
