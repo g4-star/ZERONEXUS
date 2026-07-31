@@ -11,6 +11,7 @@ from flask import (
 from app.models import Team, MemberProfile
 from app.main.forms import MemberProfileForm
 from app.extensions import db
+import cloudinary.uploader
 
 
 main_bp = Blueprint('main', __name__)
@@ -58,6 +59,9 @@ def member_profile(member_id):
 @main_bp.route('/member/edit/<token>', methods=['GET', 'POST'])
 def edit_member(token):
 
+    from flask import flash, redirect, render_template, url_for, session
+    import cloudinary.uploader
+
     member = MemberProfile.query.filter_by(
         profile_token=token
     ).first_or_404()
@@ -66,15 +70,21 @@ def edit_member(token):
 
     if form.validate_on_submit():
 
-        # -------------------------------------------------
-        # NOTE:
-        # Image uploads are disabled on Vercel because the
-        # filesystem is read-only. Profile pictures will be
-        # supported later using Cloudinary or another cloud
-        # storage provider.
-        # -------------------------------------------------
+        # -----------------------------------------
+        # Upload profile picture to Cloudinary
+        # -----------------------------------------
+        if form.photo.data:
 
+            upload_result = cloudinary.uploader.upload(
+                form.photo.data,
+                folder="zeronexus/members"
+            )
+
+            member.photo = upload_result["secure_url"]
+
+        # -----------------------------------------
         # Update member information
+        # -----------------------------------------
         member.full_name = form.full_name.data
         member.role = form.role.data
         member.bio = form.bio.data
@@ -87,20 +97,18 @@ def edit_member(token):
 
         db.session.commit()
 
-        # Remove any previous admin flash messages
-        session.pop('_flashes', None)
+        # Remove previous admin flash messages
+        session.pop("_flashes", None)
 
-        # Show only the member success message
         flash(
-            'Your profile has been updated successfully.',
-            'success'
+            "Your profile has been updated successfully.",
+            "success"
         )
 
-        # Redirect member to homepage
-        return redirect(url_for('main.index'))
+        return redirect(url_for("main.index"))
 
     return render_template(
-        'main/edit_member.html',
+        "main/edit_member.html",
         form=form,
         member=member
     )

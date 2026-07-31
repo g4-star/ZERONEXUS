@@ -4,76 +4,119 @@
 
 <div class="container py-4">
 
-```
-<h1 class="page-title mb-4 text-info">
-    Edit Member
-</h1>
+    <h1 class="page-title mb-4 text-info">
+        Edit Member
+    </h1>
 
-<div class="card bg-dark border-info shadow">
-    <div class="card-body text-light">
+    <div class="card bg-dark border-info shadow">
 
-        <form method="POST">
-            {{ form.hidden_tag() }}
+        <div class="card-body text-light">
 
-            <div class="mb-3">
-                {{ form.full_name.label(class_='form-label') }}
-                {{ form.full_name(class_='form-control') }}
-            </div>
+            <form method="POST" enctype="multipart/form-data">
 
-            <div class="mb-3">
-                {{ form.role.label(class_='form-label') }}
-                {{ form.role(class_='form-control') }}
-            </div>
+                {{ form.hidden_tag() }}
 
-            <div class="mb-3">
-                {{ form.bio.label(class_='form-label') }}
-                {{ form.bio(class_='form-control', rows='4') }}
-            </div>
+                <div class="text-center mb-4">
 
-            <div class="mb-3">
-                {{ form.linkedin_url.label(class_='form-label') }}
-                {{ form.linkedin_url(class_='form-control') }}
-            </div>
+                    {% if member.photo %}
 
-            <div class="mb-3">
-                {{ form.github_url.label(class_='form-label') }}
-                {{ form.github_url(class_='form-control') }}
-            </div>
+                        {% if member.photo.startswith('http') %}
 
-            <div class="mb-3">
-                {{ form.portfolio_url.label(class_='form-label') }}
-                {{ form.portfolio_url(class_='form-control') }}
-            </div>
+                            <img src="{{ member.photo }}"
+                                 class="rounded-circle border border-info shadow"
+                                 width="160"
+                                 height="160"
+                                 style="object-fit:cover;">
 
-            <div class="mb-3">
-                {{ form.email.label(class_='form-label') }}
-                {{ form.email(class_='form-control') }}
-            </div>
+                        {% else %}
 
-            <div class="mb-3">
-                {{ form.whatsapp_number.label(class_='form-label') }}
-                {{ form.whatsapp_number(class_='form-control') }}
-            </div>
+                            <img src="{{ url_for('static', filename=member.photo) }}"
+                                 class="rounded-circle border border-info shadow"
+                                 width="160"
+                                 height="160"
+                                 style="object-fit:cover;">
 
-            <div class="mb-3">
-                {{ form.skills.label(class_='form-label') }}
-                {{ form.skills(class_='form-control', rows='3') }}
-            </div>
+                        {% endif %}
 
-            <div class="d-flex gap-2">
-                {{ form.submit(class_='btn btn-info') }}
+                    {% else %}
 
-                <a href="{{ url_for('admin.manage_members') }}"
-                   class="btn btn-outline-secondary">
-                    Cancel
-                </a>
-            </div>
+                        <img src="{{ url_for('static', filename='img/placeholders/member_placeholder.jpg') }}"
+                             class="rounded-circle border border-info shadow"
+                             width="160"
+                             height="160"
+                             style="object-fit:cover;">
 
-        </form>
+                    {% endif %}
+
+                </div>
+
+                <div class="mb-3">
+                    {{ form.photo.label(class_='form-label') }}
+                    {{ form.photo(class_='form-control') }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.full_name.label(class_='form-label') }}
+                    {{ form.full_name(class_='form-control') }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.role.label(class_='form-label') }}
+                    {{ form.role(class_='form-control') }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.bio.label(class_='form-label') }}
+                    {{ form.bio(class_='form-control', rows='4') }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.linkedin_url.label(class_='form-label') }}
+                    {{ form.linkedin_url(class_='form-control') }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.github_url.label(class_='form-label') }}
+                    {{ form.github_url(class_='form-control') }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.portfolio_url.label(class_='form-label') }}
+                    {{ form.portfolio_url(class_='form-control') }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.email.label(class_='form-label') }}
+                    {{ form.email(class_='form-control') }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.whatsapp_number.label(class_='form-label') }}
+                    {{ form.whatsapp_number(class_='form-control') }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.skills.label(class_='form-label') }}
+                    {{ form.skills(class_='form-control', rows='3') }}
+                </div>
+
+                <div class="d-flex gap-2">
+
+                    {{ form.submit(class_='btn btn-info') }}
+
+                    <a href="{{ url_for('admin.manage_members') }}"
+                       class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
 
     </div>
-</div>
-```
 
 </div>
+
 {% endblock %}
