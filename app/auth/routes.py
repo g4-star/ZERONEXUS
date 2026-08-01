@@ -1,6 +1,5 @@
 from flask import (
     render_template,
-    request,
     redirect,
     url_for,
     flash
@@ -9,124 +8,224 @@ from flask import (
 from flask_login import (
     login_user,
     logout_user,
+    login_required,
     current_user
 )
 
-from app.auth import auth_bp
+from app.extensions import db
+
 from app.models import User
 
+from . import auth_bp
 
-@auth_bp.route(
-    "/login",
-    methods=["GET","POST"]
+from .forms import (
+    LoginForm,
+    ActivateAccountForm
 )
+
+
+# =====================================================
+# USER LOGIN
+# =====================================================
+
+@auth_bp.route("/login", methods=["GET", "POST"])
 def login():
 
     if current_user.is_authenticated:
+
         return redirect(
-            url_for("main.index")
+            url_for("auth.dashboard")
         )
 
 
-    if request.method == "POST":
-
-        username = request.form.get(
-            "username"
-        )
-
-        password = request.form.get(
-            "password"
-        )
+    form = LoginForm()
 
 
-        user = User.query.filter_by(
-            username=username
+    if form.validate_on_submit():
+
+        user = User.query.filter(
+            (
+                User.username == form.username.data
+            )
+            |
+            (
+                User.email == form.username.data
+            )
         ).first()
 
 
-        if user and user.check_password(password):
+        if not user:
 
-            login_user(user)
+            flash(
+                "Invalid username or password.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("auth.login")
+            )
 
 
-            if user.must_change_password:
+        if not user.is_active:
 
-                return redirect(
-                    url_for(
-                        "auth.change_password"
-                    )
-                )
-
+            flash(
+                "Please activate your account first.",
+                "warning"
+            )
 
             return redirect(
                 url_for(
-                    "main.dashboard"
+                    "auth.activate_account",
+                    token=user.activation_token
                 )
             )
 
 
-        flash(
-            "Invalid username or password.",
-            "danger"
+        if not user.check_password(
+            form.password.data
+        ):
+
+            flash(
+                "Invalid username or password.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("auth.login")
+            )
+
+
+        login_user(user)
+
+
+        if user.must_change_password:
+
+            return redirect(
+                url_for(
+                    "auth.activate_account",
+                    token=user.activation_token
+                )
+            )
+
+
+        return redirect(
+            url_for(
+                "auth.dashboard"
+            )
         )
 
 
     return render_template(
-        "auth/login.html"
+        "auth/login.html",
+        form=form
     )
 
 
 
-@auth_bp.route("/logout")
-def logout():
-
-    logout_user()
-
-    return redirect(
-        url_for("main.index")
-    )
-
-
+# =====================================================
+# ACCOUNT ACTIVATION
+# =====================================================
 
 @auth_bp.route(
-    "/change-password",
-    methods=["GET","POST"]
+    "/activate/<token>",
+    methods=["GET", "POST"]
 )
-def change_password():
+def activate_account(token):
 
-    if request.method=="POST":
+    user = User.query.filter_by(
+        activation_token=token
+    ).first_or_404()
 
-        password=request.form.get(
-            "password"
+
+    if user.is_active:
+
+        flash(
+            "Account already activated.",
+            "info"
+        )
+
+        return redirect(
+            url_for("auth.login")
         )
 
 
-        current_user.set_password(
-            password
+    form = ActivateAccountForm()
+
+
+    if form.validate_on_submit():
+
+        user.set_password(
+            form.password.data
         )
 
 
-        current_user.must_change_password=False
+        user.is_active = True
 
+        user.must_change_password = False
 
-        from app.extensions import db
+        user.activation_token = None
+
 
         db.session.commit()
 
 
+        login_user(user)
+
+
         flash(
-            "Password updated successfully.",
+            "Account activated successfully.",
             "success"
         )
 
 
         return redirect(
             url_for(
-                "main.dashboard"
+                "auth.dashboard"
             )
         )
 
 
     return render_template(
-        "auth/change_password.html"
+        "auth/activate_account.html",
+        form=form,
+        user=user
+    )
+
+
+
+# =====================================================
+# TEAM DASHBOARD
+# =====================================================
+
+@auth_bp.route("/dashboard")
+@login_required
+def dashboard():
+
+
+    return render_template(
+        "auth/dashboard.html",
+        user=current_user
+    )
+
+
+
+# =====================================================
+# LOGOUT
+# =====================================================
+
+@auth_bp.route("/logout")
+@login_required
+def logout():
+
+    logout_user()
+
+
+    flash(
+        "Logged out successfully.",
+        "success"
+    )
+
+
+    return redirect(
+        url_for("auth.login")
     )

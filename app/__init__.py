@@ -49,11 +49,15 @@ def create_app(config_name=None):
     from app.auth import auth_bp
     from app.admin import admin_bp
     from app.user import user_bp
+    from app.team import team_bp
+
+
 
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(user_bp)
+    app.register_blueprint(team_bp)
     app.register_blueprint(academy)
 
     # Register the AI blueprint too, if it defines one

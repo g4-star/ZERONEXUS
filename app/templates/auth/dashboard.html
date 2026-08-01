@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+
+<div class="container py-5">
+
+
+    <div class="card bg-dark text-light border-info shadow">
+
+
+        <div class="card-body">
+
+
+            <h2 class="text-info">
+
+                Welcome {{ user.username }}
+
+            </h2>
+
+
+            <hr>
+
+
+            <h4>
+                Team Dashboard
+            </h4>
+
+
+
+            {% if user.team %}
+
+            <p>
+                Team:
+                <strong>
+                    {{ user.team.name }}
+                </strong>
+            </p>
+
+
+            {% else %}
+
+            <p class="text-warning">
+                No team assigned.
+            </p>
+
+
+            {% endif %}
+
+
+
+            <div class="mt-4">
+
+
+                <button class="btn btn-outline-info">
+
+                    💬 Team Messages
+
+                </button>
+
+
+
+                <button class="btn btn-outline-success">
+
+                    📁 Projects
+
+                </button>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+{% endblock %}

@@ -53,6 +53,7 @@ class User(UserMixin, db.Model):
         default="member",
         nullable=False
     )
+    
 
 
     # -------------------------------------------------
