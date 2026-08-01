@@ -3,98 +3,54 @@
 {% block content %}
 
 <div class="academy-hero text-center mb-5">
-
-    <h1 class="display-5 fw-bold">
-        🤖 ZeroNexus AI Academy
-    </h1>
-
-    <p class="lead text-secondary">
-        Learn Programming, Web Development, Cybersecurity and Artificial Intelligence
-        through practical lessons, projects and AI-powered learning.
-    </p>
-
+    <h1 class="display-5 fw-bold">🤖 ZeroNexus AI Academy</h1>
+    <p class="lead text-secondary">Learn Programming, Web Development, Cybersecurity and Artificial Intelligence through practical lessons, projects and AI-powered learning.</p>
     <div class="academy-stats">
-
-        <span class="badge bg-info me-2">
-            📚 {{ courses|length }} Courses
-        </span>
-
-        <span class="badge bg-success me-2">
-            🏆 Certificates
-        </span>
-
-        <span class="badge bg-warning text-dark">
-            👨‍💻 Beginner Friendly
-        </span>
-
+        <span class="badge bg-info me-2">📚 {{ courses|length }} Courses</span>
+        <span class="badge bg-success me-2">🏆 Certificates</span>
+        <span class="badge bg-warning text-dark">👨‍💻 Beginner Friendly</span>
     </div>
-
 </div>
 
-<div class="row g-4">
-
-    {% for course in courses %}
-
-    <div class="col-md-6 col-xl-3">
-
-        <div class="course-card h-100">
-
-            <div class="course-icon">
-
-                {{ course.icon }}
-
-            </div>
-
-            <h4>
-
-                {{ course.title }}
-
-            </h4>
-
-            <p>
-
-                {{ course.description }}
-
-            </p>
-
-            <div class="small text-secondary mb-2">
-
-                📚 {{ course.lessons|length }} Lessons
-
-                <br>
-
-                ⏱ {{ course.duration }}
-
-                <br>
-
-                {{ course.level }}
-
-            </div>
-
-            <div class="progress mb-3">
-
-                <div class="progress-bar bg-info"
-                     style="width:0%;">
-
-                    0%
-
-                </div>
-
-            </div>
-
-            <a href="/academy/{{ course.slug }}"
-               class="btn btn-info w-100">
-
-                Open Course
-
-            </a>
-
-        </div>
-
-    </div>
-
+<!-- Category Filter -->
+<div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
+    <a href="{{ url_for('academy.home') }}"
+       class="btn btn-sm {{ 'btn-info' if active_category == 'All' else 'btn-outline-secondary' }}">All</a>
+    {% for cat in categories %}
+    <a href="{{ url_for('academy.home', category=cat) }}"
+       class="btn btn-sm {{ 'btn-info' if active_category == cat else 'btn-outline-secondary' }}">{{ cat }}</a>
     {% endfor %}
+</div>
 
+{% if not courses %}
+<div class="text-center text-secondary py-5">
+    <p class="mb-1">No courses in this category yet.</p>
+    <a href="{{ url_for('academy.home') }}" class="btn btn-outline-secondary btn-sm">← Show all courses</a>
+</div>
+{% endif %}
+
+<div class="row g-4">
+    {% for course in courses %}
+    <div class="col-md-6 col-xl-3">
+        <div class="course-card h-100">
+            <div class="course-icon">{{ course.icon }}</div>
+            <h4>{{ course.title }}</h4>
+            <p>{{ course.description }}</p>
+            <div class="small text-secondary mb-2">
+                📚 {{ lessons_by_course.get(course.id, [])|length }} Lessons<br>
+                ⏱ {{ course.duration }}<br>
+                {{ course.level }}
+            </div>
+            {% set pct = progress_by_course.get(course.id, 0) %}
+            <div class="progress mb-2" style="height:8px;">
+                <div class="progress-bar bg-info" style="width: {{ pct }}%;"></div>
+            </div>
+            <small class="text-secondary d-block mb-2">{{ pct }}% complete</small>
+            <a href="{{ url_for('academy.course', course_slug=course.slug) }}"
+               class="btn btn-info w-100">Open Course</a>
+        </div>
+    </div>
+    {% endfor %}
 </div>
 
 {% endblock %}

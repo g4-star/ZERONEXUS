@@ -1,149 +1,334 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="container py-4">
 
-<!-- Lesson Header -->
+    {# --- Detect subject from category + title (works even without a category column) --- #}
+    {% set subject = (course.category|default('') ~ ' ' ~ course.title|default(''))|lower %}
 
-<div class="course-header mb-4">
+    {% if 'cyber' in subject or 'security' in subject or 'linux' in subject or 'network' in subject or 'hack' in subject %}
+        {% set mode = 'terminal' %}
+    {% elif 'python' in subject or 'html' in subject or 'css' in subject or 'javascript' in subject or 'web' in subject %}
+        {% set mode = 'editor' %}
+    {% else %}
+        {% set mode = 'notes' %}
+    {% endif %}
 
-    <span class="badge bg-info mb-2">
-        📘 Lesson {{ lesson.lesson_number }}
-    </span>
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{{ url_for('academy.home') }}">🏠 Academy</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('academy.course', course_slug=course.slug) }}">{{ course.title }}</a></li>
+            <li class="breadcrumb-item active">Lesson {{ lesson.lesson_number }}</li>
+        </ol>
+    </nav>
 
-    <h1 class="fw-bold">
-        {{ lesson.title }}
-    </h1>
+    <!-- Lesson Header -->
+    <span class="badge bg-info mb-2">📘 Lesson {{ lesson.lesson_number }}</span>
+    <h1 class="fw-bold">{{ lesson.title }}</h1>
+    {% if lesson.content %}
+        <p class="text-secondary">{{ lesson.content[:160] }}{% if lesson.content|length > 160 %}…{% endif %}</p>
+    {% endif %}
 
-    <p class="text-secondary">
-        {{ lesson.content }}
-    </p>
+    <!-- Course Progress (shown only if the route passes progress_percent) -->
+    {% if progress_percent is defined and progress_percent is not none %}
+    <div class="mb-4">
+        <div class="d-flex justify-content-between small text-secondary mb-1">
+            <span>Lesson {{ lesson.lesson_number }} of {{ course.lessons|length }}</span>
+            <span>{{ progress_percent }}% complete</span>
+        </div>
+        <div class="progress" role="progressbar" aria-valuenow="{{ progress_percent }}" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar bg-info" style="width: {{ progress_percent }}%;"></div>
+        </div>
+    </div>
+    {% endif %}
 
-</div>
+    <!-- AI Instructor -->
+    <div class="card bg-dark border-info shadow-lg mb-4">
+        <div class="card-header">🤖 Nexus AI Instructor</div>
+        <div class="card-body">
+            {% if ai_response %}
+                <div style="white-space: pre-wrap;">{{ ai_response }}</div>
+                <button type="button" class="btn btn-outline-info btn-sm mt-3"
+                        onclick="this.closest('.card').querySelector('.ai-actions').classList.toggle('d-none')">
+                    ↻ Ask a follow-up
+                </button>
+            {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-robot text-info" style="font-size:70px;"></i>
+                    <h3 class="mt-3">Learn with Nexus AI</h3>
+                    <p class="text-secondary">Ask Nexus AI to explain this lesson, generate examples, quizzes and exercises.</p>
+                    <a href="{{ url_for('academy.tutor', course_slug=course.slug, lesson=lesson.title) }}" class="btn btn-info">
+                        🚀 Start Learning with AI
+                    </a>
+                </div>
+            {% endif %}
 
-<!-- AI Teacher -->
-
-<div class="card bg-dark border-info shadow-lg mb-4">
-
-    <div class="card-header">
-
-        🤖 Nexus AI Instructor
-
+            <div class="ai-actions d-none mt-3">
+                <form action="{{ url_for('academy.tutor', course_slug=course.slug, lesson=lesson.title) }}" method="POST" class="d-flex gap-2">
+                    {% if csrf_token is defined %}<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{% endif %}
+                    <input type="hidden" name="course" value="{{ course.title }}">
+                    <input type="hidden" name="lesson" value="{{ lesson.title }}">
+                    <input type="text" name="question" class="form-control bg-secondary text-light"
+                           placeholder="e.g. Give me a harder example" required>
+                    <button type="submit" class="btn btn-info">Ask</button>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <div class="card-body">
+    <!-- Lesson Notes -->
+    <div class="card bg-dark border-secondary mb-4">
+        <div class="card-header">📖 Lesson Notes</div>
+        <div class="card-body">
+            <div style="white-space: pre-wrap;">{{ lesson.content }}</div>
+        </div>
+    </div>
 
-        {% if ai_response %}
-
-            <div style="white-space: pre-wrap;">
-
-                {{ ai_response }}
-
+    {# ==================== PYTHON / WEB: CODE EDITOR ==================== #}
+    {% if mode == 'editor' %}
+    <div class="card bg-dark border-success mb-4">
+        <div class="card-header">💻 Practice Exercise</div>
+        <div class="card-body">
+            <p class="text-secondary">Write your solution below. Code runs in your browser (Pyodide / WASM) — nothing is sent to the server.</p>
+            <div id="editor" class="border border-secondary rounded" style="height:450px;">
+                <textarea id="code-editor"
+                          class="form-control bg-dark text-light border-0 font-monospace h-100"
+                          spellcheck="false" style="resize:none;"
+                          placeholder="# Write your code here...\n\nprint('Hello ZeroNexus!')"></textarea>
             </div>
+            <div class="mt-3 d-flex flex-wrap gap-2">
+                <button type="button" id="btn-run" class="btn btn-success">▶ Run Code</button>
+                <button type="button" class="btn btn-outline-info" disabled title="Coming soon — needs a /draft endpoint">💾 Save Draft</button>
+                <button type="button" class="btn btn-outline-warning" disabled title="Coming soon — needs an /explain-code endpoint">🤖 Explain My Code</button>
+                <button type="button" id="btn-clear" class="btn btn-outline-secondary">🧹 Clear</button>
+            </div>
+            <div class="card bg-black border-secondary mt-4">
+                <div class="card-header">🖥 Program Output</div>
+                <div class="card-body">
+                    <pre id="output-console" class="text-success mb-0" style="min-height:140px; white-space:pre-wrap;">Program output will appear here...</pre>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    {# ==================== CYBERSECURITY: PRACTICE TERMINAL ==================== #}
+    {% elif mode == 'terminal' %}
+    <div class="card bg-dark border-danger mb-4">
+        <div class="card-header">
+            🖥️ Cyber Range Terminal
+            <span class="badge bg-danger ms-2">simulated</span>
+        </div>
+        <div class="card-body">
+            <p class="text-secondary">
+                Practice Linux commands in a safe, simulated shell. Try
+                <code>help</code>, <code>ls</code>, <code>cat notes.txt</code>,
+                <code>whoami</code>, <code>ifconfig</code>, <code>ping</code>, <code>nmap</code>.
+            </p>
+            <div class="bg-black border border-secondary rounded">
+                <div id="term-output" class="p-3 text-success font-monospace"
+                     style="min-height:240px; white-space:pre-wrap;"></div>
+                <div class="d-flex border-top border-secondary">
+                    <span class="p-2 text-success font-monospace user-select-none">student@zeronexus:~$</span>
+                    <input id="term-input" class="flex-grow-1 bg-transparent text-light border-0 font-monospace"
+                           autocomplete="off" spellcheck="false" style="outline:none;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# ==================== AI + OTHER: NOTES ONLY ==================== #}
+    {% else %}
+    <div class="card bg-dark border-primary mb-4">
+        <div class="card-header">📚 Study Mode</div>
+        <div class="card-body">
+            <p class="text-secondary mb-0">
+                This course is reading-based. Review the notes above, then use
+                <strong>Nexus AI</strong> to dive deeper, generate practice questions,
+                or ask for real-world examples.
+            </p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Quick Quiz (UI only until Quiz model exists) -->
+    <div class="card bg-dark border-warning mb-4">
+        <div class="card-header">📝 Quick Quiz</div>
+        <div class="card-body">
+            <p>Explain what you learned in this lesson.</p>
+            <textarea class="form-control bg-dark text-light" rows="3" placeholder="Type your answer..."></textarea>
+            <button class="btn btn-warning mt-3">Submit Quiz</button>
+        </div>
+    </div>
+
+    <!-- Lesson Completion -->
+    <div class="card bg-dark border-success mb-4">
+        <div class="card-header">✅ Lesson Progress</div>
+        <div class="card-body">
+            {% if completed %}
+                <button class="btn btn-success w-100" disabled>✅ Lesson Completed</button>
+            {% else %}
+                <form action="{{ url_for('academy.complete_lesson', lesson_id=lesson.id) }}" method="POST">
+                    {% if csrf_token is defined %}<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{% endif %}
+                    <button type="submit" class="btn btn-success w-100">✅ Mark Lesson Complete</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="d-flex justify-content-between">
+        {% if lesson.lesson_number > 1 %}
+            <a href="{{ url_for('academy.lesson', course_slug=course.slug, lesson_number=lesson.lesson_number - 1) }}"
+               class="btn btn-outline-secondary">← Previous</a>
         {% else %}
-
-            <div class="text-center py-5">
-
-                <i class="bi bi-robot text-info"
-                   style="font-size:70px;"></i>
-
-                <h3 class="mt-3">
-
-                    Learn with Nexus AI
-
-                </h3>
-
-                <p class="text-secondary">
-
-                    Ask Nexus AI to explain this lesson,
-                    answer your questions and guide you
-                    through practical examples.
-
-                </p>
-
-                <a href="/academy/tutor?course={{ course.title }}&lesson={{ lesson.title }}"
-                   class="btn btn-info btn-lg">
-
-                    🚀 Start Learning with AI
-
-                </a>
-
-            </div>
-
+            <span></span>
         {% endif %}
 
+        <a href="{{ url_for('academy.tutor', course_slug=course.slug, lesson=lesson.title) }}" class="btn btn-info">💬 Ask Nexus AI</a>
+
+        {% if lesson.lesson_number < course.lessons|length %}
+            <a href="{{ url_for('academy.lesson', course_slug=course.slug, lesson_number=lesson.lesson_number + 1) }}"
+               class="btn btn-success">Next →</a>
+        {% else %}
+            <a href="{{ url_for('academy.course', course_slug=course.slug) }}" class="btn btn-warning">🏁 Finish Course</a>
+        {% endif %}
     </div>
 
 </div>
 
-<!-- Lesson Content -->
+<script>
+    {# ============ CODE EDITOR (Python / Web) ============ #}
+    {% if mode == 'editor' %}
+    const editor = document.getElementById('code-editor');
+    const output = document.getElementById('output-console');
 
-<div class="card bg-dark border-secondary mb-4">
+    document.getElementById('btn-clear').addEventListener('click', () => {
+        editor.value = '';
+        output.textContent = 'Program output will appear here...';
+    });
 
-    <div class="card-header">
+    // Run Code — Pyodide (client-side WASM, no server execution)
+    let pyodideReady = null;
+    document.getElementById('btn-run').addEventListener('click', async () => {
+        output.textContent = 'Running...';
+        try {
+            if (!pyodideReady) {
+                pyodideReady = loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/' });
+            }
+            const pyodide = await pyodideReady;
+            pyodide.setStdout({ batched: (s) => { output.textContent += s + '\n'; } });
+            output.textContent = '';
+            await pyodide.runPythonAsync(editor.value);
+        } catch (err) {
+            output.textContent = 'Error: ' + err.message;
+        }
+    });
 
-        📖 Lesson Notes
+    {# ============ CYBER RANGE TERMINAL (Cybersecurity) ============ #}
+    {% elif mode == 'terminal' %}
+    const termOut = document.getElementById('term-output');
+    const termIn  = document.getElementById('term-input');
 
-    </div>
+    // Simulated filesystem (dir = object, file = string)
+    const TERM_FS = {
+        home: { student: {
+            'notes.txt': 'Welcome to the ZeroNexus Cyber Range.\nCommands: ls, cd, cat, whoami, ifconfig, ping, nmap',
+            'flag.txt':  'ZNX{terminal_practice_2026}',
+            projects: {}
+        }},
+        etc: { 'passwd': 'root:x:0:0:root:/root:/bin/bash\nstudent:x:1000:1000:Student:/home/student:/bin/bash' },
+        var: { log: { 'auth.log': 'Jul 31 22:14:01 zx sshd[1024]: Failed password for root from 203.0.113.7' } },
+        tmp: {}
+    };
+    let TERM_CWD = ['home', 'student'];
+    const TERM_HISTORY = [];
 
-    <div class="card-body">
+    function termGetDir(pathArr) {
+        let node = TERM_FS;
+        for (const part of pathArr) {
+            if (!node[part] || typeof node[part] !== 'object') return null;
+            node = node[part];
+        }
+        return node;
+    }
+    function termPrint(text) { termOut.textContent += text + '\n'; termOut.scrollTop = termOut.scrollHeight; }
 
-        <div style="white-space: pre-wrap;">
+    function termExec(line) {
+        const [cmd, ...args] = line.trim().split(/\s+/);
+        const out = [];
+        switch (cmd) {
+            case 'help':
+                out.push('Available: help, pwd, ls, cd, cat, whoami, id, echo, date, uname, ifconfig, ping, nmap, history, clear, sudo');
+                break;
+            case 'pwd': out.push('/' + TERM_CWD.join('/')); break;
+            case 'ls': {
+                const dir = termGetDir(TERM_CWD);
+                if (!dir) { out.push('ls: cannot access: No such directory'); break; }
+                const names = Object.keys(dir).sort();
+                out.push(names.length ? names.join('   ') : '(empty)');
+                break;
+            }
+            case 'cd': {
+                const t = args[0];
+                if (!t || t === '~' || t === '/') { TERM_CWD = ['home', 'student']; break; }
+                if (t === '..') { if (TERM_CWD.length > 1) TERM_CWD.pop(); break; }
+                const cur = termGetDir(TERM_CWD);
+                if (cur && cur[t] && typeof cur[t] === 'object') TERM_CWD.push(t);
+                else out.push('cd: no such directory: ' + t);
+                break;
+            }
+            case 'cat': {
+                const f = args[0];
+                const cur = termGetDir(TERM_CWD);
+                if (f && cur && typeof cur[f] === 'string') out.push(cur[f]);
+                else out.push('cat: ' + (f || '') + ': No such file or directory');
+                break;
+            }
+            case 'whoami': out.push('student'); break;
+            case 'id': out.push('uid=1000(student) gid=1000(student) groups=1000(student),27(sudo)'); break;
+            case 'echo': out.push(args.join(' ')); break;
+            case 'date': out.push(new Date().toString()); break;
+            case 'uname': out.push('Linux zeronexus-cyberrange 6.1.0 x86_64 GNU/Linux'); break;
+            case 'ifconfig': out.push('eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500\n        inet 10.0.0.42  netmask 255.255.255.0'); break;
+            case 'ping':
+                out.push('PING ' + (args[0] || '8.8.8.8') + ' (' + (args[0] || '8.8.8.8') + '): 56 data bytes');
+                out.push('64 bytes: icmp_seq=0 ttl=117 time=12.3 ms');
+                out.push('64 bytes: icmp_seq=1 ttl=117 time=11.9 ms');
+                break;
+            case 'nmap':
+                out.push('Starting Nmap 7.94 ( https://nmap.org )');
+                out.push('PORT     STATE  SERVICE');
+                out.push('22/tcp   open   ssh');
+                out.push('80/tcp   open   http');
+                out.push('443/tcp  open   https');
+                out.push('Nmap done: 1 IP address scanned');
+                break;
+            case 'sudo': out.push('student is not in the sudoers file. This incident will be reported.'); break;
+            case 'history': out.push(...TERM_HISTORY.map((h, i) => (i + 1) + '  ' + h)); break;
+            case 'clear': termOut.textContent = ''; return;
+            case 'exit': out.push('exit: use the browser back button instead 🙂'); break;
+            default: out.push('bash: ' + cmd + ': command not found (try "help")');
+        }
+        out.forEach(termPrint);
+    }
 
-            {{ lesson.content }}
+    termIn.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter') return;
+        const line = termIn.value;
+        termPrint('student@zeronexus:~$ ' + line);
+        TERM_HISTORY.push(line);
+        termExec(line);
+        termIn.value = '';
+    });
 
-        </div>
-
-    </div>
-
-</div>
-
-<!-- Navigation -->
-
-<div class="d-flex justify-content-between">
-
-    {% if lesson.lesson_number > 1 %}
-
-    <a href="/academy/{{ course.slug }}/module/{{ lesson.lesson_number - 1 }}"
-       class="btn btn-outline-secondary">
-
-        ← Previous
-
-    </a>
-
-    {% else %}
-
-    <span></span>
-
+    termPrint('ZeroNexus Cyber Range v1.0 — type "help" to begin');
+    termIn.focus();
     {% endif %}
+</script>
 
-    <a href="/academy/tutor?course={{ course.title }}&lesson={{ lesson.title }}"
-       class="btn btn-info">
-
-        💬 Ask Nexus AI
-
-    </a>
-
-    {% if lesson.lesson_number < 12 %}
-
-    <a href="/academy/{{ course.slug }}/module/{{ lesson.lesson_number + 1 }}"
-       class="btn btn-success">
-
-        Next →
-
-    </a>
-
-    {% else %}
-
-    <a href="/academy/{{ course.slug }}"
-       class="btn btn-warning">
-
-        🏁 Finish Course
-
-    </a>
-
-    {% endif %}
-
-</div>
+{% if mode == 'editor' %}
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+{% endif %}
 
 {% endblock %}

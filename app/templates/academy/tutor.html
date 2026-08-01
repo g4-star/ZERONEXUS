@@ -6,49 +6,28 @@
 
     <!-- Header -->
     <div class="text-center mb-5">
-
-        <h1 class="display-5 fw-bold text-info">
-            🤖 Nexus AI Tutor
-        </h1>
-
+        <h1 class="display-5 fw-bold text-info">🤖 Nexus AI Tutor</h1>
         <p class="text-secondary">
             Your personal AI instructor for Python, HTML, CSS, JavaScript,
             Cybersecurity and Artificial Intelligence.
         </p>
-
         {% if course %}
-            <span class="badge bg-info me-2">
-                {{ course }}
-            </span>
+            <span class="badge bg-info me-2">{{ course }}</span>
         {% endif %}
-
         {% if lesson %}
-            <span class="badge bg-success">
-                {{ lesson }}
-            </span>
+            <span class="badge bg-success">{{ lesson }}</span>
         {% endif %}
-
     </div>
 
     <!-- Chat Card -->
     <div class="card bg-dark border-info shadow-lg">
-
-        <div class="card-header text-info fw-bold">
-            💬 Chat with Nexus AI
-        </div>
-
+        <div class="card-header text-info fw-bold">💬 Chat with Nexus AI</div>
         <div class="card-body">
 
             {% if answer %}
-
             <div class="card bg-black border-info mb-4">
-
-                <div class="card-header text-info fw-bold">
-                    🤖 Nexus AI
-                </div>
-
+                <div class="card-header text-info fw-bold">🤖 Nexus AI</div>
                 <div class="card-body">
-
                     <pre style="
                         white-space: pre-wrap;
                         word-wrap: break-word;
@@ -58,23 +37,13 @@
                         font-family: Consolas, monospace;
                         margin:0;
                     ">{{ answer }}</pre>
-
                 </div>
-
             </div>
-
             {% else %}
-
             <div class="alert alert-secondary">
-
                 👋 <strong>Welcome!</strong><br><br>
-
-                Ask me anything about this lesson.
-
-                <br><br>
-
+                Ask me anything about this lesson.<br><br>
                 I can:
-
                 <ul class="mt-2 mb-0">
                     <li>Explain concepts step by step</li>
                     <li>Generate coding exercises</li>
@@ -82,14 +51,16 @@
                     <li>Debug Python code</li>
                     <li>Teach like a real instructor</li>
                 </ul>
-
             </div>
-
             {% endif %}
 
             <form method="POST">
 
-                {{ csrf_token() }}
+                <!-- CSRF + context (the critical fixes) -->
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="course_slug" value="{{ course_slug or '' }}">
+                <input type="hidden" name="course" value="{{ course }}">
+                <input type="hidden" name="lesson" value="{{ lesson }}">
 
                 <textarea
                     class="form-control bg-dark text-light"
@@ -99,29 +70,18 @@
                     required></textarea>
 
                 <div class="mt-3">
-
-                    <button
-                        type="submit"
-                        class="btn btn-info">
-
-                        🚀 Ask Nexus AI
-
-                    </button>
-
-                    <a
-                        href="/academy/python"
-                        class="btn btn-outline-secondary">
-
-                        ← Back to Course
-
-                    </a>
-
+                    <button type="submit" class="btn btn-info">🚀 Ask Nexus AI</button>
+                    {% if course_slug %}
+                        <a href="{{ url_for('academy.course', course_slug=course_slug) }}"
+                           class="btn btn-outline-secondary">← Back to Course</a>
+                    {% else %}
+                        <a href="{{ url_for('academy.home') }}" class="btn btn-outline-secondary">← Back to Academy</a>
+                    {% endif %}
                 </div>
 
             </form>
 
         </div>
-
     </div>
 
 </div>

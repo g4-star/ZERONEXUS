@@ -8,7 +8,7 @@ from app.extensions import (
     migrate,
     csrf,
     limiter,
-    mail
+    mail,
 )
 
 from app.cloudinary_config import configure_cloudinary
@@ -18,77 +18,72 @@ from app.academy import academy
 def create_app(config_name=None):
     """Application factory for ZeroNexus."""
 
-    # -------------------------------------------------
-    # Determine environment configuration
-    # -------------------------------------------------
     if config_name is None:
         config_name = os.getenv("FLASK_ENV", "default")
 
     app = Flask(__name__, instance_relative_config=True)
+    app.config.from_object(config_map.get(config_name, config_map["default"]))
 
-    # -------------------------------------------------
-    # Load configuration
-    # -------------------------------------------------
-    app.config.from_object(
-        config_map.get(config_name, config_map["default"])
-    )
-
-    # -------------------------------------------------
-    # Configure Cloudinary
-    # -------------------------------------------------
     with app.app_context():
         configure_cloudinary()
 
-    # -------------------------------------------------
     # Skip directory creation on Vercel
-    # -------------------------------------------------
     if not os.environ.get("VERCEL"):
-
         os.makedirs(app.instance_path, exist_ok=True)
+        for folder in ("members", "teams", "projects", "blog", "avatars"):
+            os.makedirs(
+                os.path.join(app.root_path, "static", "uploads", folder),
+                exist_ok=True,
+            )
 
-        upload_root = os.path.join(
-            app.root_path,
-            "static",
-            "uploads"
-        )
-
-        os.makedirs(upload_root, exist_ok=True)
-        os.makedirs(os.path.join(upload_root, "members"), exist_ok=True)
-        os.makedirs(os.path.join(upload_root, "teams"), exist_ok=True)
-        os.makedirs(os.path.join(upload_root, "projects"), exist_ok=True)
-        os.makedirs(os.path.join(upload_root, "blog"), exist_ok=True)
-        os.makedirs(os.path.join(upload_root, "avatars"), exist_ok=True)
-
-    # -------------------------------------------------
-    # Initialize Extensions
-    # -------------------------------------------------
+    # Extensions
     db.init_app(app)
-
     login_manager.init_app(app)
-
     migrate.init_app(app, db)
-
     csrf.init_app(app)
-
     mail.init_app(app)
-
     limiter.init_app(app)
 
-    # -------------------------------------------------
-    # Register Blueprints
-    # -------------------------------------------------
+    # Blueprints
     from app.main import main_bp
     from app.admin import admin_bp
 
     app.register_blueprint(main_bp)
-
     app.register_blueprint(admin_bp)
-    
     app.register_blueprint(academy)
 
-    # -------------------------------------------------
-    # Error Handlers
-    # -------------------------------------------------
+    # Register the AI blueprint too, if it defines one
+    try:
+        from app.ai import ai_bp
+        app.register_blueprint(ai_bp)
+    except ImportError:
+        pass  # no blueprint yet — app.ai.tutor is used directly
+
+    # ---- Security headers on every response ----
+    @app.after_request
+    def security_headers(response):
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+        response.headers.setdefault(
+            "Permissions-Policy",
+            "camera=(), microphone=(), geolocation=()",
+        )
+        # Relaxed CSP because templates use inline <script> blocks and Pyodide CDN.
+        # Tighten later by moving JS to static files.
+        response.headers.setdefault(
+            "Content-Security-Policy",
+            "default-src 'self'; "
+            "img-src 'self' data: https:; "
+            "style-src 'self' 'unsafe-inline' https:; "
+            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+            "font-src 'self' https:; "
+            "connect-src 'self' https:; "
+            "frame-ancestors 'none'",
+        )
+        return response
+
+    # Error handlers
     @app.errorhandler(404)
     def not_found(error):
         return render_template("errors/404.html"), 404
@@ -98,17 +93,13 @@ def create_app(config_name=None):
         db.session.rollback()
         return render_template("errors/500.html"), 500
 
-    # -------------------------------------------------
     # Flask Shell
-    # -------------------------------------------------
     @app.shell_context_processor
     def make_shell_context():
-        from app.models import (
-            Team,
-            MemberProfile,
-            Project,
-            AdminUser
-        )
+        from app.models import Team, MemberProfile, Project, AdminUser
+        from app.models.course import Course
+        from app.models.lesson import Lesson
+        from app.models.progress import UserProgress
 
         return {
             "db": db,
@@ -116,6 +107,9 @@ def create_app(config_name=None):
             "MemberProfile": MemberProfile,
             "Project": Project,
             "AdminUser": AdminUser,
+            "Course": Course,
+            "Lesson": Lesson,
+            "UserProgress": UserProgress,
         }
 
     return app
