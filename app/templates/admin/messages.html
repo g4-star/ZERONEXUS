@@ -18,19 +18,12 @@
             <thead>
 
                 <tr>
-
                     <th>Name</th>
-
                     <th>Email</th>
-
                     <th>Subject</th>
-
                     <th>Date</th>
-
                     <th>Status</th>
-
-                    <th>Action</th>
-
+                    <th width="320">Actions</th>
                 </tr>
 
             </thead>
@@ -53,7 +46,13 @@
 
                     <td>
 
-                        {% if message.is_read %}
+                        {% if message.is_replied %}
+
+                            <span class="badge bg-primary">
+                                Replied
+                            </span>
+
+                        {% elif message.is_read %}
 
                             <span class="badge bg-success">
                                 Read
@@ -71,13 +70,49 @@
 
                     <td>
 
-                        <a
-                           href="{{ url_for('admin.view_message', message_id=message.id) }}"
-                           class="btn btn-sm btn-info">
+                        <div class="d-flex flex-wrap gap-2">
 
-                            View
+                            <!-- View -->
 
-                        </a>
+                            <a href="{{ url_for('admin.view_message', message_id=message.id) }}"
+                               class="btn btn-sm btn-info">
+                                View
+                            </a>
+
+                            <!-- Mark Read -->
+
+                            {% if not message.is_read %}
+
+                            <a href="{{ url_for('admin.mark_message_read', message_id=message.id) }}"
+                               class="btn btn-sm btn-success">
+                                Mark Read
+                            </a>
+
+                            {% endif %}
+
+                            <!-- Reply -->
+
+                            <a href="{{ url_for('admin.reply_message', message_id=message.id) }}"
+                               class="btn btn-sm btn-warning">
+                                Reply
+                            </a>
+
+                            <!-- Delete -->
+
+                            <form method="POST"
+                                  action="{{ url_for('admin.delete_message', message_id=message.id) }}"
+                                  onsubmit="return confirm('Delete this message permanently?');">
+
+                                {{ csrf_token() }}
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-danger">
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </div>
 
                     </td>
 
@@ -94,9 +129,7 @@
     {% else %}
 
     <div class="alert alert-info">
-
         No contact messages yet.
-
     </div>
 
     {% endif %}
