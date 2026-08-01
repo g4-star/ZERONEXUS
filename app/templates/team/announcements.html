@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}
+Announcements
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <h2>Announcements</h2>
+
+    <p class="text-muted">
+
+        Latest updates from your Team Lead.
+
+    </p>
+
+    {% if user.role == "team_lead" %}
+
+    <a href="#" class="btn btn-warning mb-3">
+
+        New Announcement
+
+    </a>
+
+    {% endif %}
+
+    <div class="alert alert-warning">
+
+        No announcements yet.
+
+    </div>
+
+</div>
+
+{% endblock %}

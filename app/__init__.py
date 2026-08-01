@@ -50,6 +50,7 @@ def create_app(config_name=None):
     from app.admin import admin_bp
     from app.user import user_bp
     from app.team import team_bp
+    
 
 
 

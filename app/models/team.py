@@ -104,10 +104,10 @@ class Team(db.Model):
     # =====================================
 
     projects = db.relationship(
-        'Project',
-        backref='team',
+        "Project",
+        back_populates="team",
         lazy=True,
-        cascade='all, delete-orphan'
+        cascade="all, delete-orphan"
     )
 
 

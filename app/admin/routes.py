@@ -15,6 +15,7 @@ from app.models import (
 
 from .forms import AdminLoginForm
 from .member_forms import AddMemberForm
+from .user_forms import CreateUserForm
 from .team_forms import EditTeamForm
 
 from app.email import (
@@ -681,4 +682,139 @@ def delete_message(message_id):
 
     return redirect(
         url_for("admin.manage_messages")
+    )
+    
+@admin_bp.route(
+    "/users/add",
+    methods=["GET", "POST"]
+)
+@login_required
+def add_user():
+
+    form = CreateUserForm()
+
+
+    teams = Team.query.order_by(
+        Team.name.asc()
+    ).all()
+
+
+    form.team_id.choices = [
+        (
+            team.id,
+            team.name
+        )
+        for team in teams
+    ]
+
+
+    if form.validate_on_submit():
+
+        try:
+
+            temporary_password = generate_temp_password()
+
+
+            username = generate_username(
+                form.full_name.data
+            )
+
+
+            user = User(
+
+                username=username,
+
+                email=form.email.data,
+
+                role=form.role.data,
+
+                team_id=form.team_id.data,
+
+                is_active=False,
+
+                activation_token=secrets.token_urlsafe(48)
+
+            )
+
+
+            user.set_password(
+                temporary_password
+            )
+
+
+            db.session.add(user)
+
+            db.session.commit()
+
+
+
+            try:
+
+                send_member_invitation(
+                    user,
+                    temporary_password
+                )
+
+
+                flash(
+                    "User created and invitation sent.",
+                    "success"
+                )
+
+
+            except Exception as email_error:
+
+
+                print(
+                    f"Email error: {email_error}"
+                )
+
+
+                flash(
+                    "User created but email failed.",
+                    "warning"
+                )
+
+
+            return redirect(
+                url_for(
+                    "admin.manage_users"
+                )
+            )
+
+
+        except Exception as e:
+
+
+            db.session.rollback()
+
+
+            print(
+                f"User creation error: {e}"
+            )
+
+
+            flash(
+                f"Error creating user: {e}",
+                "danger"
+            )
+
+
+    return render_template(
+        "admin/add_user.html",
+        form=form
+    )
+
+@admin_bp.route("/users")
+@login_required
+def manage_users():
+
+    users = User.query.order_by(
+        User.created_at.desc()
+    ).all()
+
+
+    return render_template(
+        "admin/users.html",
+        users=users
     )

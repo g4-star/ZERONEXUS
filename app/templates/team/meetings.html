@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}
+Team Meetings
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <h2>Meetings</h2>
+
+    <p class="text-muted">
+        Upcoming team meetings and schedules.
+    </p>
+
+    {% if user.role == "team_lead" %}
+
+    <a href="#" class="btn btn-success mb-3">
+        Schedule Meeting
+    </a>
+
+    {% endif %}
+
+    <div class="alert alert-info">
+        No meetings scheduled.
+    </div>
+
+</div>
+
+{% endblock %}
