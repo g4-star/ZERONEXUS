@@ -10,4 +10,3 @@ from .quiz import Quiz
 from .progress import UserProgress
 from .contact_message import ContactMessage
 from .user import User
-from .team_project import TeamProject

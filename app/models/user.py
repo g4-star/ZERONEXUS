@@ -1,35 +1,37 @@
 from datetime import datetime
+import secrets
 
 from flask_login import UserMixin
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import (
+    generate_password_hash,
+    check_password_hash
+)
 
 from app.extensions import db
-import secrets
 
 
 class User(UserMixin, db.Model):
 
     __tablename__ = "users"
 
-
-    # -------------------------------------------------
+    # =====================================================
     # Primary Key
-    # -------------------------------------------------
+    # =====================================================
+
     id = db.Column(
         db.Integer,
         primary_key=True
     )
 
-
-    # -------------------------------------------------
+    # =====================================================
     # Login Information
-    # -------------------------------------------------
+    # =====================================================
+
     username = db.Column(
         db.String(100),
         unique=True,
         nullable=False
     )
-
 
     email = db.Column(
         db.String(120),
@@ -37,42 +39,46 @@ class User(UserMixin, db.Model):
         nullable=False
     )
 
-
     password_hash = db.Column(
         db.String(255),
         nullable=False
     )
 
+    # =====================================================
+    # User Role
+    # admin
+    # team_lead
+    # member
+    # =====================================================
 
-    # -------------------------------------------------
-    # Account Role
-    # admin / team_lead / member
-    # -------------------------------------------------
     role = db.Column(
         db.String(50),
         default="member",
         nullable=False
     )
-    
 
+    # =====================================================
+    # Team Assignment
+    # =====================================================
 
-    # -------------------------------------------------
-    # Assigned Team
-    # -------------------------------------------------
     team_id = db.Column(
         db.Integer,
         db.ForeignKey("teams.id"),
         nullable=True
     )
 
+    # =====================================================
+    # Account Status
+    # =====================================================
 
-    # -------------------------------------------------
-    # Password Management
-    # Forces invited users to change password
-    # -------------------------------------------------
     must_change_password = db.Column(
         db.Boolean,
         default=True
+    )
+
+    is_active = db.Column(
+        db.Boolean,
+        default=False
     )
 
     activation_token = db.Column(
@@ -82,34 +88,20 @@ class User(UserMixin, db.Model):
         default=lambda: secrets.token_urlsafe(50)
     )
 
-
-    is_active = db.Column(
-        db.Boolean,
-        default=False
-    )
-    
-    # -------------------------------------------------
-    # Account Creation Date
-    # -------------------------------------------------
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow
     )
 
+    # =====================================================
+    # Relationships
+    # =====================================================
 
-    # -------------------------------------------------
-    # Relationship With Team
-    # -------------------------------------------------
     team = db.relationship(
         "Team",
         back_populates="users"
     )
 
-
-    # -------------------------------------------------
-    # Link To Member Profile
-    # One User = One Member Profile
-    # -------------------------------------------------
     member_profile = db.relationship(
         "MemberProfile",
         back_populates="user",
@@ -117,16 +109,21 @@ class User(UserMixin, db.Model):
         cascade="all, delete-orphan"
     )
 
+    projects = db.relationship(
+        "Project",
+        back_populates="creator",
+        lazy=True
+    )
 
-    # -------------------------------------------------
-    # Password Functions
-    # -------------------------------------------------
+    # =====================================================
+    # Password Helpers
+    # =====================================================
+
     def set_password(self, password):
 
         self.password_hash = generate_password_hash(
             password
         )
-
 
     def check_password(self, password):
 
@@ -135,10 +132,10 @@ class User(UserMixin, db.Model):
             password
         )
 
-
-    # -------------------------------------------------
+    # =====================================================
     # String Representation
-    # -------------------------------------------------
+    # =====================================================
+
     def __repr__(self):
 
         return f"<User {self.username}>"
