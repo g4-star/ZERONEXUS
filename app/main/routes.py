@@ -51,46 +51,43 @@ def index():
     # Handle Contact Form Submission
     # -----------------------------------------
     if form.validate_on_submit():
-    
-    try:
 
-        new_message = ContactMessage(
-            full_name=form.full_name.data,
-            email=form.email.data,
-            subject=form.subject.data,
-            message=form.message.data
-        )
-
-        db.session.add(new_message)
-        db.session.commit()
-
-        # Send confirmation email
         try:
-            send_contact_confirmation(new_message)
+
+            new_message = ContactMessage(
+                full_name=form.full_name.data,
+                email=form.email.data,
+                subject=form.subject.data,
+                message=form.message.data
+            )
+
+            db.session.add(new_message)
+            db.session.commit()
+
+            # Send confirmation email
+            try:
+                send_contact_confirmation(new_message)
+            except Exception as e:
+                print(f"Confirmation email failed: {e}")
+
+            flash(
+                "🎉 Thank you for contacting ZeroNexus! Your message has been submitted successfully. We truly appreciate your feedback and will get back to you as soon as possible.",
+                "success"
+            )
+
+            return redirect(
+                url_for("main.index") + "#contact"
+            )
+
         except Exception as e:
-            print(f"Confirmation email failed: {e}")
 
-        flash(
-            "🎉 Thank you for contacting ZeroNexus! Your message has been submitted successfully. We truly appreciate your feedback and will get back to you as soon as possible.",
-            "success"
-        )
+            db.session.rollback()
 
-        return redirect(
-            url_for("main.index") + "#contact"
-        )
+            flash(
+                f"An error occurred: {str(e)}",
+                "danger"
+            )
 
-    except Exception as e:
-
-        db.session.rollback()
-
-        flash(
-            f"An error occurred: {str(e)}",
-            "danger"
-        )
-
-    # -----------------------------------------
-    # Render Homepage
-    # -----------------------------------------
     return render_template(
         "main/index.html",
         teams=teams,
