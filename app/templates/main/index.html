@@ -435,228 +435,129 @@ View Team
      CONTACT SECTION
 ====================================== -->
 
-<section id="contact" class="py-5 mt-5">
+<section id="contact" class="py-5">
+
     <div class="container">
 
-        <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold text-info">
-                <i class="bi bi-envelope-paper-fill me-2"></i>
-                Contact ZeroNexus
-            </h2>
+        <div class="row justify-content-center">
 
-            <p class="text-secondary mt-3">
-                Have a project, partnership, internship opportunity,
-                or want to join the ZeroNexus community?
-                We'd love to hear from you.
-            </p>
-        </div>
+            <div class="col-lg-8 col-xl-7">
 
-        <div class="row g-4">
+                <div class="text-center mb-4">
 
-            <!-- Contact Information -->
+                    <h2 class="fw-bold text-info">
+                        <i class="bi bi-envelope-paper-fill me-2"></i>
+                        Contact ZeroNexus
+                    </h2>
 
-            <div class="col-lg-5">
-
-                <div class="card bg-dark border-info shadow-lg h-100">
-
-                    <div class="card-body p-4">
-
-                        <h3 class="text-info mb-4">
-                            Get in Touch
-                        </h3>
-
-                        <div class="mb-4">
-
-                            <h6 class="text-info">
-                                <i class="bi bi-envelope-fill me-2"></i>
-                                Email
-                            </h6>
-
-                            <a href="mailto:zeronexus.team@gmail.com"
-                               class="text-light text-decoration-none">
-                                zeronexus.team@gmail.com
-                            </a>
-
-                        </div>
-
-                        <div class="mb-4">
-
-                            <h6 class="text-success">
-                                <i class="bi bi-whatsapp me-2"></i>
-                                WhatsApp
-                            </h6>
-
-                            <a href="https://wa.link/6a6rl3"
-                               target="_blank"
-                               class="text-light text-decoration-none">
-                                Chat on WhatsApp
-                            </a>
-
-                        </div>
-
-                        <div class="mb-4">
-
-                            <h6 class="text-info">
-                                <i class="bi bi-github me-2"></i>
-                                GitHub
-                            </h6>
-
-                            <a href="https://github.com/YOUR_USERNAME"
-                               target="_blank"
-                               class="text-light text-decoration-none">
-                                github.com/YOUR_USERNAME
-                            </a>
-
-                        </div>
-
-                        <div class="mb-4">
-
-                            <h6 class="text-primary">
-                                <i class="bi bi-linkedin me-2"></i>
-                                LinkedIn
-                            </h6>
-
-                            <a href="https://linkedin.com/in/YOUR_PROFILE"
-                               target="_blank"
-                               class="text-light text-decoration-none">
-                                linkedin.com/in/YOUR_PROFILE
-                            </a>
-
-                        </div>
-
-                        <hr class="border-secondary">
-
-                        <h5 class="text-info mb-3">
-                            Follow ZeroNexus
-                        </h5>
-
-                        <div class="d-flex gap-3 fs-3">
-
-                            <a href="https://github.com/YOUR_USERNAME"
-                               target="_blank"
-                               class="text-light">
-                                <i class="bi bi-github"></i>
-                            </a>
-
-                            <a href="https://linkedin.com/in/YOUR_PROFILE"
-                               target="_blank"
-                               class="text-info">
-                                <i class="bi bi-linkedin"></i>
-                            </a>
-
-                            <a href="https://wa.link/6a6rl3"
-                               target="_blank"
-                               class="text-success">
-                                <i class="bi bi-whatsapp"></i>
-                            </a>
-
-                            <a href="mailto:zeronexus.team@gmail.com"
-                               class="text-danger">
-                                <i class="bi bi-envelope-fill"></i>
-                            </a>
-
-                        </div>
-
-                    </div>
+                    <p class="text-secondary small mt-2 mb-0">
+                        Have a project, partnership, internship opportunity,
+                        or want to join the ZeroNexus community?
+                        We'd love to hear from you.
+                    </p>
 
                 </div>
-
-            </div>
-
-            <!-- Contact Form -->
-
-            <div class="col-lg-7">
 
                 <div class="card bg-dark border-info shadow-lg">
 
-                    <div class="card-body p-4">
+                    <div class="card-body p-4 p-lg-5">
 
-                        <h3 class="text-info mb-4">
+                        <h4 class="text-info text-center mb-4">
                             Send a Message
-                        </h3>
+                        </h4>
 
-                       <form method="POST" action="{{ url_for('main.index') }}">
+                        <form method="POST"
+                              action="{{ url_for('main.index') }}">
 
-    {{ form.hidden_tag() }}
+                            {{ form.hidden_tag() }}
 
-    <!-- Full Name -->
-    <div class="mb-3">
+                            <!-- Full Name -->
 
-        {{ form.full_name.label(class="form-label") }}
+                            <div class="mb-3">
 
-        {{ form.full_name(
-            class="form-control",
-            placeholder="Enter your full name"
-        ) }}
+                                {{ form.full_name.label(class="form-label") }}
 
-        {% for error in form.full_name.errors %}
-            <div class="text-danger small mt-1">
-                {{ error }}
-            </div>
-        {% endfor %}
+                                {{ form.full_name(
+                                    class="form-control",
+                                    placeholder="Enter your full name"
+                                ) }}
 
-    </div>
+                                {% for error in form.full_name.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
 
-    <!-- Email -->
-    <div class="mb-3">
+                            </div>
 
-        {{ form.email.label(class="form-label") }}
+                            <!-- Email -->
 
-        {{ form.email(
-            class="form-control",
-            placeholder="Enter your email address"
-        ) }}
+                            <div class="mb-3">
 
-        {% for error in form.email.errors %}
-            <div class="text-danger small mt-1">
-                {{ error }}
-            </div>
-        {% endfor %}
+                                {{ form.email.label(class="form-label") }}
 
-    </div>
+                                {{ form.email(
+                                    class="form-control",
+                                    placeholder="Enter your email address"
+                                ) }}
 
-    <!-- Subject -->
-    <div class="mb-3">
+                                {% for error in form.email.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
 
-        {{ form.subject.label(class="form-label") }}
+                            </div>
 
-        {{ form.subject(
-            class="form-control",
-            placeholder="Message subject"
-        ) }}
+                            <!-- Subject -->
 
-        {% for error in form.subject.errors %}
-            <div class="text-danger small mt-1">
-                {{ error }}
-            </div>
-        {% endfor %}
+                            <div class="mb-3">
 
-    </div>
+                                {{ form.subject.label(class="form-label") }}
 
-    <!-- Message -->
-    <div class="mb-4">
+                                {{ form.subject(
+                                    class="form-control",
+                                    placeholder="Message subject"
+                                ) }}
 
-        {{ form.message.label(class="form-label") }}
+                                {% for error in form.subject.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
 
-        {{ form.message(
-            class="form-control",
-            rows="6",
-            placeholder="Write your message..."
-        ) }}
+                            </div>
 
-        {% for error in form.message.errors %}
-            <div class="text-danger small mt-1">
-                {{ error }}
-            </div>
-        {% endfor %}
+                            <!-- Message -->
 
-    </div>
+                            <div class="mb-4">
 
-    {{ form.submit(
-        class="btn btn-info btn-lg"
-    ) }}
+                                {{ form.message.label(class="form-label") }}
 
-</form>
+                                {{ form.message(
+                                    class="form-control",
+                                    rows="6",
+                                    placeholder="Write your message..."
+                                ) }}
+
+                                {% for error in form.message.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+
+                            <div class="text-center">
+
+                                {{ form.submit(
+                                    class="btn btn-info btn-lg px-5"
+                                ) }}
+
+                            </div>
+
+                        </form>
+
                     </div>
 
                 </div>
@@ -666,7 +567,6 @@ View Team
         </div>
 
     </div>
+
 </section>
-
-
 {% endblock %}
