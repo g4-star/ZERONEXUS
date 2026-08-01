@@ -62,3 +62,53 @@ class MemberProfileForm(FlaskForm):
     # Submit Button
     # -------------------------------------------------
     submit = SubmitField('Save Changes')
+    
+from flask_wtf import FlaskForm
+from wtforms import (
+    StringField,
+    TextAreaField,
+    SubmitField
+)
+from wtforms.validators import (
+    DataRequired,
+    Email,
+    Length
+)
+
+
+class ContactForm(FlaskForm):
+
+    full_name = StringField(
+        "Full Name",
+        validators=[
+            DataRequired(),
+            Length(max=120)
+        ]
+    )
+
+    email = StringField(
+        "Email",
+        validators=[
+            DataRequired(),
+            Email(),
+            Length(max=120)
+        ]
+    )
+
+    subject = StringField(
+        "Subject",
+        validators=[
+            DataRequired(),
+            Length(max=200)
+        ]
+    )
+
+    message = TextAreaField(
+        "Message",
+        validators=[
+            DataRequired(),
+            Length(min=10)
+        ]
+    )
+
+    submit = SubmitField("Send Message")

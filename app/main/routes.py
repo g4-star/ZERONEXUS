@@ -8,10 +8,22 @@ from flask import (
     session
 )
 
-from app.models import Team, MemberProfile
-from app.main.forms import MemberProfileForm
+from app.models import (
+    Team,
+    MemberProfile,
+    ContactMessage
+)
+
+from app.main.forms import (
+    MemberProfileForm,
+    ContactForm
+)
 from app.extensions import db
 import cloudinary.uploader
+from app.email import (
+    send_member_welcome,
+    send_contact_confirmation
+)
 
 
 main_bp = Blueprint('main', __name__)
@@ -20,10 +32,70 @@ main_bp = Blueprint('main', __name__)
 # -------------------------------------------------
 # Home Page
 # -------------------------------------------------
-@main_bp.route('/')
+@main_bp.route("/", methods=["GET", "POST"])
 def index():
-    teams = Team.query.order_by(Team.name.asc()).all()
-    return render_template('main/index.html', teams=teams)
+
+    # -----------------------------------------
+    # Load Contact Form
+    # -----------------------------------------
+    form = ContactForm()
+
+    # -----------------------------------------
+    # Load Teams
+    # -----------------------------------------
+    teams = Team.query.order_by(
+        Team.name.asc()
+    ).all()
+
+    # -----------------------------------------
+    # Handle Contact Form Submission
+    # -----------------------------------------
+    if form.validate_on_submit():
+    
+    try:
+
+        new_message = ContactMessage(
+            full_name=form.full_name.data,
+            email=form.email.data,
+            subject=form.subject.data,
+            message=form.message.data
+        )
+
+        db.session.add(new_message)
+        db.session.commit()
+
+        # Send confirmation email
+        try:
+            send_contact_confirmation(new_message)
+        except Exception as e:
+            print(f"Confirmation email failed: {e}")
+
+        flash(
+            "🎉 Thank you for contacting ZeroNexus! Your message has been submitted successfully. We truly appreciate your feedback and will get back to you as soon as possible.",
+            "success"
+        )
+
+        return redirect(
+            url_for("main.index") + "#contact"
+        )
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        flash(
+            f"An error occurred: {str(e)}",
+            "danger"
+        )
+
+    # -----------------------------------------
+    # Render Homepage
+    # -----------------------------------------
+    return render_template(
+        "main/index.html",
+        teams=teams,
+        form=form
+    )
 
 
 # -------------------------------------------------
@@ -152,3 +224,4 @@ def edit_member(token):
         form=form,
         member=member
     )
+    

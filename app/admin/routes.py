@@ -2,7 +2,13 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 
 from app.extensions import db
-from app.models import AdminUser, Team, MemberProfile, Project
+from app.models import (
+    AdminUser,
+    Team,
+    MemberProfile,
+    Project,
+    ContactMessage
+)
 from .forms import AdminLoginForm
 from .member_forms import AddMemberForm
 from .team_forms import EditTeamForm
@@ -357,3 +363,66 @@ def inject_settings():
     return {
         "settings": SiteSetting.query.first()
     }
+    
+# =========================================================
+# CONTACT MESSAGES
+# =========================================================
+
+@admin_bp.route("/messages")
+@login_required
+def manage_messages():
+
+    messages = ContactMessage.query.order_by(
+        ContactMessage.created_at.desc()
+    ).all()
+
+    return render_template(
+        "admin/messages.html",
+        messages=messages
+    )
+    
+@admin_bp.route("/messages/<int:message_id>")
+@login_required
+def view_message(message_id):
+
+    message = ContactMessage.query.get_or_404(message_id)
+
+    if not message.is_read:
+
+        message.is_read = True
+
+        db.session.commit()
+
+    return render_template(
+        "admin/message_detail.html",
+        message=message
+    )
+    
+@admin_bp.route("/messages/<int:message_id>/reply")
+@login_required
+def reply_message(message_id):
+
+    message = ContactMessage.query.get_or_404(message_id)
+
+    message.is_replied = True
+
+    db.session.commit()
+
+    flash("Message marked as replied.", "success")
+
+    return redirect(url_for("admin.view_message", message_id=message.id))
+
+
+@admin_bp.route("/messages/<int:message_id>/delete", methods=["POST"])
+@login_required
+def delete_message(message_id):
+
+    message = ContactMessage.query.get_or_404(message_id)
+
+    db.session.delete(message)
+
+    db.session.commit()
+
+    flash("Message deleted successfully.", "success")
+
+    return redirect(url_for("admin.manage_messages"))

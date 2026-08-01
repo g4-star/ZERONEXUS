@@ -142,3 +142,131 @@ def send_member_welcome(member):
     """
 
     mail.send(msg)
+    
+def send_contact_confirmation(contact_message):
+    """
+    Sends an automatic confirmation email after someone
+    submits the ZeroNexus contact form.
+    """
+
+    msg = Message(
+        subject="✅ Thank You for Contacting ZeroNexus",
+        recipients=[contact_message.email]
+    )
+
+    msg.html = f"""
+    <!DOCTYPE html>
+    <html>
+    <body style="font-family:Arial,sans-serif;background:#f4f6f9;padding:30px;">
+
+        <div style="
+            max-width:700px;
+            margin:auto;
+            background:#ffffff;
+            border-radius:12px;
+            overflow:hidden;
+            box-shadow:0 6px 20px rgba(0,0,0,.15);
+        ">
+
+            <div style="
+                background:#0dcaf0;
+                color:#000;
+                text-align:center;
+                padding:35px;
+            ">
+
+                <h1>Thank You!</h1>
+
+                <p>Your message has been received.</p>
+
+            </div>
+
+            <div style="padding:35px;">
+
+                <h2>Hello {contact_message.full_name},</h2>
+
+                <p>
+                    Thank you for contacting
+                    <strong>ZeroNexus</strong>.
+                </p>
+
+                <p>
+                    Your message has been successfully received by our team.
+                    We appreciate you taking the time to reach out.
+                </p>
+
+                <h3>Your Submission</h3>
+
+                <table style="width:100%;border-collapse:collapse;">
+
+                    <tr>
+                        <td style="padding:8px;"><strong>Name</strong></td>
+                        <td style="padding:8px;">{contact_message.full_name}</td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding:8px;"><strong>Email</strong></td>
+                        <td style="padding:8px;">{contact_message.email}</td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding:8px;"><strong>Subject</strong></td>
+                        <td style="padding:8px;">{contact_message.subject}</td>
+                    </tr>
+
+                </table>
+
+                <br>
+
+                <div style="
+                    background:#f8f9fa;
+                    border-left:5px solid #0dcaf0;
+                    padding:20px;
+                ">
+
+                    {contact_message.message}
+
+                </div>
+
+                <br>
+
+                <p>
+                    Our team will review your message and respond as soon as
+                    possible.
+                </p>
+
+                <p>
+                    Thank you for supporting the ZeroNexus community.
+                </p>
+
+                <br>
+
+                <p>
+                    Regards,<br>
+                    <strong>ZeroNexus Team</strong><br>
+                    <span style="color:#666;">
+                        Forge Skills. Build Solutions. Secure the Future.
+                    </span>
+                </p>
+
+            </div>
+
+            <div style="
+                background:#f8f9fa;
+                padding:18px;
+                text-align:center;
+                color:#666;
+                font-size:13px;
+            ">
+
+                © ZeroNexus • Thank you for connecting with us.
+
+            </div>
+
+        </div>
+
+    </body>
+    </html>
+    """
+
+    mail.send(msg)

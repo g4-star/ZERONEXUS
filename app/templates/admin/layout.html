@@ -25,11 +25,9 @@ theme-light
 theme-dark
 {% endif %}
 theme-{{ settings.theme_name if settings else 'cyber-blue' }}">
-
 <div class="admin-wrapper">
 
     <!-- Sidebar -->
-
     <aside class="sidebar">
 
         <div class="sidebar-brand mb-4">
@@ -42,36 +40,49 @@ theme-{{ settings.theme_name if settings else 'cyber-blue' }}">
 
         <nav class="sidebar-nav">
 
+            <!-- Dashboard -->
             <a href="{{ url_for('admin.dashboard') }}"
-               class="{% if request.endpoint=='admin.dashboard' %}active{% endif %}">
+               class="{% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
                 🏠 Dashboard
             </a>
 
+            <!-- Teams -->
             <a href="{{ url_for('admin.manage_teams') }}"
-               class="{% if request.endpoint=='admin.manage_teams' %}active{% endif %}">
+               class="{% if request.endpoint == 'admin.manage_teams' %}active{% endif %}">
                 🛡 Teams
             </a>
 
+            <!-- Members -->
             <a href="{{ url_for('admin.manage_members') }}"
-               class="{% if request.endpoint=='admin.manage_members' %}active{% endif %}">
+               class="{% if request.endpoint == 'admin.manage_members' %}active{% endif %}">
                 👥 Members
             </a>
 
+            <!-- Projects -->
             <a href="{{ url_for('admin.manage_projects') }}"
-               class="{% if request.endpoint=='admin.manage_projects' %}active{% endif %}">
+               class="{% if request.endpoint == 'admin.manage_projects' %}active{% endif %}">
                 📁 Projects
             </a>
 
+            <!-- Blog -->
             <a href="{{ url_for('admin.manage_blog') }}"
-               class="{% if request.endpoint=='admin.manage_blog' %}active{% endif %}">
+               class="{% if request.endpoint == 'admin.manage_blog' %}active{% endif %}">
                 📝 Blog
             </a>
 
+            <!-- Contact Messages -->
+            <a href="{{ url_for('admin.manage_messages') }}"
+               class="{% if request.endpoint in ['admin.manage_messages', 'admin.view_message'] %}active{% endif %}">
+                📩 Messages
+            </a>
+
+            <!-- Settings -->
             <a href="{{ url_for('admin.settings') }}"
-               class="{% if request.endpoint=='admin.settings' %}active{% endif %}">
+               class="{% if request.endpoint == 'admin.settings' %}active{% endif %}">
                 ⚙ Settings
             </a>
 
+            <!-- Logout -->
             <a href="{{ url_for('admin.logout') }}">
                 🚪 Logout
             </a>
@@ -79,7 +90,6 @@ theme-{{ settings.theme_name if settings else 'cyber-blue' }}">
         </nav>
 
     </aside>
-
     <!-- Main -->
 
     <main class="main-content">
