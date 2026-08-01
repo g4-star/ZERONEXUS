@@ -83,13 +83,20 @@ class Team(db.Model):
     # New Authentication System
     # =====================================
 
+    members = db.relationship(
+        'MemberProfile',
+        backref='team',
+        lazy=True,
+        cascade='all, delete-orphan'
+    )
+
+
     users = db.relationship(
         "User",
         back_populates="team",
         lazy=True,
         cascade="all, delete-orphan"
     )
-
 
 
     # =====================================

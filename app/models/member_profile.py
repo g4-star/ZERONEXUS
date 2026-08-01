@@ -105,8 +105,8 @@ class MemberProfile(db.Model):
     user_id = db.Column(
         db.Integer,
         db.ForeignKey('users.id'),
-        nullable=True,
-        unique=True
+        unique=True,
+        nullable=True
     )
 
 

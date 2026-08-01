@@ -11,12 +11,18 @@ class User(UserMixin, db.Model):
     __tablename__ = "users"
 
 
+    # -------------------------------------------------
+    # Primary Key
+    # -------------------------------------------------
     id = db.Column(
         db.Integer,
         primary_key=True
     )
 
 
+    # -------------------------------------------------
+    # Login Information
+    # -------------------------------------------------
     username = db.Column(
         db.String(100),
         unique=True,
@@ -37,7 +43,10 @@ class User(UserMixin, db.Model):
     )
 
 
+    # -------------------------------------------------
+    # Account Role
     # admin / team_lead / member
+    # -------------------------------------------------
     role = db.Column(
         db.String(50),
         default="member",
@@ -45,6 +54,9 @@ class User(UserMixin, db.Model):
     )
 
 
+    # -------------------------------------------------
+    # Assigned Team
+    # -------------------------------------------------
     team_id = db.Column(
         db.Integer,
         db.ForeignKey("teams.id"),
@@ -52,31 +64,49 @@ class User(UserMixin, db.Model):
     )
 
 
+    # -------------------------------------------------
+    # Password Management
+    # Forces invited users to change password
+    # -------------------------------------------------
     must_change_password = db.Column(
         db.Boolean,
         default=True
     )
 
 
+    # -------------------------------------------------
+    # Account Creation Date
+    # -------------------------------------------------
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow
     )
 
 
-    # Relationship with Team
+    # -------------------------------------------------
+    # Relationship With Team
+    # -------------------------------------------------
     team = db.relationship(
         "Team",
         back_populates="users"
     )
-    
+
+
+    # -------------------------------------------------
+    # Link To Member Profile
+    # One User = One Member Profile
+    # -------------------------------------------------
     member_profile = db.relationship(
         "MemberProfile",
         back_populates="user",
-        uselist=False
+        uselist=False,
+        cascade="all, delete-orphan"
     )
 
 
+    # -------------------------------------------------
+    # Password Functions
+    # -------------------------------------------------
     def set_password(self, password):
 
         self.password_hash = generate_password_hash(
@@ -90,3 +120,11 @@ class User(UserMixin, db.Model):
             self.password_hash,
             password
         )
+
+
+    # -------------------------------------------------
+    # String Representation
+    # -------------------------------------------------
+    def __repr__(self):
+
+        return f"<User {self.username}>"

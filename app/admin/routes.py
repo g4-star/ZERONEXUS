@@ -12,16 +12,33 @@ from app.models import (
     ContactMessage,
     User
 )
+
 from .forms import AdminLoginForm
 from .member_forms import AddMemberForm
 from .team_forms import EditTeamForm
-from app.models import SiteSetting, BlogPost
-from app.email import send_member_welcome
+
+from app.email import (
+    send_member_welcome,
+    send_member_invitation
+)
+
 import secrets
 import string
 
+
+# ==========================================
+# Admin Blueprint
+# ==========================================
+
+admin_bp = Blueprint(
+    'admin',
+    __name__,
+    url_prefix='/admin'
+)
+
+
 def generate_temp_password():
-    
+
     chars = string.ascii_letters + string.digits
 
     return "ZN@" + "".join(
@@ -29,7 +46,26 @@ def generate_temp_password():
         for _ in range(8)
     )
 
-admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
+
+def generate_username(full_name):
+
+    base_username = (
+        full_name.lower()
+        .replace(" ", "")
+    )
+
+    username = base_username
+    counter = 1
+
+    while User.query.filter_by(
+        username=username
+    ).first():
+
+        username = f"{base_username}{counter}"
+
+        counter += 1
+
+    return username
 
 @admin_bp.context_processor
 def inject_admin_settings():
@@ -299,20 +335,58 @@ def edit_member(member_id):
     )
 
 
-@admin_bp.route('/members/<int:member_id>/delete', methods=['POST'])
+@admin_bp.route(
+    '/members/<int:member_id>/delete',
+    methods=['POST']
+)
+@login_required
 def delete_member(member_id):
-    from app.models.member_profile import MemberProfile
-    from app.extensions import db
-    from flask import flash, redirect, url_for
 
-    member = MemberProfile.query.get_or_404(member_id)
+    member = MemberProfile.query.get_or_404(
+        member_id
+    )
 
-    db.session.delete(member)
-    db.session.commit()
 
-    flash('Member deleted successfully.', 'success')
+    # Get connected user account
+    user = member.user
 
-    return redirect(url_for('admin.manage_members'))
+
+    try:
+
+        # Delete user login account first
+        if user:
+
+            db.session.delete(user)
+
+
+        # Delete public profile
+        db.session.delete(member)
+
+
+        db.session.commit()
+
+
+        flash(
+            "Member account deleted permanently.",
+            "success"
+        )
+
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        flash(
+            f"Delete failed: {e}",
+            "danger"
+        )
+
+
+    return redirect(
+        url_for(
+            'admin.manage_members'
+        )
+    )
     
 @admin_bp.route('/projects')
 @login_required
