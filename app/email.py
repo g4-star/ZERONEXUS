@@ -143,6 +143,58 @@ def send_member_welcome(member):
 
     mail.send(msg)
     
+def send_member_invitation(user, password):
+    
+    msg = Message(
+        subject="🎉 Welcome to ZeroNexus Team",
+        recipients=[user.email]
+    )
+
+
+    msg.html = f"""
+
+    <h2>
+    Welcome to ZeroNexus
+    </h2>
+
+
+    <p>
+    You have been invited to join a ZeroNexus team.
+    </p>
+
+
+    <h3>Your Login Details</h3>
+
+
+    <p>
+    Username:
+    <b>{user.username}</b>
+    </p>
+
+
+    <p>
+    Temporary Password:
+    <b>{password}</b>
+    </p>
+
+
+    <p>
+    Login and change your password immediately.
+    </p>
+
+
+    <br>
+
+
+    <strong>
+    ZeroNexus Administration
+    </strong>
+
+    """
+
+
+    mail.send(msg)
+
 def send_contact_confirmation(contact_message):
     """
     Sends an automatic confirmation email after someone

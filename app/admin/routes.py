@@ -7,13 +7,27 @@ from app.models import (
     Team,
     MemberProfile,
     Project,
-    ContactMessage
+    SiteSetting,
+    BlogPost,
+    ContactMessage,
+    User
 )
 from .forms import AdminLoginForm
 from .member_forms import AddMemberForm
 from .team_forms import EditTeamForm
 from app.models import SiteSetting, BlogPost
 from app.email import send_member_welcome
+import secrets
+import string
+
+def generate_temp_password():
+    
+    chars = string.ascii_letters + string.digits
+
+    return "ZN@" + "".join(
+        secrets.choice(chars)
+        for _ in range(8)
+    )
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -101,44 +115,158 @@ def manage_members():
 @admin_bp.route('/members/add', methods=['GET', 'POST'])
 @login_required
 def add_member():
+
     form = AddMemberForm()
 
-    teams = Team.query.order_by(Team.name.asc()).all()
-    form.team_id.choices = [(team.id, team.name) for team in teams]
+
+    teams = Team.query.order_by(
+        Team.name.asc()
+    ).all()
+
+
+    form.team_id.choices = [
+        (team.id, team.name)
+        for team in teams
+    ]
+
 
     if form.validate_on_submit():
 
-        member = MemberProfile(
-            full_name=form.full_name.data,
-            role=form.role.data,
-            bio=form.bio.data,
-            linkedin_url=form.linkedin_url.data,
-            github_url=form.github_url.data,
-            portfolio_url=form.portfolio_url.data,
-            email=form.email.data,
-            whatsapp_number=form.whatsapp_number.data,
-            skills=form.skills.data,
-            team_id=form.team_id.data
-        )
-
-        db.session.add(member)
-        db.session.commit()
-
-        # Send welcome email
         try:
-            send_member_welcome(member)
-            flash(
-                'Member added successfully and welcome email sent.',
-                'success'
-            )
-        except Exception as e:
-            print(f"Email Error: {e}")
-            flash(
-                'Member added successfully, but the welcome email could not be sent.',
-                'warning'
+
+            # ==============================
+            # Create Public Member Profile
+            # ==============================
+
+            member = MemberProfile(
+
+                full_name=form.full_name.data,
+
+                role=form.role.data,
+
+                bio=form.bio.data,
+
+                linkedin_url=form.linkedin_url.data,
+
+                github_url=form.github_url.data,
+
+                portfolio_url=form.portfolio_url.data,
+
+                email=form.email.data,
+
+                whatsapp_number=form.whatsapp_number.data,
+
+                skills=form.skills.data,
+
+                team_id=form.team_id.data
+
             )
 
-        return redirect(url_for('admin.manage_members'))
+
+            db.session.add(member)
+
+
+
+            # ==============================
+            # Create Login Account
+            # ==============================
+
+            username = (
+                form.full_name.data
+                .lower()
+                .replace(" ", "")
+            )
+
+
+            temporary_password = generate_temp_password()
+
+
+
+            user = User(
+
+                username=username,
+
+                email=form.email.data,
+
+                role="member",
+
+                team_id=form.team_id.data
+
+            )
+
+
+            user.set_password(
+                temporary_password
+            )
+
+
+            db.session.add(user)
+
+
+
+            # Save both records
+
+            db.session.commit()
+
+
+
+            # ==============================
+            # Send Invitation Email
+            # ==============================
+
+            try:
+
+                send_member_invitation(
+                    user,
+                    temporary_password
+                )
+
+
+                flash(
+                    "Member account created and invitation email sent.",
+                    "success"
+                )
+
+
+            except Exception as e:
+
+                print(
+                    f"Invitation Email Error: {e}"
+                )
+
+
+                flash(
+                    "Account created but email failed.",
+                    "warning"
+                )
+
+
+
+            return redirect(
+                url_for(
+                    'admin.manage_members'
+                )
+            )
+
+
+
+        except Exception as e:
+
+
+            db.session.rollback()
+
+
+            print(
+                f"Member Creation Error: {e}"
+            )
+
+
+            flash(
+                f"Error creating member: {e}",
+                "danger"
+            )
+
+
 
     return render_template(
         'admin/add_member.html',

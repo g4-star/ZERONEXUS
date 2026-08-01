@@ -1,28 +1,73 @@
 from app.extensions import db
 
+
 class Team(db.Model):
+
     __tablename__ = 'teams'
 
-    id = db.Column(db.Integer, primary_key=True)
 
-    slug = db.Column(db.String(120), unique=True, nullable=False)
-    name = db.Column(db.String(120), unique=True, nullable=False)
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
 
-    short_description = db.Column(db.String(255))
-    description = db.Column(db.Text)
 
-    lead_name = db.Column(db.String(120))
-    lead_role = db.Column(db.String(120))
+    slug = db.Column(
+        db.String(120),
+        unique=True,
+        nullable=False
+    )
+
+
+    name = db.Column(
+        db.String(120),
+        unique=True,
+        nullable=False
+    )
+
+
+    short_description = db.Column(
+        db.String(255)
+    )
+
+
+    description = db.Column(
+        db.Text
+    )
+
+
+    # =====================================
+    # Legacy Public Team Lead Information
+    # (Keeps your current website working)
+    # =====================================
+
+    lead_name = db.Column(
+        db.String(120)
+    )
+
+
+    lead_role = db.Column(
+        db.String(120)
+    )
+
 
     lead_image = db.Column(
         db.String(255),
         default='img/placeholders/team_lead_placeholder.jpg'
     )
 
+
     banner_image = db.Column(
         db.String(255),
         default='img/placeholders/team_banner_placeholder.jpg'
     )
+
+
+
+    # =====================================
+    # Public Profiles
+    # Existing ZeroNexus members
+    # =====================================
 
     members = db.relationship(
         'MemberProfile',
@@ -31,6 +76,26 @@ class Team(db.Model):
         cascade='all, delete-orphan'
     )
 
+
+
+    # =====================================
+    # User Accounts
+    # New Authentication System
+    # =====================================
+
+    users = db.relationship(
+        "User",
+        back_populates="team",
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
+
+
+    # =====================================
+    # Team Projects
+    # =====================================
+
     projects = db.relationship(
         'Project',
         backref='team',
@@ -38,5 +103,8 @@ class Team(db.Model):
         cascade='all, delete-orphan'
     )
 
+
+
     def __repr__(self):
+
         return f'<Team {self.name}>'
