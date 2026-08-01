@@ -149,9 +149,9 @@ def send_member_invitation(user, password):
         "SITE_URL",
         "https://zeronexus.vercel.app"
     )
-
+    
     activation_link = (
-        f"{site_url}/activate/{user.activation_token}"
+        f"{site_url}/auth/activate/{user.activation_token}"
     )
 
 
