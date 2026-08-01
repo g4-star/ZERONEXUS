@@ -2,200 +2,99 @@
 
 {% block content %}
 
-<section class="academy-container">
+<div class="academy-hero text-center mb-5">
 
-    <div class="academy-hero text-center mb-5">
+    <h1 class="display-5 fw-bold">
+        🤖 ZeroNexus AI Academy
+    </h1>
 
-        <h1 class="display-5 fw-bold">
-            🤖 ZeroNexus AI Academy
-        </h1>
+    <p class="lead text-secondary">
+        Learn Programming, Web Development, Cybersecurity and Artificial Intelligence
+        through practical lessons, projects and AI-powered learning.
+    </p>
 
-        <p class="lead text-secondary">
-            Learn Programming, Web Development, Cybersecurity and Artificial Intelligence
-            through practical lessons, projects and AI-powered learning.
-        </p>
+    <div class="academy-stats">
 
-        <div class="academy-stats">
+        <span class="badge bg-info me-2">
+            📚 {{ courses|length }} Courses
+        </span>
 
-            <span class="badge bg-info me-2">📚 4 Courses</span>
-            <span class="badge bg-success me-2">🏆 Certificates</span>
-            <span class="badge bg-warning text-dark">👨‍💻 Beginner Friendly</span>
+        <span class="badge bg-success me-2">
+            🏆 Certificates
+        </span>
+
+        <span class="badge bg-warning text-dark">
+            👨‍💻 Beginner Friendly
+        </span>
+
+    </div>
+
+</div>
+
+<div class="row g-4">
+
+    {% for course in courses %}
+
+    <div class="col-md-6 col-xl-3">
+
+        <div class="course-card h-100">
+
+            <div class="course-icon">
+
+                {{ course.icon }}
+
+            </div>
+
+            <h4>
+
+                {{ course.title }}
+
+            </h4>
+
+            <p>
+
+                {{ course.description }}
+
+            </p>
+
+            <div class="small text-secondary mb-2">
+
+                📚 {{ course.lessons|length }} Lessons
+
+                <br>
+
+                ⏱ {{ course.duration }}
+
+                <br>
+
+                {{ course.level }}
+
+            </div>
+
+            <div class="progress mb-3">
+
+                <div class="progress-bar bg-info"
+                     style="width:0%;">
+
+                    0%
+
+                </div>
+
+            </div>
+
+            <a href="/academy/{{ course.slug }}"
+               class="btn btn-info w-100">
+
+                Open Course
+
+            </a>
 
         </div>
 
     </div>
 
-    <div class="row g-4">
+    {% endfor %}
 
-        <!-- Python -->
-
-        <div class="col-md-6 col-xl-3">
-
-            <div class="course-card h-100">
-
-                <div class="course-icon">🐍</div>
-
-                <h4>Python Fundamentals</h4>
-
-                <p>
-                    Learn Python from zero knowledge to automation and scripting.
-                </p>
-
-                <div class="small text-secondary mb-2">
-                    📚 24 Lessons
-                    <br>
-                    ⏱ 12 Hours
-                    <br>
-                    🟢 Beginner
-                </div>
-
-                <div class="progress mb-3">
-
-                    <div class="progress-bar bg-info"
-                         style="width:15%;">
-
-                        15%
-
-                    </div>
-
-                </div>
-
-                <a href="/academy/python"
-                   class="btn btn-info w-100">
-
-                    Continue Learning
-
-                </a>
-
-            </div>
-
-        </div>
-
-        <!-- HTML CSS JS -->
-
-        <div class="col-md-6 col-xl-3">
-
-            <div class="course-card h-100">
-
-                <div class="course-icon">🌐</div>
-
-                <h4>HTML • CSS • JavaScript</h4>
-
-                <p>
-                    Build beautiful, responsive and interactive websites.
-                </p>
-
-                <div class="small text-secondary mb-2">
-                    📚 30 Lessons
-                    <br>
-                    ⏱ 15 Hours
-                    <br>
-                    🟢 Beginner
-                </div>
-
-                <div class="progress mb-3">
-
-                    <div class="progress-bar bg-success"
-                         style="width:0%;">
-
-                        0%
-
-                    </div>
-
-                </div>
-
-                <button class="btn btn-outline-info w-100">
-                    Coming Soon
-                </button>
-
-            </div>
-
-        </div>
-
-        <!-- Cybersecurity -->
-
-        <div class="col-md-6 col-xl-3">
-
-            <div class="course-card h-100">
-
-                <div class="course-icon">🛡</div>
-
-                <h4>Cybersecurity</h4>
-
-                <p>
-                    Ethical hacking, Blue Team, SOC and Digital Forensics.
-                </p>
-
-                <div class="small text-secondary mb-2">
-                    📚 40 Lessons
-                    <br>
-                    ⏱ 20 Hours
-                    <br>
-                    🟡 Intermediate
-                </div>
-
-                <div class="progress mb-3">
-
-                    <div class="progress-bar bg-warning"
-                         style="width:0%;">
-
-                        0%
-
-                    </div>
-
-                </div>
-
-                <button class="btn btn-outline-info w-100">
-                    Coming Soon
-                </button>
-
-            </div>
-
-        </div>
-
-        <!-- AI -->
-
-        <div class="col-md-6 col-xl-3">
-
-            <div class="course-card h-100">
-
-                <div class="course-icon">🤖</div>
-
-                <h4>Artificial Intelligence</h4>
-
-                <p>
-                    Learn prompt engineering, machine learning and modern AI tools.
-                </p>
-
-                <div class="small text-secondary mb-2">
-                    📚 18 Lessons
-                    <br>
-                    ⏱ 10 Hours
-                    <br>
-                    🟢 Beginner
-                </div>
-
-                <div class="progress mb-3">
-
-                    <div class="progress-bar bg-primary"
-                         style="width:0%;">
-
-                        0%
-
-                    </div>
-
-                </div>
-
-                <button class="btn btn-outline-info w-100">
-                    Coming Soon
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
+</div>
 
 {% endblock %}

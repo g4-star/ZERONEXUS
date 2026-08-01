@@ -2,197 +2,147 @@
 
 {% block content %}
 
-<div class="container py-5">
+<!-- Lesson Header -->
 
-    <!-- Lesson Header -->
+<div class="course-header mb-4">
 
-    <div class="course-header mb-4">
+    <span class="badge bg-info mb-2">
+        📘 Lesson {{ lesson.lesson_number }}
+    </span>
 
-        <span class="badge bg-info mb-2">
-            📘 Module {{ module_id }}
-        </span>
+    <h1 class="fw-bold">
+        {{ lesson.title }}
+    </h1>
 
-        <h1 class="fw-bold">
-            {{ lesson.title }}
-        </h1>
+    <p class="text-secondary">
+        {{ lesson.content }}
+    </p>
 
-        <p class="text-secondary">
-            {{ lesson.description }}
-        </p>
+</div>
 
-        <div class="progress mt-3">
+<!-- AI Teacher -->
 
-            <div class="progress-bar bg-success"
-                 style="width:{{ (module_id/12*100)|round }}%">
+<div class="card bg-dark border-info shadow-lg mb-4">
 
-                {{ (module_id/12*100)|round }}%
+    <div class="card-header">
+
+        🤖 Nexus AI Instructor
+
+    </div>
+
+    <div class="card-body">
+
+        {% if ai_response %}
+
+            <div style="white-space: pre-wrap;">
+
+                {{ ai_response }}
 
             </div>
 
-        </div>
-
-    </div>
-
-    <!-- AI Teacher -->
-
-    <div class="card bg-dark border-info shadow-lg mb-4">
-
-        <div class="card-header">
-
-            🤖 Nexus AI Instructor
-
-        </div>
-
-        <div class="card-body">
-
-            {% if ai_response %}
-
-                <div style="white-space:pre-wrap">
-
-                    {{ ai_response }}
-
-                </div>
-
-            {% else %}
-
-                <div class="text-center py-5">
-
-                    <i class="bi bi-robot text-info"
-                       style="font-size:70px;"></i>
-
-                    <h3 class="mt-3">
-
-                        Learn with Nexus AI
-
-                    </h3>
-
-                    <p class="text-secondary">
-
-                        Click the button below and Nexus AI
-                        will teach this lesson step by step,
-                        provide examples, exercises and quizzes.
-
-                    </p>
-
-                    <a href="/academy/tutor?course=Python&lesson={{ lesson.title }}"
-                       class="btn btn-info btn-lg">
-
-                        🚀 Start Learning with AI
-
-                    </a>
-
-                </div>
-
-            {% endif %}
-
-        </div>
-
-    </div>
-
-    <!-- Lesson Objectives -->
-
-    <div class="card bg-dark border-secondary mb-4">
-
-        <div class="card-header">
-
-            🎯 Learning Objectives
-
-        </div>
-
-        <div class="card-body">
-
-            <ul>
-
-                <li>Understand {{ lesson.title }}</li>
-
-                <li>See real-world examples</li>
-
-                <li>Practice with coding exercises</li>
-
-                <li>Take a short quiz</li>
-
-                <li>Prepare for the next module</li>
-
-            </ul>
-
-        </div>
-
-    </div>
-
-    <!-- Quick Quiz -->
-
-    <div class="card bg-dark border-warning mb-4">
-
-        <div class="card-header">
-
-            📝 Quick Quiz
-
-        </div>
-
-        <div class="card-body">
-
-            <textarea
-                class="form-control bg-dark text-light"
-                rows="5"
-                placeholder="Write your answer..."></textarea>
-
-            <button class="btn btn-success mt-3">
-
-                Submit Answer
-
-            </button>
-
-        </div>
-
-    </div>
-
-    <!-- Navigation -->
-
-    <div class="d-flex justify-content-between">
-
-        {% if module_id > 1 %}
-
-        <a href="/academy/python/module/{{ module_id-1 }}"
-           class="btn btn-outline-secondary">
-
-            ← Previous
-
-        </a>
-
         {% else %}
 
-        <span></span>
+            <div class="text-center py-5">
 
-        {% endif %}
+                <i class="bi bi-robot text-info"
+                   style="font-size:70px;"></i>
 
-        <a href="/academy/tutor?course=Python&lesson={{ lesson.title }}"
-           class="btn btn-info">
+                <h3 class="mt-3">
 
-            💬 Ask Nexus AI
+                    Learn with Nexus AI
 
-        </a>
+                </h3>
 
-        {% if module_id < 12 %}
+                <p class="text-secondary">
 
-        <a href="/academy/python/module/{{ module_id+1 }}"
-           class="btn btn-success">
+                    Ask Nexus AI to explain this lesson,
+                    answer your questions and guide you
+                    through practical examples.
 
-            Next →
+                </p>
 
-        </a>
+                <a href="/academy/tutor?course={{ course.title }}&lesson={{ lesson.title }}"
+                   class="btn btn-info btn-lg">
 
-        {% else %}
+                    🚀 Start Learning with AI
 
-        <a href="/academy/python"
-           class="btn btn-warning">
+                </a>
 
-            🏆 Finish Course
-
-        </a>
+            </div>
 
         {% endif %}
 
     </div>
+
+</div>
+
+<!-- Lesson Content -->
+
+<div class="card bg-dark border-secondary mb-4">
+
+    <div class="card-header">
+
+        📖 Lesson Notes
+
+    </div>
+
+    <div class="card-body">
+
+        <div style="white-space: pre-wrap;">
+
+            {{ lesson.content }}
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Navigation -->
+
+<div class="d-flex justify-content-between">
+
+    {% if lesson.lesson_number > 1 %}
+
+    <a href="/academy/{{ course.slug }}/module/{{ lesson.lesson_number - 1 }}"
+       class="btn btn-outline-secondary">
+
+        ← Previous
+
+    </a>
+
+    {% else %}
+
+    <span></span>
+
+    {% endif %}
+
+    <a href="/academy/tutor?course={{ course.title }}&lesson={{ lesson.title }}"
+       class="btn btn-info">
+
+        💬 Ask Nexus AI
+
+    </a>
+
+    {% if lesson.lesson_number < 12 %}
+
+    <a href="/academy/{{ course.slug }}/module/{{ lesson.lesson_number + 1 }}"
+       class="btn btn-success">
+
+        Next →
+
+    </a>
+
+    {% else %}
+
+    <a href="/academy/{{ course.slug }}"
+       class="btn btn-warning">
+
+        🏁 Finish Course
+
+    </a>
+
+    {% endif %}
 
 </div>
 
