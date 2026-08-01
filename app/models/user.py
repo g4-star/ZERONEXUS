@@ -4,6 +4,7 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.extensions import db
+import secrets
 
 
 class User(UserMixin, db.Model):
@@ -73,7 +74,19 @@ class User(UserMixin, db.Model):
         default=True
     )
 
+    activation_token = db.Column(
+        db.String(100),
+        unique=True,
+        nullable=False,
+        default=lambda: secrets.token_urlsafe(50)
+    )
 
+
+    is_active = db.Column(
+        db.Boolean,
+        default=False
+    )
+    
     # -------------------------------------------------
     # Account Creation Date
     # -------------------------------------------------

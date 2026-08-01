@@ -145,6 +145,16 @@ def send_member_welcome(member):
     
 def send_member_invitation(user, password):
     
+    site_url = current_app.config.get(
+        "SITE_URL",
+        "https://zeronexus.vercel.app"
+    )
+
+    activation_link = (
+        f"{site_url}/activate/{user.activation_token}"
+    )
+
+
     msg = Message(
         subject="🎉 Welcome to ZeroNexus Team",
         recipients=[user.email]
@@ -153,42 +163,100 @@ def send_member_invitation(user, password):
 
     msg.html = f"""
 
-    <h2>
-    Welcome to ZeroNexus
-    </h2>
+    <!DOCTYPE html>
+
+    <html>
+
+    <body style="
+        font-family:Arial;
+        background:#f4f6f9;
+        padding:30px;
+    ">
+
+
+    <div style="
+        max-width:650px;
+        margin:auto;
+        background:white;
+        padding:35px;
+        border-radius:12px;
+    ">
+
+
+    <h1 style="color:#0d6efd;">
+        Welcome to ZeroNexus 🎉
+    </h1>
 
 
     <p>
-    You have been invited to join a ZeroNexus team.
+        You have been invited to join a ZeroNexus team.
     </p>
 
 
-    <h3>Your Login Details</h3>
+    <h3>Your Account Details</h3>
 
 
     <p>
-    Username:
-    <b>{user.username}</b>
-    </p>
-
-
-    <p>
-    Temporary Password:
-    <b>{password}</b>
+        <b>Username:</b>
+        {user.username}
     </p>
 
 
     <p>
-    Login and change your password immediately.
+        <b>Temporary Password:</b>
+        {password}
     </p>
 
 
-    <br>
+    <p>
+        For security reasons, you must change your
+        password before accessing your team dashboard.
+    </p>
+
+
+
+    <a href="{activation_link}"
+
+    style="
+    display:inline-block;
+    background:#0dcaf0;
+    color:#000;
+    padding:14px 25px;
+    text-decoration:none;
+    border-radius:6px;
+    font-weight:bold;
+    ">
+
+    Activate My Account
+
+    </a>
+
+
+
+    <br><br>
+
+
+    <p>
+    After activation you will be redirected to your
+    assigned ZeroNexus team dashboard.
+    </p>
+
+
+
+    <hr>
 
 
     <strong>
     ZeroNexus Administration
     </strong>
+
+
+    </div>
+
+
+    </body>
+
+    </html>
 
     """
 
