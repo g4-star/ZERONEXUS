@@ -23,7 +23,7 @@
                     <th>Subject</th>
                     <th>Date</th>
                     <th>Status</th>
-                    <th width="320">Actions</th>
+                    <th width="340">Actions</th>
                 </tr>
 
             </thead>
@@ -101,9 +101,12 @@
 
                             <form method="POST"
                                   action="{{ url_for('admin.delete_message', message_id=message.id) }}"
+                                  class="d-inline"
                                   onsubmit="return confirm('Delete this message permanently?');">
 
-                                {{ csrf_token() }}
+                                <input type="hidden"
+                                       name="csrf_token"
+                                       value="{{ csrf_token() }}">
 
                                 <button type="submit"
                                         class="btn btn-sm btn-danger">
@@ -129,7 +132,9 @@
     {% else %}
 
     <div class="alert alert-info">
+
         No contact messages yet.
+
     </div>
 
     {% endif %}

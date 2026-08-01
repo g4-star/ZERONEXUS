@@ -380,7 +380,11 @@ def manage_messages():
         "admin/messages.html",
         messages=messages
     )
-    
+
+
+# ---------------------------------------------------------
+# View Message
+# ---------------------------------------------------------
 @admin_bp.route("/messages/<int:message_id>")
 @login_required
 def view_message(message_id):
@@ -388,32 +392,77 @@ def view_message(message_id):
     message = ContactMessage.query.get_or_404(message_id)
 
     if not message.is_read:
-
         message.is_read = True
-
         db.session.commit()
 
     return render_template(
         "admin/message_detail.html",
         message=message
     )
-    
+
+
+# ---------------------------------------------------------
+# Mark as Read
+# ---------------------------------------------------------
+@admin_bp.route("/messages/<int:message_id>/read")
+@login_required
+def mark_message_read(message_id):
+
+    message = ContactMessage.query.get_or_404(message_id)
+
+    message.is_read = True
+
+    db.session.commit()
+
+    flash("Message marked as read.", "success")
+
+    return redirect(
+        url_for("admin.manage_messages")
+    )
+
+
+# ---------------------------------------------------------
+# Reply
+# ---------------------------------------------------------
 @admin_bp.route("/messages/<int:message_id>/reply")
 @login_required
 def reply_message(message_id):
 
     message = ContactMessage.query.get_or_404(message_id)
 
+    message.is_read = True
     message.is_replied = True
 
     db.session.commit()
 
-    flash("Message marked as replied.", "success")
+    from urllib.parse import quote
 
-    return redirect(url_for("admin.view_message", message_id=message.id))
+    subject = quote(f"Re: {message.subject}")
+
+    body = quote(
+        f"""Hello {message.full_name},
+
+Thank you for contacting ZeroNexus.
+
+We have received your message and appreciate you reaching out.
+
+Best regards,
+ZeroNexus Team
+"""
+    )
+
+    return redirect(
+        f"mailto:{message.email}?subject={subject}&body={body}"
+    )
 
 
-@admin_bp.route("/messages/<int:message_id>/delete", methods=["POST"])
+# ---------------------------------------------------------
+# Delete Message
+# ---------------------------------------------------------
+@admin_bp.route(
+    "/messages/<int:message_id>/delete",
+    methods=["POST"]
+)
 @login_required
 def delete_message(message_id):
 
@@ -423,6 +472,11 @@ def delete_message(message_id):
 
     db.session.commit()
 
-    flash("Message deleted successfully.", "success")
+    flash(
+        "Message deleted successfully.",
+        "success"
+    )
 
-    return redirect(url_for("admin.manage_messages"))
+    return redirect(
+        url_for("admin.manage_messages")
+    )
