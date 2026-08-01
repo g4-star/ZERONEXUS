@@ -6,34 +6,50 @@
 
 {% block content %}
 
-<div class="container py-4">
+<div class="container py-5">
 
-    <div class="mb-4">
+    <!-- ========================================= -->
+    <!-- TEAM HEADER -->
+    <!-- ========================================= -->
 
-        <h2>{{ team.name }}</h2>
+    <div class="text-center mb-5">
 
-        <p class="text-muted">
+        <h1 class="display-5 fw-bold text-info">
+            {{ team.name }}
+        </h1>
+
+        <p class="lead text-secondary">
             Welcome back,
             <strong>{{ user.username }}</strong>
         </p>
 
-        <span class="badge bg-primary">
+        <span class="badge bg-info px-4 py-2 fs-6">
             {{ user.role.replace("_", " ").title() }}
         </span>
 
     </div>
 
-    <div class="row g-4">
+    <!-- ========================================= -->
+    <!-- TEAM STATISTICS -->
+    <!-- ========================================= -->
+
+    <div class="row g-4 mb-5">
 
         <div class="col-md-3">
 
-            <div class="card shadow-sm">
+            <div class="card bg-dark border-info text-center h-100 shadow">
 
                 <div class="card-body">
 
-                    <h5>Team</h5>
+                    <i class="bi bi-people-fill text-info fs-1"></i>
 
-                    <p>{{ team.name }}</p>
+                    <h2 class="mt-3 text-info">
+                        {{ members|length }}
+                    </h2>
+
+                    <p class="mb-0">
+                        Team Members
+                    </p>
 
                 </div>
 
@@ -43,18 +59,19 @@
 
         <div class="col-md-3">
 
-            <div class="card shadow-sm">
+            <div class="card bg-dark border-info text-center h-100 shadow">
 
                 <div class="card-body">
 
-                    <h5>Projects</h5>
+                    <i class="bi bi-folder-fill text-warning fs-1"></i>
 
-                    <a
-                        href="{{ url_for('team.projects') }}"
-                        class="btn btn-outline-primary btn-sm"
-                    >
-                        View Projects
-                    </a>
+                    <h2 class="mt-3 text-warning">
+                        {{ projects|length }}
+                    </h2>
+
+                    <p class="mb-0">
+                        Projects
+                    </p>
 
                 </div>
 
@@ -64,18 +81,19 @@
 
         <div class="col-md-3">
 
-            <div class="card shadow-sm">
+            <div class="card bg-dark border-info text-center h-100 shadow">
 
                 <div class="card-body">
 
-                    <h5>Meetings</h5>
+                    <i class="bi bi-calendar-event-fill text-success fs-1"></i>
 
-                    <a
-                        href="{{ url_for('team.meetings') }}"
-                        class="btn btn-outline-success btn-sm"
-                    >
-                        View Meetings
-                    </a>
+                    <h2 class="mt-3 text-success">
+                        0
+                    </h2>
+
+                    <p class="mb-0">
+                        Meetings
+                    </p>
 
                 </div>
 
@@ -85,18 +103,19 @@
 
         <div class="col-md-3">
 
-            <div class="card shadow-sm">
+            <div class="card bg-dark border-info text-center h-100 shadow">
 
                 <div class="card-body">
 
-                    <h5>Messages</h5>
+                    <i class="bi bi-megaphone-fill text-danger fs-1"></i>
 
-                    <a
-                        href="{{ url_for('team.messages') }}"
-                        class="btn btn-outline-dark btn-sm"
-                    >
-                        Open Chat
-                    </a>
+                    <h2 class="mt-3 text-danger">
+                        0
+                    </h2>
+
+                    <p class="mb-0">
+                        Announcements
+                    </p>
 
                 </div>
 
@@ -106,38 +125,246 @@
 
     </div>
 
-    {% if user.role == "team_lead" %}
+    <!-- ========================================= -->
+    <!-- QUICK ACTIONS -->
+    <!-- ========================================= -->
 
-    <hr class="my-5">
+    <div class="card bg-dark border-info shadow mb-5">
 
-    <h4>Team Lead Actions</h4>
+        <div class="card-header">
 
-    <div class="d-flex flex-wrap gap-2">
+            <h4 class="mb-0 text-info">
 
-        <a
-            href="#"
-            class="btn btn-primary"
-        >
-            Create Project
-        </a>
+                <i class="bi bi-lightning-charge-fill me-2"></i>
 
-        <a
-            href="#"
-            class="btn btn-success"
-        >
-            Schedule Meeting
-        </a>
+                Quick Actions
 
-        <a
-            href="#"
-            class="btn btn-warning"
-        >
-            Post Announcement
-        </a>
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if user.role == "team_admin" %}
+
+            <div class="row g-3">
+
+                <div class="col-md-4">
+
+                    <a href="{{ url_for('team.members') }}"
+                       class="btn btn-info w-100 py-3">
+
+                        <i class="bi bi-person-plus-fill me-2"></i>
+
+                        Manage Members
+
+                    </a>
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <a href="{{ url_for('team.projects') }}"
+                       class="btn btn-warning w-100 py-3">
+
+                        <i class="bi bi-folder-fill me-2"></i>
+
+                        Manage Projects
+
+                    </a>
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <a href="{{ url_for('team.meetings') }}"
+                       class="btn btn-success w-100 py-3">
+
+                        <i class="bi bi-calendar-event-fill me-2"></i>
+
+                        Meetings
+
+                    </a>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <a href="{{ url_for('team.announcements') }}"
+                       class="btn btn-danger w-100 py-3">
+
+                        <i class="bi bi-megaphone-fill me-2"></i>
+
+                        Announcements
+
+                    </a>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <a href="{{ url_for('team.messages') }}"
+                       class="btn btn-secondary w-100 py-3">
+
+                        <i class="bi bi-chat-dots-fill me-2"></i>
+
+                        Team Chat
+
+                    </a>
+
+                </div>
+
+            </div>
+
+            {% elif user.role == "team_lead" %}
+
+            <div class="row g-3">
+
+                <div class="col-md-4">
+
+                    <a href="{{ url_for('team.projects') }}"
+                       class="btn btn-warning w-100 py-3">
+
+                        Manage Projects
+
+                    </a>
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <a href="{{ url_for('team.meetings') }}"
+                       class="btn btn-success w-100 py-3">
+
+                        Meetings
+
+                    </a>
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <a href="{{ url_for('team.messages') }}"
+                       class="btn btn-secondary w-100 py-3">
+
+                        Team Chat
+
+                    </a>
+
+                </div>
+
+            </div>
+
+            {% else %}
+
+            <div class="row g-3">
+
+                <div class="col-md-4">
+
+                    <a href="{{ url_for('team.projects') }}"
+                       class="btn btn-warning w-100 py-3">
+
+                        My Projects
+
+                    </a>
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <a href="{{ url_for('team.meetings') }}"
+                       class="btn btn-success w-100 py-3">
+
+                        My Meetings
+
+                    </a>
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <a href="{{ url_for('team.messages') }}"
+                       class="btn btn-secondary w-100 py-3">
+
+                        Team Chat
+
+                    </a>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+        </div>
 
     </div>
 
-    {% endif %}
+    <!-- ========================================= -->
+    <!-- RECENT PROJECTS -->
+    <!-- ========================================= -->
+
+    <div class="card bg-dark border-info shadow">
+
+        <div class="card-header">
+
+            <h4 class="mb-0 text-info">
+
+                <i class="bi bi-folder2-open me-2"></i>
+
+                Recent Projects
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if projects %}
+
+                <div class="list-group list-group-flush">
+
+                    {% for project in projects %}
+
+                    <div class="list-group-item bg-dark text-light border-secondary">
+
+                        <h5 class="mb-1">
+
+                            {{ project.title }}
+
+                        </h5>
+
+                        <small class="text-secondary">
+
+                            {{ project.description or "No description available." }}
+
+                        </small>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="text-center py-4">
+
+                    <i class="bi bi-folder-x text-secondary display-4"></i>
+
+                    <p class="text-secondary mt-3">
+
+                        No projects available yet.
+
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
 
 </div>
 

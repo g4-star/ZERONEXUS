@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}
+Create Meeting
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="col-lg-8 mx-auto">
+
+        <div class="card shadow-lg">
+
+            <div class="card-body">
+
+                <h2 class="mb-4 text-info">
+
+                    Schedule Meeting
+
+                </h2>
+
+                <form method="POST">
+
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+
+                        {{ form.title.label }}
+
+                        {{ form.title(class="form-control") }}
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        {{ form.description.label }}
+
+                        {{ form.description(class="form-control", rows="4") }}
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            {{ form.meeting_date.label }}
+
+                            {{ form.meeting_date(class="form-control") }}
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            {{ form.meeting_time.label }}
+
+                            {{ form.meeting_time(class="form-control") }}
+
+                        </div>
+
+                    </div>
+
+                    <div class="mt-4">
+
+                        {{ form.submit(class="btn btn-info") }}
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

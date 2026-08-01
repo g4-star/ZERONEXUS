@@ -23,6 +23,9 @@ from app.email import (
     send_member_invitation
 )
 
+from app.utils.permissions import (
+    super_admin_required
+)
 import secrets
 import string
 
@@ -92,8 +95,9 @@ def login():
     return render_template('admin/login.html', form=form)
 
 
-@admin_bp.route('/dashboard')
+@admin_bp.route("/dashboard")
 @login_required
+@super_admin_required
 def dashboard():
     return render_template(
         'admin/dashboard.html',

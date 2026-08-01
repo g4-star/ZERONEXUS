@@ -34,6 +34,20 @@ class Team(db.Model):
     description = db.Column(
         db.Text
     )
+    
+    meetings = db.relationship(
+        "Meeting",
+        back_populates="team",
+        cascade="all, delete-orphan",
+        lazy=True
+    )
+
+    announcements = db.relationship(
+        "Announcement",
+        back_populates="team",
+        cascade="all, delete-orphan",
+        lazy=True
+    )
 
 
     # =====================================

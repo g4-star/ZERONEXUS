@@ -115,6 +115,13 @@ class User(UserMixin, db.Model):
         lazy=True
     )
 
+    # Announcements created by this user
+    announcements = db.relationship(
+        "Announcement",
+        back_populates="author",
+        lazy=True
+    )
+
     # =====================================================
     # Password Helpers
     # =====================================================

@@ -1,14 +1,24 @@
 from flask import (
-    render_template,
-    redirect,
-    url_for,
-    flash,
-    request
+    render_template
 )
 
-from werkzeug.security import generate_password_hash
-
-from app.extensions import db
-from app.models import User
+from flask_login import (
+    login_required,
+    current_user
+)
 
 from . import user_bp
+
+
+# =====================================================
+# MEMBER PROFILE
+# =====================================================
+
+@user_bp.route("/profile")
+@login_required
+def profile():
+
+    return render_template(
+        "user/profile.html",
+        user=current_user
+    )

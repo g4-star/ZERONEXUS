@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row g-4">
+
+        <!-- ========================= -->
+        <!-- PROFILE -->
+        <!-- ========================= -->
+
+        <div class="col-lg-4">
+
+            <div class="card bg-dark border-info shadow-lg h-100">
+
+                <div class="card-body text-center">
+
+                    <i class="bi bi-person-circle text-info"
+                       style="font-size:90px;"></i>
+
+                    <h3 class="text-info mt-3">
+
+                        {{ user.username }}
+
+                    </h3>
+
+                    <p class="text-secondary">
+
+                        {{ user.role.replace("_", " ").title() }}
+
+                    </p>
+
+                    <hr>
+
+                    <div class="text-start">
+
+                        <p>
+
+                            <strong>Email</strong>
+
+                            <br>
+
+                            {{ user.email }}
+
+                        </p>
+
+                        <p>
+
+                            <strong>Team</strong>
+
+                            <br>
+
+                            {% if user.team %}
+
+                                {{ user.team.name }}
+
+                            {% else %}
+
+                                Not Assigned
+
+                            {% endif %}
+
+                        </p>
+
+                        <p>
+
+                            <strong>Member Since</strong>
+
+                            <br>
+
+                            {{ user.created_at.strftime("%d %B %Y") }}
+
+                        </p>
+
+                    </div>
+
+                    <a href="#"
+                       class="btn btn-outline-info w-100 mt-3">
+
+                        <i class="bi bi-pencil-square me-2"></i>
+
+                        Edit Profile
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- DASHBOARD -->
+        <!-- ========================= -->
+
+        <div class="col-lg-8">
+
+            <h2 class="text-info mb-4">
+
+                Welcome back,
+                {{ user.username }}
+
+            </h2>
+
+            <div class="row g-4">
+
+                <!-- Projects -->
+
+                <div class="col-md-6">
+
+                    <div class="card bg-dark border-info h-100 shadow">
+
+                        <div class="card-body text-center">
+
+                            <i class="bi bi-folder-fill text-info fs-1"></i>
+
+                            <h5 class="mt-3">
+
+                                My Projects
+
+                            </h5>
+
+                            <p class="text-secondary">
+
+                                View projects assigned to you.
+
+                            </p>
+
+                            <a href="#"
+                               class="btn btn-info">
+
+                                Open
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Meetings -->
+
+                <div class="col-md-6">
+
+                    <div class="card bg-dark border-info h-100 shadow">
+
+                        <div class="card-body text-center">
+
+                            <i class="bi bi-calendar-event text-info fs-1"></i>
+
+                            <h5 class="mt-3">
+
+                                Meetings
+
+                            </h5>
+
+                            <p class="text-secondary">
+
+                                Upcoming team meetings.
+
+                            </p>
+
+                            <a href="#"
+                               class="btn btn-info">
+
+                                Open
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Tasks -->
+
+                <div class="col-md-6">
+
+                    <div class="card bg-dark border-info h-100 shadow">
+
+                        <div class="card-body text-center">
+
+                            <i class="bi bi-list-check text-info fs-1"></i>
+
+                            <h5 class="mt-3">
+
+                                My Tasks
+
+                            </h5>
+
+                            <p class="text-secondary">
+
+                                Complete your assigned tasks.
+
+                            </p>
+
+                            <a href="#"
+                               class="btn btn-info">
+
+                                Open
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Announcements -->
+
+                <div class="col-md-6">
+
+                    <div class="card bg-dark border-info h-100 shadow">
+
+                        <div class="card-body text-center">
+
+                            <i class="bi bi-megaphone-fill text-info fs-1"></i>
+
+                            <h5 class="mt-3">
+
+                                Announcements
+
+                            </h5>
+
+                            <p class="text-secondary">
+
+                                Latest updates from your team.
+
+                            </p>
+
+                            <a href="#"
+                               class="btn btn-info">
+
+                                Open
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card bg-dark border-info shadow-lg mt-4">
+
+                <div class="card-body">
+
+                    <h4 class="text-info">
+
+                        Team Overview
+
+                    </h4>
+
+                    <hr>
+
+                    {% if user.team %}
+
+                        <h5>
+
+                            {{ user.team.name }}
+
+                        </h5>
+
+                        <p class="text-secondary">
+
+                            You are currently assigned to this team.
+
+                            Projects, meetings, announcements and tasks
+                            will appear here as they are created.
+
+                        </p>
+
+                    {% else %}
+
+                        <p class="text-warning">
+
+                            You haven't been assigned to a team yet.
+
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

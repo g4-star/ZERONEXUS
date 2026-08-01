@@ -25,7 +25,7 @@ from .forms import (
 
 
 # =====================================================
-# USER LOGIN
+# LOGIN
 # =====================================================
 
 @auth_bp.route("/login", methods=["GET", "POST"])
@@ -33,13 +33,25 @@ def login():
 
     if current_user.is_authenticated:
 
-        return redirect(
-            url_for("auth.dashboard")
-        )
+        if current_user.role == "admin":
 
+            return redirect(
+                url_for("admin.dashboard")
+            )
+
+        elif current_user.role == "team_lead":
+
+            return redirect(
+                url_for("team.dashboard")
+            )
+
+        else:
+
+            return redirect(
+                url_for("user.profile")
+            )
 
     form = LoginForm()
-
 
     if form.validate_on_submit():
 
@@ -53,7 +65,6 @@ def login():
             )
         ).first()
 
-
         if not user:
 
             flash(
@@ -64,7 +75,6 @@ def login():
             return redirect(
                 url_for("auth.login")
             )
-
 
         if not user.is_active:
 
@@ -80,7 +90,6 @@ def login():
                 )
             )
 
-
         if not user.check_password(
             form.password.data
         ):
@@ -94,9 +103,7 @@ def login():
                 url_for("auth.login")
             )
 
-
         login_user(user)
-
 
         if user.must_change_password:
 
@@ -107,19 +114,32 @@ def login():
                 )
             )
 
+        # -----------------------------------------
+        # Redirect according to role
+        # -----------------------------------------
 
-        return redirect(
-            url_for(
-                "auth.dashboard"
+        if user.role == "admin":
+
+            return redirect(
+                url_for("admin.dashboard")
             )
-        )
 
+        elif user.role == "team_lead":
+
+            return redirect(
+                url_for("team.dashboard")
+            )
+
+        else:
+
+            return redirect(
+                url_for("user.profile")
+            )
 
     return render_template(
         "auth/login.html",
         form=form
     )
-
 
 
 # =====================================================
@@ -136,7 +156,6 @@ def activate_account(token):
         activation_token=token
     ).first_or_404()
 
-
     if user.is_active:
 
         flash(
@@ -148,9 +167,7 @@ def activate_account(token):
             url_for("auth.login")
         )
 
-
     form = ActivateAccountForm()
-
 
     if form.validate_on_submit():
 
@@ -158,40 +175,46 @@ def activate_account(token):
             form.password.data
         )
 
-
         user.is_active = True
-
         user.must_change_password = False
-
         user.activation_token = None
-
 
         db.session.commit()
 
-
         login_user(user)
-
 
         flash(
             "Account activated successfully.",
             "success"
         )
 
+        # -----------------------------------------
+        # Redirect according to role
+        # -----------------------------------------
 
-        return redirect(
-            url_for(
-                "auth.dashboard"
+        if user.role == "admin":
+
+            return redirect(
+                url_for("admin.dashboard")
             )
-        )
 
+        elif user.role == "team_lead":
+
+            return redirect(
+                url_for("team.dashboard")
+            )
+
+        else:
+
+            return redirect(
+                url_for("user.profile")
+            )
 
     return render_template(
         "auth/activate_account.html",
         form=form,
         user=user
     )
-
-
 
 # =====================================================
 # TEAM DASHBOARD

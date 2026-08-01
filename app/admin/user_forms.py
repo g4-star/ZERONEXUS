@@ -53,15 +53,10 @@ class CreateUserForm(FlaskForm):
     role = SelectField(
         "Role",
         choices=[
-            (
-                "member",
-                "Member"
-            ),
-            (
-                "team_lead",
-                "Team Lead"
-            )
-        ],
+            ("member", "Member"),
+            ("team_lead", "Team Lead"),
+            ("team_admin", "Team Admin")
+       ],
         validators=[
             DataRequired()
         ]

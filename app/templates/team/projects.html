@@ -1,30 +1,239 @@
 {% extends "base.html" %}
 
 {% block title %}
-Team Projects
+{{ team.name }} Projects
 {% endblock %}
 
 {% block content %}
 
-<div class="container py-4">
+<div class="container py-5">
 
-    <h2>Team Projects</h2>
+    <div class="d-flex justify-content-between align-items-center mb-5">
 
-    <p class="text-muted">
-        View and collaborate on your team's projects.
-    </p>
+        <div>
 
-    {% if user.role == "team_lead" %}
+            <h1 class="fw-bold text-info">
 
-    <a href="#" class="btn btn-primary mb-3">
-        + Create Project
-    </a>
+                <i class="bi bi-kanban-fill me-2"></i>
+
+                Team Projects
+
+            </h1>
+
+            <p class="text-secondary">
+
+                {{ team.name }}
+
+            </p>
+
+        </div>
+
+        {% if user.role == "team_lead" %}
+
+        <a
+            href="{{ url_for('team.create_project') }}"
+            class="btn btn-info btn-lg"
+        >
+
+            <i class="bi bi-plus-circle-fill me-2"></i>
+
+            New Project
+
+        </a>
+
+        {% endif %}
+
+    </div>
+
+
+    {% if projects %}
+
+    <div class="row g-4">
+
+        {% for project in projects %}
+
+        <div class="col-lg-6">
+
+            <div class="card shadow-lg border-0 h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <h4>
+
+                            {{ project.title }}
+
+                        </h4>
+
+                        <span class="badge bg-primary">
+
+                            {{ project.status }}
+
+                        </span>
+
+                    </div>
+
+                    <p class="text-muted mt-3">
+
+                        {{ project.description }}
+
+                    </p>
+
+
+                    <div class="mb-3">
+
+                        <strong>Priority</strong>
+
+                        <span class="badge bg-danger">
+
+                            {{ project.priority }}
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <strong>Progress</strong>
+
+                        <div class="progress mt-2">
+
+                            <div
+                                class="progress-bar"
+                                style="width: {{ project.progress }}%;"
+                            >
+
+                                {{ project.progress }}%
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    {% if project.deadline %}
+
+                    <p>
+
+                        <strong>Deadline:</strong>
+
+                        {{ project.deadline }}
+
+                    </p>
+
+                    {% endif %}
+
+
+                    <div class="d-flex flex-wrap gap-2 mt-4">
+
+                        {% if project.github_url %}
+
+                        <a
+                            href="{{ project.github_url }}"
+                            target="_blank"
+                            class="btn btn-dark btn-sm"
+                        >
+
+                            <i class="bi bi-github"></i>
+
+                            GitHub
+
+                        </a>
+
+                        {% endif %}
+
+
+                        {% if project.demo_url %}
+
+                        <a
+                            href="{{ project.demo_url }}"
+                            target="_blank"
+                            class="btn btn-success btn-sm"
+                        >
+
+                            Live Demo
+
+                        </a>
+
+                        {% endif %}
+
+
+                        {% if user.role == "team_lead" %}
+
+                        <a
+                            href="{{ url_for('team.edit_project', project_id=project.id) }}"
+                            class="btn btn-warning btn-sm"
+                        >
+
+                            Edit
+
+                        </a>
+
+
+                        <a
+                            href="{{ url_for('team.delete_project', project_id=project.id) }}"
+                            class="btn btn-danger btn-sm"
+                            onclick="return confirm('Delete this project?');"
+                        >
+
+                            Delete
+
+                        </a>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="text-center py-5">
+
+        <i
+            class="bi bi-folder2-open text-secondary"
+            style="font-size:80px;"
+        ></i>
+
+        <h3 class="mt-4">
+
+            No Projects Yet
+
+        </h3>
+
+        <p class="text-secondary">
+
+            Your team hasn't created any projects.
+
+        </p>
+
+        {% if user.role == "team_lead" %}
+
+        <a
+            href="{{ url_for('team.create_project') }}"
+            class="btn btn-info"
+        >
+
+            Create First Project
+
+        </a>
+
+        {% endif %}
+
+    </div>
 
     {% endif %}
-
-    <div class="alert alert-info">
-        No projects available yet.
-    </div>
 
 </div>
 

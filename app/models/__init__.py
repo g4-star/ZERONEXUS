@@ -10,3 +10,5 @@ from .quiz import Quiz
 from .progress import UserProgress
 from .contact_message import ContactMessage
 from .user import User
+from .meeting import Meeting
+from .announcement import Announcement

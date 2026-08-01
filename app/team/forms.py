@@ -3,6 +3,8 @@ from flask_wtf import FlaskForm
 from wtforms import (
     StringField,
     TextAreaField,
+    URLField,
+    IntegerField,
     SelectField,
     DateField,
     SubmitField
@@ -10,17 +12,18 @@ from wtforms import (
 
 from wtforms.validators import (
     DataRequired,
-    Length
+    Optional,
+    URL,
+    NumberRange
 )
 
 
-class ProjectForm(FlaskForm):
+class CreateProjectForm(FlaskForm):
 
     title = StringField(
         "Project Title",
         validators=[
-            DataRequired(),
-            Length(max=200)
+            DataRequired()
         ]
     )
 
@@ -28,6 +31,22 @@ class ProjectForm(FlaskForm):
         "Description",
         validators=[
             DataRequired()
+        ]
+    )
+
+    github_url = URLField(
+        "GitHub Repository",
+        validators=[
+            Optional(),
+            URL()
+        ]
+    )
+
+    demo_url = URLField(
+        "Live Demo",
+        validators=[
+            Optional(),
+            URL()
         ]
     )
 
@@ -39,9 +58,7 @@ class ProjectForm(FlaskForm):
             ("Testing", "Testing"),
             ("Completed", "Completed")
         ],
-        validators=[
-            DataRequired()
-        ]
+        default="Planning"
     )
 
     priority = SelectField(
@@ -52,16 +69,62 @@ class ProjectForm(FlaskForm):
             ("High", "High"),
             ("Critical", "Critical")
         ],
+        default="Medium"
+    )
+
+    progress = IntegerField(
+        "Progress (%)",
+        default=0,
         validators=[
-            DataRequired()
+            DataRequired(),
+            NumberRange(
+                min=0,
+                max=100
+            )
         ]
     )
 
     deadline = DateField(
         "Deadline",
-        format="%Y-%m-%d"
+        format="%Y-%m-%d",
+        validators=[
+            Optional()
+        ]
     )
 
     submit = SubmitField(
         "Save Project"
+    )
+class CreateMeetingForm(FlaskForm):
+    
+    title = StringField(
+        "Meeting Title",
+        validators=[
+            DataRequired()
+        ]
+    )
+
+    description = TextAreaField(
+        "Description",
+        validators=[
+            DataRequired()
+        ]
+    )
+
+    meeting_date = DateField(
+        "Meeting Date",
+        validators=[
+            DataRequired()
+        ]
+    )
+
+    meeting_time = StringField(
+        "Meeting Time",
+        validators=[
+            DataRequired()
+        ]
+    )
+
+    submit = SubmitField(
+        "Save Meeting"
     )
