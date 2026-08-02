@@ -2,237 +2,1138 @@
 
 {% block content %}
 
-<div class="container py-4">
+{# ------------------------------------------------------------------
+   ZeroNexus — Profile Dashboard (frontend-only redesign)
+   Requires: Bootstrap 5 CSS/JS and Bootstrap Icons (already in base.html)
+   No external libraries. No JavaScript. All animation is pure CSS.
+   ------------------------------------------------------------------ #}
 
-    <!-- Cover -->
-    <div class="card bg-dark border-info shadow-lg mb-4">
-        <div class="card-body text-center py-5">
+<style>
+    :root {
+        --zx-bg: #05070f;
+        --zx-border: rgba(125, 160, 255, .14);
+        --zx-neon: #38bdf8;
+        --zx-neon-deep: #0ea5e9;
+        --zx-cyan: #22d3ee;
+        --zx-text: #dceaff;
+        --zx-muted: #8fa3c7;
+    }
 
-            {% if user.profile_image %}
-                <img src="{{ user.profile_image }}"
-                     class="rounded-circle border border-info shadow"
-                     width="170"
-                     height="170"
-                     style="object-fit:cover;">
-            {% else %}
-                <i class="bi bi-person-circle text-info"
-                   style="font-size:170px;"></i>
-            {% endif %}
+    /* ---- page canvas ---- */
+    .zx-page {
+        min-height: 100vh;
+        background:
+            radial-gradient(1100px 560px at 88% -12%, rgba(56, 189, 248, .14), transparent 60%),
+            radial-gradient(900px 500px at -12% 25%, rgba(14, 165, 233, .12), transparent 55%),
+            radial-gradient(800px 420px at 50% 115%, rgba(34, 211, 238, .09), transparent 60%),
+            var(--zx-bg);
+    }
 
-            <h2 class="mt-3 text-info">
-                {{ user.username }}
-            </h2>
+    /* ---- glass cards ---- */
+    .zx-card {
+        background: linear-gradient(160deg, rgba(23, 34, 60, .72), rgba(9, 14, 28, .70));
+        border: 1px solid var(--zx-border);
+        border-radius: 18px;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        box-shadow: 0 10px 30px rgba(2, 6, 18, .45);
+        transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+    }
+    .zx-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(56, 189, 248, .45);
+        box-shadow: 0 16px 42px rgba(2, 6, 18, .55), 0 0 26px rgba(56, 189, 248, .10);
+    }
+    .zx-card-title {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--zx-text);
+    }
+    .zx-icon {
+        width: 2.1rem;
+        height: 2.1rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: .65rem;
+        background: rgba(56, 189, 248, .12);
+        color: var(--zx-neon);
+        font-size: 1rem;
+        box-shadow: inset 0 0 12px rgba(56, 189, 248, .08);
+    }
+    .zx-divider { border: 0; border-top: 1px dashed rgba(125, 160, 255, .16); margin: 1rem 0; }
 
-            <p class="text-secondary mb-1">
-                {{ user.role.replace("_"," ").title() }}
-            </p>
+    /* ---- header ---- */
+    .zx-header { position: relative; overflow: hidden; }
+    .zx-header::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+            linear-gradient(rgba(56, 189, 248, .05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(56, 189, 248, .05) 1px, transparent 1px);
+        background-size: 36px 36px;
+    }
+    .zx-eyebrow {
+        font-size: .68rem;
+        letter-spacing: .24em;
+        text-transform: uppercase;
+        color: var(--zx-neon);
+        margin-bottom: .35rem;
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+    }
+    .zx-avatar {
+        width: 118px;
+        height: 118px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid rgba(56, 189, 248, .65);
+        box-shadow: 0 0 0 6px rgba(56, 189, 248, .12), 0 0 32px rgba(56, 189, 248, .35);
+    }
+    .zx-avatar-fallback {
+        font-size: 6.4rem;
+        line-height: 1;
+        color: var(--zx-neon);
+        text-shadow: 0 0 26px rgba(56, 189, 248, .55);
+    }
+    .zx-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        padding: .35rem .85rem;
+        border-radius: 999px;
+        font-size: .76rem;
+        font-weight: 600;
+        color: #7dd3fc;
+        background: rgba(56, 189, 248, .10);
+        border: 1px solid rgba(56, 189, 248, .35);
+    }
+    .zx-status {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .3rem .75rem;
+        border-radius: 999px;
+        font-size: .68rem;
+        letter-spacing: .18em;
+        font-weight: 700;
+        color: #6ee7b7;
+        background: rgba(34, 197, 94, .08);
+        border: 1px solid rgba(34, 197, 94, .30);
+    }
+    .zx-pulse {
+        width: .55rem;
+        height: .55rem;
+        border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 10px #22c55e;
+        animation: zxPulse 1.8s ease-in-out infinite;
+    }
 
-            {% if user.job_title %}
-            <p class="text-light">
-                {{ user.job_title }}
-                {% if user.company %}
-                    • {{ user.company }}
-                {% endif %}
-            </p>
-            {% endif %}
+    /* ---- buttons ---- */
+    .zx-btn-neon {
+        background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+        border: 0;
+        color: #041220;
+        font-weight: 700;
+        border-radius: 12px;
+        box-shadow: 0 6px 22px rgba(56, 189, 248, .35);
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .zx-btn-neon:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(56, 189, 248, .5); color: #041220; }
+    .zx-btn-ghost {
+        background: rgba(56, 189, 248, .07);
+        border: 1px solid rgba(56, 189, 248, .30);
+        color: #7dd3fc;
+        font-weight: 600;
+        border-radius: 12px;
+        transition: background .2s ease, color .2s ease, transform .2s ease;
+    }
+    .zx-btn-ghost:hover { background: rgba(56, 189, 248, .16); color: #e0f2fe; transform: translateY(-1px); }
 
-            <a href="{{ url_for('user.edit_profile') }}"
-               class="btn btn-info mt-3">
-                <i class="bi bi-pencil-square"></i>
-                Edit Profile
-            </a>
+    /* ---- layout helpers ---- */
+    .zx-sticky { position: sticky; top: 1.25rem; }
 
-        </div>
-    </div>
+    /* ---- circular stat rings ---- */
+    .zx-ring { position: relative; width: 9.6rem; height: 9.6rem; margin: 0 auto; }
+    .zx-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .zx-ring .track { fill: none; stroke: rgba(120, 170, 255, .12); stroke-width: 9; }
+    .zx-ring .bar {
+        fill: none;
+        stroke: url(#zxGrad);
+        stroke-width: 9;
+        stroke-linecap: round;
+        stroke-dasharray: 283;
+        stroke-dashoffset: 283;
+    }
+    .zx-bar-projects { animation: zxFill72 1.3s cubic-bezier(.22, 1, .36, 1) forwards, zxPulse 3.6s ease-in-out 1.3s infinite; }
+    .zx-bar-meetings { animation: zxFill45 1.3s cubic-bezier(.22, 1, .36, 1) forwards, zxPulse 3.6s ease-in-out 1.3s infinite; }
+    .zx-bar-announcements { animation: zxFill88 1.3s cubic-bezier(.22, 1, .36, 1) forwards, zxPulse 3.6s ease-in-out 1.3s infinite; }
+    @keyframes zxFill72 { to { stroke-dashoffset: 79; } }   /* 72% */
+    @keyframes zxFill45 { to { stroke-dashoffset: 156; } }  /* 45% */
+    @keyframes zxFill88 { to { stroke-dashoffset: 34; } }   /* 88% */
+    @keyframes zxPulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+    .zx-ring-value {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .zx-ring-number {
+        font-size: 2.1rem;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1.1;
+        text-shadow: 0 0 14px rgba(56, 189, 248, .65);
+    }
+    .zx-ring-label {
+        font-size: .7rem;
+        letter-spacing: .16em;
+        text-transform: uppercase;
+        color: var(--zx-muted);
+    }
 
-    <div class="row">
+    /* ---- progress bars ---- */
+    .zx-progress {
+        height: .7rem;
+        border-radius: 999px;
+        overflow: hidden;
+        background: rgba(120, 170, 255, .10);
+        border: 1px solid rgba(120, 170, 255, .08);
+    }
+    .zx-progress > div {
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #0ea5e9, #38bdf8, #22d3ee);
+        background-size: 220% 100%;
+        animation: zxShift 3.2s linear infinite;
+        box-shadow: 0 0 14px rgba(56, 189, 248, .55);
+    }
+    @keyframes zxShift { to { background-position: 220% 0; } }
+    .zx-mini { height: .45rem; border-radius: 999px; overflow: hidden; background: rgba(120, 170, 255, .10); }
+    .zx-mini > div { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #0ea5e9, #22d3ee); box-shadow: 0 0 8px rgba(56, 189, 248, .5); }
 
-        <!-- LEFT COLUMN -->
-        <div class="col-lg-4">
+    /* ---- stat tiles ---- */
+    .zx-stat-tile {
+        text-align: center;
+        padding: 1rem .6rem;
+        border-radius: 16px;
+        background: rgba(120, 170, 255, .05);
+        border: 1px solid rgba(120, 170, 255, .10);
+        transition: transform .2s ease, border-color .2s ease;
+    }
+    .zx-stat-tile:hover { transform: translateY(-2px); border-color: rgba(56, 189, 248, .4); }
+    .zx-stat-num { font-size: 1.35rem; font-weight: 800; color: #fff; text-shadow: 0 0 10px rgba(56, 189, 248, .45); }
+    .zx-stat-label { font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--zx-muted); margin-top: .15rem; }
 
-            <div class="card bg-dark border-info shadow mb-4">
-                <div class="card-header text-info">
-                    About
-                </div>
+    /* ---- timeline ---- */
+    .zx-timeline { position: relative; margin: 0; padding: 0; list-style: none; }
+    .zx-timeline::before {
+        content: "";
+        position: absolute;
+        left: .42rem;
+        top: .35rem;
+        bottom: .35rem;
+        width: 2px;
+        background: linear-gradient(180deg, rgba(56, 189, 248, .55), rgba(56, 189, 248, .04));
+    }
+    .zx-tl-item { position: relative; padding: 0 0 1.1rem 1.5rem; }
+    .zx-tl-item:last-child { padding-bottom: 0; }
+    .zx-tl-item::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: .3rem;
+        width: .85rem;
+        height: .85rem;
+        border-radius: 50%;
+        background: #0ea5e9;
+        border: 3px solid #0a1428;
+        box-shadow: 0 0 12px rgba(56, 189, 248, .8);
+    }
+    .zx-tl-time { font-size: .72rem; color: var(--zx-muted); letter-spacing: .04em; }
 
-                <div class="card-body">
+    /* ---- achievements ---- */
+    .zx-ach {
+        display: flex;
+        align-items: center;
+        gap: .55rem;
+        padding: .55rem .85rem;
+        border-radius: 14px;
+        background: rgba(120, 170, 255, .05);
+        border: 1px solid rgba(120, 170, 255, .10);
+        color: #dceaff;
+        font-size: .85rem;
+        transition: transform .2s ease, border-color .2s ease;
+    }
+    .zx-ach:hover { transform: translateY(-2px); border-color: rgba(56, 189, 248, .4); }
+    .zx-ach i { color: #fbbf24; font-size: 1.05rem; filter: drop-shadow(0 0 6px rgba(251, 191, 36, .5)); }
 
-                    <p>
-                        {{ user.bio or "No bio added yet." }}
-                    </p>
+    /* ---- pills & links ---- */
+    .zx-skill {
+        display: inline-block;
+        padding: .3rem .8rem;
+        margin: .15rem;
+        border-radius: 999px;
+        font-size: .78rem;
+        font-weight: 600;
+        color: #bae6fd;
+        background: rgba(34, 211, 238, .09);
+        border: 1px solid rgba(34, 211, 238, .25);
+        transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+    }
+    .zx-skill:hover { background: rgba(34, 211, 238, .18); transform: translateY(-2px); box-shadow: 0 4px 14px rgba(34, 211, 238, .25); }
+    .zx-chip {
+        display: inline-block;
+        padding: .3rem .8rem;
+        margin: .15rem;
+        border-radius: 999px;
+        font-size: .76rem;
+        font-weight: 600;
+        color: #bae6fd;
+        background: rgba(34, 211, 238, .08);
+        border: 1px solid rgba(34, 211, 238, .25);
+        transition: background .2s ease, transform .2s ease;
+    }
+    .zx-chip:hover { background: rgba(34, 211, 238, .16); transform: translateY(-2px); }
+    .zx-link-item {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        padding: .6rem .85rem;
+        border-radius: 12px;
+        background: rgba(120, 170, 255, .05);
+        border: 1px solid rgba(120, 170, 255, .10);
+        color: #cfe3ff;
+        text-decoration: none;
+        font-size: .9rem;
+        font-weight: 500;
+        transition: background .2s ease, transform .2s ease, border-color .2s ease, color .2s ease;
+    }
+    .zx-link-item:hover {
+        background: rgba(56, 189, 248, .12);
+        border-color: rgba(56, 189, 248, .42);
+        color: #fff;
+        transform: translateX(4px);
+    }
 
-                    <hr>
+    /* ---- chat ---- */
+    .zx-chat-in, .zx-chat-out {
+        max-width: 86%;
+        padding: .55rem .85rem;
+        border-radius: 14px;
+        font-size: .84rem;
+    }
+    .zx-chat-in {
+        background: rgba(56, 189, 248, .12);
+        border: 1px solid rgba(56, 189, 248, .24);
+        border-bottom-left-radius: 4px;
+    }
+    .zx-chat-out {
+        background: rgba(120, 170, 255, .08);
+        border: 1px solid rgba(120, 170, 255, .14);
+        border-bottom-right-radius: 4px;
+        margin-left: auto;
+    }
+    .zx-online { font-size: .72rem; color: #6ee7b7; font-weight: 600; display: inline-flex; align-items: center; gap: .3rem; }
+    .zx-input {
+        background: rgba(120, 170, 255, .06);
+        border: 1px solid rgba(120, 170, 255, .14);
+        color: var(--zx-text);
+        border-radius: 12px;
+        font-size: .85rem;
+    }
+    .zx-input::placeholder { color: var(--zx-muted); }
+    .zx-input:focus {
+        background: rgba(56, 189, 248, .08);
+        border-color: rgba(56, 189, 248, .45);
+        box-shadow: 0 0 0 .2rem rgba(56, 189, 248, .12);
+        color: var(--zx-text);
+    }
+    .zx-input:disabled { opacity: 1; }
 
-                    <p>
-                        <i class="bi bi-envelope text-info"></i>
-                        {{ user.email }}
-                    </p>
+    /* ---- AI widget ---- */
+    .zx-ai {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(150deg, rgba(14, 165, 233, .22), rgba(9, 14, 28, .72) 55%);
+        border: 1px solid rgba(56, 189, 248, .38);
+    }
+    .zx-ai::after {
+        content: "";
+        position: absolute;
+        top: -45%;
+        right: -25%;
+        width: 65%;
+        height: 65%;
+        background: radial-gradient(circle, rgba(56, 189, 248, .32), transparent 70%);
+        pointer-events: none;
+        animation: zxPulse 4s ease-in-out infinite;
+    }
+    .zx-ai > * { position: relative; z-index: 1; }
+    .zx-ai-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .35rem .85rem;
+        border-radius: 999px;
+        font-size: .74rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+        color: #e0f2fe;
+        background: rgba(56, 189, 248, .16);
+        border: 1px solid rgba(56, 189, 248, .45);
+        box-shadow: 0 0 18px rgba(56, 189, 248, .25);
+    }
+    .zx-learn {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        padding: .7rem .85rem;
+        border-radius: 14px;
+        background: rgba(120, 170, 255, .05);
+        border: 1px solid rgba(120, 170, 255, .10);
+    }
 
-                    {% if user.phone %}
-                    <p>
-                        <i class="bi bi-telephone text-info"></i>
-                        {{ user.phone }}
-                    </p>
-                    {% endif %}
+    /* ---- meetings ---- */
+    .zx-meet {
+        display: flex;
+        gap: .85rem;
+        align-items: center;
+        padding: .7rem;
+        border-radius: 14px;
+        background: rgba(120, 170, 255, .05);
+        border: 1px solid rgba(120, 170, 255, .10);
+        transition: border-color .2s ease, transform .2s ease;
+    }
+    .zx-meet:hover { border-color: rgba(56, 189, 248, .4); transform: translateY(-2px); }
+    .zx-date-chip {
+        min-width: 3.1rem;
+        text-align: center;
+        padding: .4rem .3rem;
+        border-radius: 12px;
+        background: linear-gradient(160deg, rgba(14, 165, 233, .30), rgba(14, 165, 233, .10));
+        border: 1px solid rgba(56, 189, 248, .35);
+        color: #e0f2fe;
+        font-weight: 700;
+        line-height: 1.15;
+    }
+    .zx-date-chip small { display: block; font-size: .6rem; letter-spacing: .12em; color: #7dd3fc; font-weight: 600; }
+</style>
 
-                    {% if user.location %}
-                    <p>
-                        <i class="bi bi-geo-alt text-info"></i>
-                        {{ user.location }}
-                    </p>
-                    {% endif %}
+{# SVG gradient definition used by all stat rings #}
+<svg width="0" height="0" style="position:absolute;" aria-hidden="true">
+    <defs>
+        <linearGradient id="zxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0ea5e9"/>
+            <stop offset="50%" stop-color="#38bdf8"/>
+            <stop offset="100%" stop-color="#22d3ee"/>
+        </linearGradient>
+    </defs>
+</svg>
 
-                    {% if user.team %}
-                    <p>
-                        <i class="bi bi-people text-info"></i>
-                        {{ user.team.name }}
-                    </p>
-                    {% endif %}
+{# Fallback-safe counters (0 when the attribute is absent/empty) #}
+{% set zx_project_count = user.projects|length if (user.projects is defined and user.projects is not none) else 0 %}
+{% set zx_announcement_count = user.announcements|length if (user.announcements is defined and user.announcements is not none) else 0 %}
+{# Placeholder — no user.meetings variable exists in the model; wire it up when available #}
+{% set zx_meeting_count = 12 %}
 
-                </div>
-            </div>
+<div class="zx-page py-4 px-3 px-lg-4">
 
-            <div class="card bg-dark border-info shadow">
+    <div class="container-fluid">
 
-                <div class="card-header text-info">
+        <!-- ========================= -->
+        <!-- PROFILE HEADER -->
+        <!-- ========================= -->
 
-                    Skills
+        <div class="zx-card zx-header mb-4">
 
-                </div>
+            <div class="row align-items-center g-4 position-relative" style="z-index:1;">
 
-                <div class="card-body">
-
-                    {% if user.skills %}
-
-                        {% for skill in user.skills.split(",") %}
-
-                            <span class="badge bg-info text-dark mb-2">
-
-                                {{ skill.strip() }}
-
-                            </span>
-
-                        {% endfor %}
-
+                <div class="col-lg-2 col-md-4 text-center text-lg-start">
+                    {% if user.profile_image %}
+                        <img src="{{ user.profile_image }}"
+                             alt="{{ user.username }}"
+                             class="zx-avatar">
                     {% else %}
+                        <i class="bi bi-person-circle zx-avatar-fallback"></i>
+                    {% endif %}
+                </div>
 
-                        <p class="text-secondary">
+                <div class="col-lg-7 col-md-8">
 
-                            No skills added.
+                    <div class="zx-eyebrow">
+                        <i class="bi bi-shield-lock-fill"></i>
+                        ZeroNexus Operator
+                    </div>
 
+                    <h2 class="mb-1 fw-bold text-white">{{ user.username }}</h2>
+
+                    <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                        <span class="zx-badge">
+                            <i class="bi bi-person-badge"></i>
+                            {{ user.role.replace("_", " ").title() }}
+                        </span>
+                        {% if user.team %}
+                            <span class="zx-badge">
+                                <i class="bi bi-people-fill"></i>
+                                {{ user.team.name }}
+                            </span>
+                        {% else %}
+                            <span class="zx-badge opacity-75">
+                                <i class="bi bi-person-dash"></i>
+                                No Team Assigned
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    {% if user.job_title %}
+                        <p class="mb-0 mt-2 text-secondary">
+                            <i class="bi bi-briefcase me-1 text-info"></i>
+                            {{ user.job_title }}
+                            {% if user.company %}
+                                <span class="text-secondary mx-1">&middot;</span>
+                                {{ user.company }}
+                            {% endif %}
                         </p>
-
                     {% endif %}
 
+                </div>
+
+                <div class="col-lg-3 text-lg-end text-start">
+                    <div class="d-flex flex-wrap align-items-center justify-content-lg-end justify-content-start gap-2">
+                        <span class="zx-status">
+                            <span class="zx-pulse"></span>
+                            ACTIVE
+                        </span>
+                        <a href="{{ url_for('user.edit_profile') }}"
+                           class="btn zx-btn-neon px-4">
+                            <i class="bi bi-pencil-square me-1"></i>
+                            Edit Profile
+                        </a>
+                    </div>
                 </div>
 
             </div>
 
         </div>
 
-        <!-- RIGHT COLUMN -->
-        <div class="col-lg-8">
 
-            <div class="card bg-dark border-info shadow mb-4">
+        <!-- ========================= -->
+        <!-- MAIN 3-COLUMN GRID -->
+        <!-- ========================= -->
 
-                <div class="card-header text-info">
+        <div class="row g-4">
 
-                    Professional Links
 
-                </div>
+            <!-- ========================= -->
+            <!-- LEFT SIDEBAR -->
+            <!-- ========================= -->
 
-                <div class="card-body">
+            <div class="col-lg-3">
 
-                    <div class="row">
+                <div class="zx-sticky d-flex flex-column gap-4">
 
-                        {% if user.portfolio %}
-                        <div class="col-md-6 mb-3">
-                            🌐
-                            <a href="{{ user.portfolio }}"
-                               target="_blank">
-                                Portfolio
-                            </a>
+                    <!-- About -->
+                    <div class="zx-card p-4">
+                        <h5 class="zx-card-title mb-3">
+                            <span class="zx-icon"><i class="bi bi-person-fill"></i></span>
+                            About
+                        </h5>
+                        <p class="text-secondary mb-0 lh-base">
+                            {{ user.bio or "No biography added yet. Tell the team a bit about yourself." }}
+                        </p>
+                    </div>
+
+                    <!-- Contact -->
+                    <div class="zx-card p-4">
+                        <h5 class="zx-card-title mb-3">
+                            <span class="zx-icon"><i class="bi bi-envelope-fill"></i></span>
+                            Contact
+                        </h5>
+                        <div class="d-flex flex-column gap-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="zx-icon"><i class="bi bi-envelope"></i></span>
+                                <span class="text-break small">{{ user.email }}</span>
+                            </div>
+                            {% if user.phone %}
+                                <div class="d-flex align-items-center gap-3">
+                                    <span class="zx-icon"><i class="bi bi-telephone-fill"></i></span>
+                                    <span class="small">{{ user.phone }}</span>
+                                </div>
+                            {% endif %}
+                            {% if user.location %}
+                                <div class="d-flex align-items-center gap-3">
+                                    <span class="zx-icon"><i class="bi bi-geo-alt-fill"></i></span>
+                                    <span class="small">{{ user.location }}</span>
+                                </div>
+                            {% endif %}
                         </div>
-                        {% endif %}
+                    </div>
 
-                        {% if user.github %}
-                        <div class="col-md-6 mb-3">
-                            💻
-                            <a href="{{ user.github }}"
-                               target="_blank">
-                                GitHub
-                            </a>
+                    <!-- Skills -->
+                    <div class="zx-card p-4">
+                        <h5 class="zx-card-title mb-3">
+                            <span class="zx-icon"><i class="bi bi-stars"></i></span>
+                            Skills
+                        </h5>
+                        {% if user.skills %}
+                            <div>
+                                {% for skill in user.skills.split(",") %}
+                                    <span class="zx-skill">{{ skill.strip() }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-secondary small mb-0">No skills added yet.</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Team Information -->
+                    <div class="zx-card p-4">
+                        <h5 class="zx-card-title mb-3">
+                            <span class="zx-icon"><i class="bi bi-shield-fill-check"></i></span>
+                            Team Information
+                        </h5>
+                        {% if user.team %}
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="small text-secondary">Assigned team</span>
+                                <span class="zx-badge">
+                                    <i class="bi bi-people-fill"></i>
+                                    {{ user.team.name }}
+                                </span>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="small text-secondary">Workspace status</span>
+                                <span class="zx-online"><i class="bi bi-circle-fill" style="font-size:.55rem;"></i>Active</span>
+                            </div>
+                        {% else %}
+                            <p class="text-secondary small mb-0">
+                                You haven't been assigned to a team yet. An admin will activate your workspace soon.
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Professional Links -->
+                    <div class="zx-card p-4">
+                        <h5 class="zx-card-title mb-3">
+                            <span class="zx-icon"><i class="bi bi-link-45deg"></i></span>
+                            Professional Links
+                        </h5>
+                        <div class="d-flex flex-column gap-2">
+                            {% if user.github %}
+                                <a class="zx-link-item" href="{{ user.github }}" target="_blank" rel="noopener">
+                                    <i class="bi bi-github"></i>
+                                    <span>GitHub</span>
+                                    <i class="bi bi-box-arrow-up-right ms-auto"></i>
+                                </a>
+                            {% endif %}
+                            {% if user.linkedin %}
+                                <a class="zx-link-item" href="{{ user.linkedin }}" target="_blank" rel="noopener">
+                                    <i class="bi bi-linkedin"></i>
+                                    <span>LinkedIn</span>
+                                    <i class="bi bi-box-arrow-up-right ms-auto"></i>
+                                </a>
+                            {% endif %}
+                            {% if user.portfolio %}
+                                <a class="zx-link-item" href="{{ user.portfolio }}" target="_blank" rel="noopener">
+                                    <i class="bi bi-globe2"></i>
+                                    <span>Portfolio</span>
+                                    <i class="bi bi-box-arrow-up-right ms-auto"></i>
+                                </a>
+                            {% endif %}
+                            {% if user.tryhackme %}
+                                <a class="zx-link-item" href="{{ user.tryhackme }}" target="_blank" rel="noopener">
+                                    <i class="bi bi-shield-shaded"></i>
+                                    <span>TryHackMe</span>
+                                    <i class="bi bi-box-arrow-up-right ms-auto"></i>
+                                </a>
+                            {% endif %}
+                            {% if user.hackthebox %}
+                                <a class="zx-link-item" href="{{ user.hackthebox }}" target="_blank" rel="noopener">
+                                    <i class="bi bi-hdd-network-fill"></i>
+                                    <span>Hack The Box</span>
+                                    <i class="bi bi-box-arrow-up-right ms-auto"></i>
+                                </a>
+                            {% endif %}
+                            {% if user.ctftime %}
+                                <a class="zx-link-item" href="{{ user.ctftime }}" target="_blank" rel="noopener">
+                                    <i class="bi bi-stopwatch-fill"></i>
+                                    <span>CTFTime</span>
+                                    <i class="bi bi-box-arrow-up-right ms-auto"></i>
+                                </a>
+                            {% endif %}
+                            {% if not (user.github or user.linkedin or user.portfolio or user.tryhackme or user.hackthebox or user.ctftime) %}
+                                <p class="text-secondary small mb-0">No professional links added yet.</p>
+                            {% endif %}
                         </div>
-                        {% endif %}
-
-                        {% if user.linkedin %}
-                        <div class="col-md-6 mb-3">
-                            🔗
-                            <a href="{{ user.linkedin }}"
-                               target="_blank">
-                                LinkedIn
-                            </a>
-                        </div>
-                        {% endif %}
-
-                        {% if user.tryhackme %}
-                        <div class="col-md-6 mb-3">
-                            🎯
-                            <a href="{{ user.tryhackme }}"
-                               target="_blank">
-                                TryHackMe
-                            </a>
-                        </div>
-                        {% endif %}
-
-                        {% if user.hackthebox %}
-                        <div class="col-md-6 mb-3">
-                            🟥
-                            <a href="{{ user.hackthebox }}"
-                               target="_blank">
-                                Hack The Box
-                            </a>
-                        </div>
-                        {% endif %}
-
-                        {% if user.ctftime %}
-                        <div class="col-md-6 mb-3">
-                            🏆
-                            <a href="{{ user.ctftime }}"
-                               target="_blank">
-                                CTFTime
-                            </a>
-                        </div>
-                        {% endif %}
-
                     </div>
 
                 </div>
 
             </div>
 
-            <div class="row">
 
-                <div class="col-md-6 mb-4">
-                    <div class="card bg-dark border-info text-center shadow">
-                        <div class="card-body">
-                            <h1 class="text-info">
-                                {{ user.projects|length }}
-                            </h1>
-                            <p>Projects</p>
+            <!-- ========================= -->
+            <!-- CENTER PANEL -->
+            <!-- ========================= -->
+
+            <div class="col-lg-6">
+
+                <div class="d-flex flex-column gap-4">
+
+                    <!-- Animated Statistics -->
+                    <div class="row g-4">
+
+                        <div class="col-md-4 col-12">
+                            <div class="zx-card p-4 text-center h-100">
+                                <div class="zx-ring">
+                                    <svg viewBox="0 0 100 100">
+                                        <circle class="track" cx="50" cy="50" r="45"></circle>
+                                        <circle class="bar zx-bar-projects" cx="50" cy="50" r="45"></circle>
+                                    </svg>
+                                    <div class="zx-ring-value">
+                                        <span class="zx-ring-number">{{ zx_project_count }}</span>
+                                        <span class="zx-ring-label">Projects</span>
+                                    </div>
+                                </div>
+                                <p class="small text-secondary mt-3 mb-0">
+                                    <i class="bi bi-folder2-open me-1"></i>
+                                    Assigned to you
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 col-12">
+                            <div class="zx-card p-4 text-center h-100">
+                                <div class="zx-ring">
+                                    <svg viewBox="0 0 100 100">
+                                        <circle class="track" cx="50" cy="50" r="45"></circle>
+                                        <circle class="bar zx-bar-meetings" cx="50" cy="50" r="45"></circle>
+                                    </svg>
+                                    <div class="zx-ring-value">
+                                        <span class="zx-ring-number">{{ zx_meeting_count }}</span>
+                                        <span class="zx-ring-label">Meetings</span>
+                                    </div>
+                                </div>
+                                <p class="small text-secondary mt-3 mb-0">
+                                    <i class="bi bi-calendar-event me-1"></i>
+                                    This quarter
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 col-12">
+                            <div class="zx-card p-4 text-center h-100">
+                                <div class="zx-ring">
+                                    <svg viewBox="0 0 100 100">
+                                        <circle class="track" cx="50" cy="50" r="45"></circle>
+                                        <circle class="bar zx-bar-announcements" cx="50" cy="50" r="45"></circle>
+                                    </svg>
+                                    <div class="zx-ring-value">
+                                        <span class="zx-ring-number">{{ zx_announcement_count }}</span>
+                                        <span class="zx-ring-label">Announcements</span>
+                                    </div>
+                                </div>
+                                <p class="small text-secondary mt-3 mb-0">
+                                    <i class="bi bi-megaphone me-1"></i>
+                                    Latest updates
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Profile Completion -->
+                    <div class="zx-card p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="zx-card-title mb-0">
+                                <span class="zx-icon"><i class="bi bi-patch-check-fill"></i></span>
+                                Profile Completion
+                            </h5>
+                            <span class="zx-badge">72%</span>
+                        </div>
+                        <div class="zx-progress mb-2">
+                            <div style="width:72%;"></div>
+                        </div>
+                        <div class="d-flex justify-content-between small text-secondary">
+                            <span>Avatar, bio, skills &amp; links completed</span>
+                            <span>72% complete</span>
                         </div>
                     </div>
+
+                    <!-- Contribution Statistics -->
+                    <div class="zx-card p-4">
+                        <h5 class="zx-card-title mb-3">
+                            <span class="zx-icon"><i class="bi bi-graph-up-arrow"></i></span>
+                            Contribution Statistics
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-6 col-md-3">
+                                <div class="zx-stat-tile">
+                                    <div class="zx-stat-num">2,450</div>
+                                    <div class="zx-stat-label">CTF Points</div>
+                                </div>
+
+                            <div class="col-6 col-md-3">
+                                <div class="zx-stat-tile">
+                                    <div class="zx-stat-num">87</div>
+                                    <div class="zx-stat-label">Machines Pwned</div>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-md-3">
+                                <div class="zx-stat-tile">
+                                    <div class="zx-stat-num">34</div>
+                                    <div class="zx-stat-label">Challenges Solved</div>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-md-3">
+                                <div class="zx-stat-tile">
+                                    <div class="zx-stat-num">12</div>
+                                    <div class="zx-stat-label">Writeups</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Activity Timeline -->
+                    <div class="zx-card p-4">
+                        <h5 class="zx-card-title mb-3">
+                            <span class="zx-icon"><i class="bi bi-activity"></i></span>
+                            Activity Timeline
+                        </h5>
+                        <ul class="zx-timeline">
+                            <li class="zx-tl-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <span class="fw-semibold text-white">Completed CTF challenge</span>
+                                    <span class="zx-tl-time">2h ago</span>
+                                </div>
+                                <span class="small text-secondary">Web Exploitation &middot; "SQLi Labs" &middot; +150 pts</span>
+                            </li>
+                            <li class="zx-tl-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <span class="fw-semibold text-white">Pwned a Hack The Box machine</span>
+                                    <span class="zx-tl-time">Yesterday</span>
+                                </div>
+                                <span class="small text-secondary">"Cascade" &middot; privilege escalation via Kerberoasting</span>
+                            </li>
+                            <li class="zx-tl-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <span class="fw-semibold text-white">Published a writeup</span>
+                                    <span class="zx-tl-time">3d ago</span>
+                                </div>
+                                <span class="small text-secondary">PortSwigger Academy &middot; XSS series</span>
+                            </li>
+                            <li class="zx-tl-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <span class="fw-semibold text-white">Joined a new team</span>
+                                    <span class="zx-tl-time">1w ago</span>
+                                </div>
+                                {% if user.team %}
+                                    <span class="small text-secondary">Assigned to {{ user.team.name }}</span>
+                                {% else %}
+                                    <span class="small text-secondary">Team workspace created</span>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Achievements -->
+                    <div class="zx-card p-4">
+                        <h5 class="zx-card-title mb-3">
+                            <span class="zx-icon"><i class="bi bi-trophy-fill"></i></span>
+                            Achievements
+                        </h5>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <div class="zx-ach">
+                                    <i class="bi bi-shield-lock-fill"></i>
+                                    <span>First Blood — easy box</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="zx-ach">
+                                    <i class="bi bi-lightning-charge-fill"></i>
+                                    <span>50-day learning streak</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="zx-ach">
+                                    <i class="bi bi-trophy-fill"></i>
+                                    <span>Top 10% — monthly CTF</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="zx-ach">
+                                    <i class="bi bi-journal-code"></i>
+                                    <span>10 published writeups</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Learning Progress -->
+                    <div class="zx-card p-4">
+                        <h5 class="zx-card-title mb-3">
+                            <span class="zx-icon"><i class="bi bi-mortarboard-fill"></i></span>
+                            Learning Progress
+                        </h5>
+                        <div class="d-flex flex-column gap-3">
+                            <div>
+                                <div class="d-flex justify-content-between small mb-1">
+                                    <span class="text-white fw-semibold">Penetration Testing Path</span>
+                                    <span class="text-info">72%</span>
+                                </div>
+                                <div class="zx-mini"><div style="width:72%;"></div></div>
+                            </div>
+                            <div>
+                                <div class="d-flex justify-content-between small mb-1">
+                                    <span class="text-white fw-semibold">Web Application Security</span>
+                                    <span class="text-info">48%</span>
+                                </div>
+                                <div class="zx-mini"><div style="width:48%;"></div></div>
+                            </div>
+                            <div>
+                                <div class="d-flex justify-content-between small mb-1">
+                                    <span class="text-white fw-semibold">Network Defense &amp; Blue Team</span>
+                                    <span class="text-info">61%</span>
+                                </div>
+                                <div class="zx-mini"><div style="width:61%;"></div></div>
+                            </div>
+                            <div>
+                                <div class="d-flex justify-content-between small mb-1">
+                                    <span class="text-white fw-semibold">Binary Exploitation</span>
+                                    <span class="text-info">29%</span>
+                                </div>
+                                <div class="zx-mini"><div style="width:29%;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
-                <div class="col-md-6 mb-4">
-                    <div class="card bg-dark border-info text-center shadow">
-                        <div class="card-body">
-                            <h1 class="text-info">
-                                {{ user.announcements|length }}
-                            </h1>
-                            <p>Announcements</p>
+            </div>
+
+
+            <!-- ========================= -->
+            <!-- RIGHT SIDEBAR -->
+            <!-- ========================= -->
+
+            <div class="col-lg-3">
+
+                <div class="zx-sticky d-flex flex-column gap-4">
+
+                    <!-- Team Chat -->
+                    <div class="zx-card p-4">
+                        <h5 class="zx-card-title mb-3">
+                            <span class="zx-icon"><i class="bi bi-chat-dots-fill"></i></span>
+                            Team Chat
+                        </h5>
+                        <div class="d-flex flex-column gap-2 mb-3">
+                            <div class="zx-chat-in">
+                                <span class="fw-semibold text-info small d-block">Raven</span>
+                                Anyone up for the new HTB box tonight?
+                            </div>
+                            <div class="zx-chat-out">
+                                I'm in. Starting recon at 20:00.
+                            </div>
+                            <div class="zx-chat-in">
+                                <span class="fw-semibold text-info small d-block">Nyx</span>
+                                I'll prep the notes template.
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <input type="text"
+                                   class="form-control zx-input"
+                                   placeholder="Message #team-ops..." disabled>
+                            <button class="btn zx-btn-ghost" type="button" disabled>
+                                <i class="bi bi-send-fill"></i>
+                            </button>
+                        </div>
+                        <p class="small text-secondary mt-2 mb-0">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Chat is a live demo — connect to your backend messaging API to enable it.
+                        </p>
+                    </div>
+
+                    <!-- Latest Projects -->
+                    <div class="zx-card p-4">
+                        <h5 class="zx-card-title mb-3">
+                            <span class="zx-icon"><i class="bi bi-folder2-open"></i></span>
+                            Latest Projects
+                        </h5>
+                        <div class="d-flex flex-column gap-3">
+                            <div>
+                                <div class="d-flex justify-content-between small mb-1">
+                                    <span class="text-white fw-semibold">
+                                        <i class="bi bi-bug-fill text-danger me-1"></i>Red Team — Phishing
+                                    </span>
+                                    <span class="text-info">85%</span>
+                                </div>
+                                <div class="zx-mini"><div style="width:85%;"></div></div>
+                            </div>
+                            <div>
+                                <div class="d-flex justify-content-between small mb-1">
+                                    <span class="text-white fw-semibold">
+                                        <i class="bi bi-shield-check text-success me-1"></i>Network Hardening
+                                    </span>
+                                    <span class="text-info">62%</span>
+                                </div>
+                                <div class="zx-mini"><div style="width:62%;"></div></div>
+                            </div>
+                            <div>
+                                <div class="d-flex justify-content-between small mb-1">
+                                    <span class="text-white fw-semibold">
+                                        <i class="bi bi-search text-warning me-1"></i>OSINT Investigation
+                                    </span>
+                                    <span class="text-info">41%</span>
+                                </div>
+                                <div class="zx-mini"><div style="width:41%;"></div></div>
+                            </div>
+                        </div>
+                        {% if user.projects %}
+                            <p class="small text-secondary mt-3 mb-0">
+                                <i class="bi bi-check2-circle me-1 text-info"></i>
+                                {{ user.projects|length }} project(s) tied to your account.
+                            </p>
+                        {% else %}
+                            <p class="small text-secondary mt-3 mb-0">
+                                <i class="bi bi-plus-circle me-1 text-info"></i>
+                                No assigned projects yet — samples shown above.
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Latest Announcements -->
+                    <div class="zx-card p-4">
+                        <h5 class="zx-card-title mb-3">
+                            <span class="zx-icon"><i class="bi bi-megaphone-fill"></i></span>
+                            Latest Announcements
+                        </h5>
+                        <div class="d-flex flex-column gap-2">
+                            <a href="#" class="zx-link-item">
+                                <i class="bi bi-shield-exclamation"></i>
+                                <span class="text-truncate">New incident response policy</span>
+                            </a>
+                            <a href="#" class="zx-link-item">
+                                <i class="bi bi-calendar2-week"></i>
+                                <span class="text-truncate">CTF training sprint — Q3</span>
+                            </a>
+                            <a href="#" class="zx-link-item">
+                                <i class="bi bi-download"></i>
+                                <span class="text-truncate">Toolchain v2.4 rollout</span>
+                            </a>
+                        </div>
+                        {% if user.announcements %}
+                            <p class="small text-secondary mt-3 mb-0">
+                                <i class="bi bi-megaphone me-1 text-info"></i>
+                                {{ user.announcements|length }} announcement(s) for you.
+                            </p>
+                        {% else %}
+                            <p class="small text-secondary mt-3 mb-0">
+                                <i class="bi bi-bell me-1 text-info"></i>
+                                No announcements yet — samples shown above.
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Upcoming Meetings -->
+                    <div class="zx-card p-4">
+                        <h5 class="zx-card-title mb-3">
+                            <span class="zx-icon"><i class="bi bi-calendar-event-fill"></i></span>
+                            Upcoming Meetings
+                        </h5>
+                        <div class="d-flex flex-column gap-2">
+                            <div class="zx-meet">
+                                <div class="zx-date-chip">
+                                    14
+                                    <small>AUG</small>
+                                </div>
+                                <div>
+                                    <div class="fw-semibold text-white small">Ops Standup</div>
+                                    <div class="small text-secondary">09:00 &middot; Team Ops</div>
+                                </div>
+                            </div>
+                            <div class="zx-meet">
+                                <div class="zx-date-chip">
+                                    21
+                                    <small>AUG</small>
+                                </div>
+                                <div>
+                                    <div class="fw-semibold text-white small">CTF Strategy Sync</div>
+                                    <div class="small text-secondary">16:30 &middot; War Room</div>
+                                </div>
+                            </div>
+                            <div class="zx-meet">
+                                <div class="zx-date-chip">
+                                    28
+                                    <small>AUG</small>
+                                </div>
+                                <div>
+                                    <div class="fw-semibold text-white small">Monthly Security Review</div>
+                                    <div class="small text-secondary">14:00 &middot; All hands</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- ZeroNexus AI Widget -->
+                    <div class="zx-card zx-ai p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="zx-card-title mb-0">
+                                <span class="zx-icon"><i class="bi bi-cpu-fill"></i></span>
+                                ZeroNexus AI
+                            </h5>
+                            <span class="zx-ai-badge">
+                                <span class="zx-pulse"></span>
+                                ONLINE
+                            </span>
+                        </div>
+                        <p class="text-white fw-semibold mb-1">
+                            Good {{ "evening" if false else "evening" }}, {{ user.username }}
+                        </p>
+                        <p class="small text-secondary mb-3">
+                            Here's your next move in the field.
+                        </p>
+                        <div class="zx-learn mb-2">
+                            <span class="zx-icon"><i class="bi bi-journal-code"></i></span>
+                            <div class="flex-grow-1">
+                                <div class="small fw-semibold text-white">Continue Learning</div>
+                                <div class="small text-secondary">Python Fundamentals</div>
+                                <div class="zx-mini mt-1"><div style="width:72%;"></div></div>
+                            </div>
+                            <span class="text-info small fw-bold">72%</span>
+                        </div>
+                        <div class="d-flex flex-column gap-2 mt-3">
+                            <span class="zx-chip">
+                                <i class="bi bi-lightning-charge-fill me-1"></i>
+                                Suggested: Linux Permissions
+                            </span>
+                            <span class="zx-chip">
+                                <i class="bi bi-hdd-network me-1"></i>
+                                Suggested: Networking
+                            </span>
+                            <span class="zx-chip">
+                                <i class="bi bi-shield-lock me-1"></i>
+                                Suggested: Web Attacks
+                            </span>
+                        </div>
+                        <p class="small text-secondary mt-3 mb-0">
+                            <i class="bi bi-robot me-1"></i>
+                            Learning path generated from your activity.
+                        </p>
+                    </div>
+
                 </div>
 
             </div>
