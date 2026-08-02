@@ -64,6 +64,12 @@ theme-{{ settings.theme_name if settings else 'cyber-blue' }}">
                 📁 Projects
             </a>
 
+            <!-- Announcements -->
+            <a href="{{ url_for('admin.manage_announcements') }}"
+                class="{% if request.endpoint in ['admin.manage_announcements', 'admin.create_announcement'] %}active{% endif %}">
+                📢 Announcements
+            </a>
+
             <!-- Blog -->
             <a href="{{ url_for('admin.manage_blog') }}"
                class="{% if request.endpoint == 'admin.manage_blog' %}active{% endif %}">

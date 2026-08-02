@@ -3,7 +3,8 @@ from flask import (
     abort,
     redirect,
     url_for,
-    flash
+    flash,
+    session
 )
 
 from flask_login import (
@@ -19,7 +20,13 @@ from app.auth.decorators import (
 )
 
 from . import team_bp
-from .forms import CreateProjectForm
+
+from .forms import (
+    CreateProjectForm,
+    CreateMeetingForm
+)
+
+from .announcement_forms import CreateAnnouncementForm
 
 from app.models import (
     User,
@@ -28,12 +35,6 @@ from app.models import (
     Meeting,
     Announcement
 )
-
-from .forms import (
-    CreateProjectForm,
-    CreateMeetingForm
-)
-from flask import session
 
 
 def require_active_team():
@@ -59,6 +60,7 @@ def require_active_team():
 
     return team
 
+
 # =====================================================
 # TEAM DASHBOARD
 # =====================================================
@@ -77,7 +79,7 @@ def dashboard():
     ).order_by(
         User.created_at.desc()
     ).all()
-    
+
     recent_members = members[:5]
 
     projects = Project.query.filter_by(
@@ -93,6 +95,7 @@ def dashboard():
     announcements = Announcement.query.filter_by(
         team_id=team.id
     ).order_by(
+        Announcement.pinned.desc(),
         Announcement.created_at.desc()
     ).all()
 
@@ -120,6 +123,7 @@ def dashboard():
 
         announcement_count=len(announcements)
     )
+
 
 # =====================================================
 # TEAM PROJECTS
@@ -280,7 +284,8 @@ def delete_project(project_id):
     return redirect(
         url_for("team.projects")
     )
-    
+
+
 # =====================================================
 # TEAM MEETINGS
 # =====================================================
@@ -347,7 +352,7 @@ def create_announcement():
             title=form.title.data,
             content=form.content.data,
             category=form.category.data,
-            pinned=form.pinned.data == "1",
+            pinned=form.pinned.data,
             team=current_user.team,
             author=current_user
         )

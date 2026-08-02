@@ -9,6 +9,7 @@ from app.models import (
     SiteSetting,
     BlogPost,
     ContactMessage,
+    Announcement,
     User
 )
 
@@ -16,6 +17,7 @@ from .forms import AdminLoginForm
 from .member_forms import AddMemberForm
 from .user_forms import CreateUserForm
 from .team_forms import EditTeamForm
+from .announcement_forms import CreateAnnouncementForm
 
 from app.email import (
     send_member_welcome,
@@ -927,4 +929,121 @@ def manage_users():
     return render_template(
         "admin/users.html",
         users=users
+    )
+
+# =====================================================
+# MANAGE ANNOUNCEMENTS
+# =====================================================
+
+@admin_bp.route("/announcements")
+@login_required
+@super_admin_required
+def manage_announcements():
+
+    announcements = (
+        Announcement.query
+        .order_by(
+            Announcement.pinned.desc(),
+            Announcement.created_at.desc()
+        )
+        .all()
+    )
+
+    return render_template(
+        "admin/announcements.html",
+        announcements=announcements
+    )
+
+
+# =====================================================
+# CREATE ANNOUNCEMENT
+# =====================================================
+
+@admin_bp.route("/announcements/create", methods=["GET", "POST"])
+@login_required
+@super_admin_required
+def create_announcement():
+
+    form = CreateAnnouncementForm()
+
+    if form.validate_on_submit():
+
+        announcement = Announcement(
+            title=form.title.data,
+            content=form.content.data,
+            category=form.category.data,
+            pinned=form.pinned.data,
+            team_id=form.team_id.data,
+            author_id=current_user.id
+        )
+
+        db.session.add(announcement)
+        db.session.commit()
+
+        flash(
+            "Announcement published.",
+            "success"
+        )
+
+        return redirect(
+            url_for("admin.manage_announcements")
+        )
+
+    return render_template(
+        "admin/create_announcement.html",
+        form=form
+    )
+
+
+# =====================================================
+# TOGGLE PIN
+# =====================================================
+
+@admin_bp.route(
+    "/announcements/<int:announcement_id>/pin",
+    methods=["POST"]
+)
+@login_required
+@super_admin_required
+def toggle_pin_announcement(announcement_id):
+
+    announcement = db.session.get(Announcement, announcement_id)
+
+    if announcement is None:
+        abort(404)
+
+    announcement.pinned = not announcement.pinned
+    db.session.commit()
+
+    flash("Announcement updated.", "success")
+
+    return redirect(
+        request.referrer or url_for("admin.manage_announcements")
+    )
+
+
+# =====================================================
+# DELETE ANNOUNCEMENT
+# =====================================================
+
+@admin_bp.route(
+    "/announcements/<int:announcement_id>/delete",
+    methods=["POST"]
+)
+@login_required
+@super_admin_required
+def delete_announcement(announcement_id):
+
+    announcement = db.session.get(Announcement, announcement_id)
+
+    if announcement is None:
+        abort(404)
+
+    db.session.delete(announcement)
+    db.session.commit()
+
+    flash("Announcement deleted.", "success")
+
+    return redirect(
+        url_for("admin.manage_announcements")
     )

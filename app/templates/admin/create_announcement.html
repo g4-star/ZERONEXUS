@@ -1,0 +1,104 @@
+{% extends "admin/layout.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h2>New Announcement</h2>
+
+    <a href="{{ url_for('admin.manage_announcements') }}"
+       class="btn btn-outline-secondary">
+        ← Back
+    </a>
+
+</div>
+
+<div class="card">
+
+    <div class="card-body">
+
+        <form method="post"
+              novalidate>
+
+            {{ form.hidden_tag() }}
+
+            <div class="mb-3">
+
+                {{ form.title.label(class="form-label") }}
+
+                {{ form.title(
+                    class="form-control" + (" is-invalid" if form.title.errors else ""),
+                    placeholder="e.g. Sprint review moved to Friday"
+                ) }}
+
+                {% for error in form.title.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+
+            </div>
+
+            <div class="mb-3">
+
+                {{ form.content.label(class="form-label") }}
+
+                {{ form.content(
+                    class="form-control" + (" is-invalid" if form.content.errors else ""),
+                    rows=6,
+                    placeholder="Write the announcement…"
+                ) }}
+
+                {% for error in form.content.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    {{ form.category.label(class="form-label") }}
+
+                    {{ form.category(
+                        class="form-select" + (" is-invalid" if form.category.errors else "")
+                    ) }}
+
+                    {% for error in form.category.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    {{ form.team_id.label(class="form-label") }}
+
+                    {{ form.team_id(
+                        class="form-select" + (" is-invalid" if form.team_id.errors else "")
+                    ) }}
+
+                    {% for error in form.team_id.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+            <div class="form-check mb-4">
+
+                {{ form.pinned(class="form-check-input") }}
+
+                {{ form.pinned.label(class="form-check-label") }}
+
+            </div>
+
+            {{ form.submit(class="btn btn-primary") }}
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
