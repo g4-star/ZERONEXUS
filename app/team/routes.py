@@ -14,30 +14,51 @@ from flask_login import (
 from app.extensions import db
 
 from app.auth.decorators import (
-    member_required
+    member_required,
+    team_lead_required
 )
 
 from . import team_bp
-
 from .forms import CreateProjectForm
 
 from app.models import (
     User,
+    Team,
     Project,
-    Meeting
+    Meeting,
+    Announcement
 )
 
 from .forms import (
     CreateProjectForm,
     CreateMeetingForm
 )
+from flask import session
 
-def team_lead_required():
-    
-    if current_user.role != "team_lead":
 
-        abort(403)
-        
+def require_active_team():
+
+    # Team Lead / Member
+    if current_user.role != "super_admin":
+
+        if current_user.team is None:
+            abort(404)
+
+        return current_user.team
+
+    # Super Admin
+    team_id = session.get("active_team_id")
+
+    if not team_id:
+        abort(404)
+
+    team = Team.query.get(team_id)
+
+    if team is None:
+        abort(404)
+
+    return team
+
 # =====================================================
 # TEAM DASHBOARD
 # =====================================================
@@ -48,26 +69,56 @@ def team_lead_required():
 def dashboard():
 
     user = current_user
-    team = user.team
 
-    if team is None:
-
-        abort(404)
+    team = require_active_team()
 
     members = User.query.filter_by(
         team_id=team.id
+    ).order_by(
+        User.created_at.desc()
     ).all()
+    
+    recent_members = members[:5]
 
     projects = Project.query.filter_by(
         team_id=team.id
+    ).order_by(
+        Project.created_at.desc()
+    ).all()
+
+    meetings = Meeting.query.filter_by(
+        team_id=team.id
+    ).all()
+
+    announcements = Announcement.query.filter_by(
+        team_id=team.id
+    ).order_by(
+        Announcement.created_at.desc()
     ).all()
 
     return render_template(
         "team/dashboard.html",
+
         user=user,
+
         team=team,
+
         members=members,
-        projects=projects
+        recent_members=recent_members,
+
+        projects=projects,
+
+        meetings=meetings,
+
+        announcements=announcements,
+
+        member_count=len(members),
+
+        project_count=len(projects),
+
+        meeting_count=len(meetings),
+
+        announcement_count=len(announcements)
     )
 
 # =====================================================
@@ -81,6 +132,9 @@ def projects():
 
     team = current_user.team
 
+    if team is None:
+        abort(404)
+
     projects = Project.query.filter_by(
         team_id=team.id
     ).order_by(
@@ -93,7 +147,8 @@ def projects():
         team=team,
         projects=projects
     )
-    
+
+
 # =====================================================
 # CREATE PROJECT
 # =====================================================
@@ -103,41 +158,30 @@ def projects():
     methods=["GET", "POST"]
 )
 @login_required
-@member_required
+@team_lead_required
 def create_project():
 
-    team_lead_required()
+    if current_user.team is None:
+        abort(404)
 
     form = CreateProjectForm()
 
     if form.validate_on_submit():
 
         project = Project(
-
             title=form.title.data,
-
             description=form.description.data,
-
             github_url=form.github_url.data,
-
             demo_url=form.demo_url.data,
-
             status=form.status.data,
-
             priority=form.priority.data,
-
             progress=form.progress.data,
-
             deadline=form.deadline.data,
-
             team_id=current_user.team.id,
-
             created_by=current_user.id
-
         )
 
         db.session.add(project)
-
         db.session.commit()
 
         flash(
@@ -153,7 +197,8 @@ def create_project():
         "team/create_project.html",
         form=form
     )
-    
+
+
 # =====================================================
 # EDIT PROJECT
 # =====================================================
@@ -163,17 +208,15 @@ def create_project():
     methods=["GET", "POST"]
 )
 @login_required
-@member_required
+@team_lead_required
 def edit_project(project_id):
 
-    team_lead_required()
+    if current_user.team is None:
+        abort(404)
 
     project = Project.query.filter_by(
-
         id=project_id,
-
         team_id=current_user.team.id
-
     ).first_or_404()
 
     form = CreateProjectForm(obj=project)
@@ -181,19 +224,12 @@ def edit_project(project_id):
     if form.validate_on_submit():
 
         project.title = form.title.data
-
         project.description = form.description.data
-
         project.github_url = form.github_url.data
-
         project.demo_url = form.demo_url.data
-
         project.status = form.status.data
-
         project.priority = form.priority.data
-
         project.progress = form.progress.data
-
         project.deadline = form.deadline.data
 
         db.session.commit()
@@ -212,7 +248,8 @@ def edit_project(project_id):
         form=form,
         project=project
     )
-    
+
+
 # =====================================================
 # DELETE PROJECT
 # =====================================================
@@ -221,21 +258,18 @@ def edit_project(project_id):
     "/projects/<int:project_id>/delete"
 )
 @login_required
-@member_required
+@team_lead_required
 def delete_project(project_id):
 
-    team_lead_required()
+    if current_user.team is None:
+        abort(404)
 
     project = Project.query.filter_by(
-
         id=project_id,
-
         team_id=current_user.team.id
-
     ).first_or_404()
 
     db.session.delete(project)
-
     db.session.commit()
 
     flash(
@@ -247,8 +281,6 @@ def delete_project(project_id):
         url_for("team.projects")
     )
     
-
-
 # =====================================================
 # TEAM MEETINGS
 # =====================================================
@@ -274,8 +306,11 @@ def meetings():
 @member_required
 def announcements():
 
+    if current_user.team is None:
+        abort(404)
+
     announcements = Announcement.query.filter_by(
-        team_id=current_user.team_id
+        team_id=current_user.team.id
     ).order_by(
         Announcement.pinned.desc(),
         Announcement.created_at.desc()
@@ -287,40 +322,37 @@ def announcements():
         user=current_user,
         team=current_user.team
     )
+
+
+# =====================================================
+# CREATE ANNOUNCEMENT
+# =====================================================
+
 @team_bp.route(
     "/announcements/create",
-    methods=["GET","POST"]
+    methods=["GET", "POST"]
 )
 @login_required
-@member_required
+@team_lead_required
 def create_announcement():
 
-    if current_user.role != "team_lead":
-
-        abort(403)
+    if current_user.team is None:
+        abort(404)
 
     form = CreateAnnouncementForm()
 
     if form.validate_on_submit():
 
         announcement = Announcement(
-
             title=form.title.data,
-
             content=form.content.data,
-
             category=form.category.data,
-
             pinned=form.pinned.data == "1",
-
             team=current_user.team,
-
             author=current_user
-
         )
 
         db.session.add(announcement)
-
         db.session.commit()
 
         flash(
@@ -336,8 +368,6 @@ def create_announcement():
         "team/create_announcement.html",
         form=form
     )
-    
-
 
 
 # =====================================================
@@ -348,6 +378,9 @@ def create_announcement():
 @login_required
 @member_required
 def members():
+
+    if current_user.team is None:
+        abort(404)
 
     return render_template(
         "team/members.html",
@@ -364,6 +397,9 @@ def members():
 @login_required
 @member_required
 def messages():
+
+    if current_user.team is None:
+        abort(404)
 
     return render_template(
         "team/messages.html",

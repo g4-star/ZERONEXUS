@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
-
+from app.models.admin_user import AdminUser
 from app.extensions import db
 from app.models import (
     Team,
@@ -23,6 +23,18 @@ from app.email import (
 )
 
 from app.utils.permissions import (
+    super_admin_required
+)
+from flask import session
+from flask import (
+    render_template,
+    redirect,
+    url_for,
+    flash,
+    abort,
+    session
+)
+from app.auth.decorators import (
     super_admin_required
 )
 import secrets
@@ -106,7 +118,6 @@ def login():
                 User.username == form.username.data,
                 User.email == form.username.data
             ),
-            User.role == "super_admin"
         ).first()
 
         if admin and admin.check_password(form.password.data):
@@ -132,32 +143,103 @@ def login():
         form=form
     )
     
+
+# =====================================================
+# ADMIN DASHBOARD
+# =====================================================
+
 @admin_bp.route("/dashboard")
 @login_required
 @super_admin_required
 def dashboard():
+
     return render_template(
-        'admin/dashboard.html',
+        "admin/dashboard.html",
         team_count=Team.query.count(),
         member_count=MemberProfile.query.count(),
         project_count=Project.query.count()
     )
 
+# =====================================================
+# CREATE TEAM
+# =====================================================
 
-@admin_bp.route('/teams')
+@admin_bp.route("/teams/create", methods=["GET", "POST"])
 @login_required
+@super_admin_required
+def create_team():
+
+    return render_template(
+        "admin/create_team.html"
+    )
+# =====================================================
+# MANAGE TEAMS
+# =====================================================
+
+@admin_bp.route("/teams")
+@login_required
+@super_admin_required
 def manage_teams():
-    teams = Team.query.order_by(Team.name.asc()).all()
-    return render_template('admin/teams.html', teams=teams)
 
-@admin_bp.route('/teams/<int:team_id>/edit', methods=['GET', 'POST'])
+    teams = Team.query.order_by(
+        Team.name.asc()
+    ).all()
+
+    return render_template(
+        "admin/teams.html",
+        teams=teams
+    )
+
+
+# =====================================================
+# OPEN TEAM WORKSPACE
+# =====================================================
+
+@admin_bp.route("/teams/<int:team_id>/open")
 @login_required
+@super_admin_required
+def open_team(team_id):
+
+    from flask import session
+
+    team = db.session.get(Team, team_id)
+
+    if team is None:
+        abort(404)
+
+    session["active_team_id"] = team.id
+
+    flash(
+        f"You are now managing the {team.name} team.",
+        "success"
+    )
+
+    return redirect(
+        url_for("team.dashboard")
+    )
+
+
+# =====================================================
+# EDIT TEAM
+# =====================================================
+
+@admin_bp.route(
+    "/teams/<int:team_id>/edit",
+    methods=["GET", "POST"]
+)
+@login_required
+@super_admin_required
 def edit_team(team_id):
-    team = Team.query.get_or_404(team_id)
+
+    team = db.session.get(Team, team_id)
+
+    if team is None:
+        abort(404)
 
     form = EditTeamForm(obj=team)
 
     if form.validate_on_submit():
+
         team.name = form.name.data
         team.slug = form.slug.data
         team.short_description = form.short_description.data
@@ -167,28 +249,44 @@ def edit_team(team_id):
 
         db.session.commit()
 
-        flash('Team updated successfully.', 'success')
+        flash(
+            "Team updated successfully.",
+            "success"
+        )
 
-        return redirect(url_for('admin.manage_teams'))
+        return redirect(
+            url_for("admin.manage_teams")
+        )
 
     return render_template(
-        'admin/edit_team.html',
+        "admin/edit_team.html",
         form=form,
         team=team
     )
-    
-@admin_bp.route('/members')
+
+
+# =====================================================
+# MANAGE MEMBERS
+# =====================================================
+
+@admin_bp.route("/members")
 @login_required
+@super_admin_required
 def manage_members():
-    members = MemberProfile.query.order_by(MemberProfile.full_name.asc()).all()
-    teams = Team.query.order_by(Team.name.asc()).all()
+
+    members = MemberProfile.query.order_by(
+        MemberProfile.full_name.asc()
+    ).all()
+
+    teams = Team.query.order_by(
+        Team.name.asc()
+    ).all()
 
     return render_template(
-        'admin/members.html',
+        "admin/members.html",
         members=members,
         teams=teams
     )
-
 
 @admin_bp.route('/members/add', methods=['GET', 'POST'])
 @login_required

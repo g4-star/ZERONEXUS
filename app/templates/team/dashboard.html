@@ -44,7 +44,7 @@
                     <i class="bi bi-people-fill text-info fs-1"></i>
 
                     <h2 class="mt-3 text-info">
-                        {{ members|length }}
+                        {{ member_count }}
                     </h2>
 
                     <p class="mb-0">
@@ -66,7 +66,7 @@
                     <i class="bi bi-folder-fill text-warning fs-1"></i>
 
                     <h2 class="mt-3 text-warning">
-                        {{ projects|length }}
+                        {{ project_count }}
                     </h2>
 
                     <p class="mb-0">
@@ -88,7 +88,7 @@
                     <i class="bi bi-calendar-event-fill text-success fs-1"></i>
 
                     <h2 class="mt-3 text-success">
-                        0
+                        {{ meeting_count }}
                     </h2>
 
                     <p class="mb-0">
@@ -110,7 +110,7 @@
                     <i class="bi bi-megaphone-fill text-danger fs-1"></i>
 
                     <h2 class="mt-3 text-danger">
-                        0
+                        {{ announcement_count }}
                     </h2>
 
                     <p class="mb-0">
@@ -145,7 +145,7 @@
 
         <div class="card-body">
 
-            {% if user.role == "team_admin" %}
+            {% if user.role == "super_admin" %}
 
             <div class="row g-3">
 
@@ -317,6 +317,74 @@
             </h4>
 
         </div>
+
+    <!-- ========================================= -->
+<!-- RECENT MEMBERS -->
+<!-- ========================================= -->
+
+<div class="card bg-dark border-info shadow mt-4">
+
+    <div class="card-header">
+
+        <h4 class="mb-0 text-info">
+
+            <i class="bi bi-people-fill me-2"></i>
+
+            Recent Members
+
+        </h4>
+
+    </div>
+
+    <div class="card-body">
+
+        {% if recent_members %}
+
+            <div class="list-group list-group-flush">
+
+                {% for member in recent_members %}
+
+                <div class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <strong>{{ member.username }}</strong>
+
+                        <br>
+
+                        <small class="text-secondary">
+
+                            {{ member.email }}
+
+                        </small>
+
+                    </div>
+
+                    <span class="badge bg-info">
+
+                        {{ member.role.replace("_", " ").title() }}
+
+                    </span>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="text-center py-4 text-secondary">
+
+                No members yet.
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
 
         <div class="card-body">
 
