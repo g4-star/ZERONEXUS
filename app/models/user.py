@@ -85,8 +85,7 @@ class User(UserMixin, db.Model):
     activation_token = db.Column(
         db.String(100),
         unique=True,
-        nullable=False,
-        default=lambda: secrets.token_urlsafe(50)
+        nullable=True,
     )
 
     created_at = db.Column(
