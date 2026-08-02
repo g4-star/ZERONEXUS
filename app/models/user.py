@@ -11,7 +11,7 @@ from app.extensions import db, login_manager
 
 
 class User(UserMixin, db.Model):
-
+    
     __tablename__ = "users"
 
     # =====================================================
@@ -94,6 +94,92 @@ class User(UserMixin, db.Model):
     )
 
     # =====================================================
+    # Profile Information
+    # =====================================================
+
+    profile_image = db.Column(
+        db.String(255),
+        nullable=True
+    )
+
+    bio = db.Column(
+        db.Text,
+        nullable=True
+    )
+
+    phone = db.Column(
+        db.String(30),
+        nullable=True
+    )
+
+    location = db.Column(
+        db.String(120),
+        nullable=True
+    )
+
+    # =====================================================
+    # Professional Information
+    # =====================================================
+
+    job_title = db.Column(
+        db.String(120),
+        nullable=True
+    )
+
+    company = db.Column(
+        db.String(120),
+        nullable=True
+    )
+
+    skills = db.Column(
+        db.Text,
+        nullable=True
+    )
+
+    # =====================================================
+    # Social Links
+    # =====================================================
+
+    portfolio = db.Column(
+        db.String(255),
+        nullable=True
+    )
+
+    github = db.Column(
+        db.String(255),
+        nullable=True
+    )
+
+    linkedin = db.Column(
+        db.String(255),
+        nullable=True
+    )
+
+    twitter = db.Column(
+        db.String(255),
+        nullable=True
+    )
+
+    # =====================================================
+    # Cybersecurity Profiles
+    # =====================================================
+
+    tryhackme = db.Column(
+        db.String(255),
+        nullable=True
+    )
+
+    hackthebox = db.Column(
+        db.String(255),
+        nullable=True
+    )
+
+    ctftime = db.Column(
+        db.String(255),
+        nullable=True
+    )
+
+    # =====================================================
     # Relationships
     # =====================================================
 
@@ -116,7 +202,6 @@ class User(UserMixin, db.Model):
         lazy=True
     )
 
-    # Announcements created by this user
     announcements = db.relationship(
         "Announcement",
         back_populates="author",
@@ -147,8 +232,7 @@ class User(UserMixin, db.Model):
     def __repr__(self):
 
         return f"<User {self.username}>"
-
-
+    
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(User, int(user_id))
