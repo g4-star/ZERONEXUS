@@ -1,0 +1,354 @@
+/* ==========================================================
+   ZERONEXUS TEAM CHAT
+   Discord • Slack • Teams Inspired
+========================================================== */
+
+.chat-card{
+
+    height:820px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    overflow:hidden;
+
+}
+
+/* ===========================
+   HEADER
+=========================== */
+
+.chat-card .card-header{
+
+    background:linear-gradient(
+        135deg,
+        rgba(0,191,255,.18),
+        rgba(0,229,255,.05)
+    );
+
+    border-bottom:1px solid rgba(255,255,255,.08);
+
+    padding:18px;
+
+}
+
+.chat-card .card-header h5{
+
+    font-weight:600;
+
+    margin-bottom:3px;
+
+}
+
+.chat-card .card-header small{
+
+    color:#00ff88;
+
+    font-weight:500;
+
+}
+
+/* ===========================
+   SEARCH
+=========================== */
+
+.chat-card .form-control{
+
+    background:#111d2f;
+
+    border:none;
+
+    color:white;
+
+    border-radius:12px;
+
+}
+
+.chat-card .form-control:focus{
+
+    box-shadow:
+
+        0 0 18px rgba(0,191,255,.35);
+
+}
+
+/* ===========================
+   CHANNELS
+=========================== */
+
+.chat-card .list-group{
+
+    gap:8px;
+
+}
+
+.chat-card .list-group-item{
+
+    border:none;
+
+    border-radius:12px;
+
+    transition:.3s;
+
+    cursor:pointer;
+
+    background:transparent;
+
+}
+
+.chat-card .list-group-item:hover{
+
+    background:rgba(255,255,255,.04);
+
+    transform:translateX(6px);
+
+}
+
+.chat-card .list-group-item.active{
+
+    background:
+
+        linear-gradient(
+
+            90deg,
+
+            #00bfff,
+
+            #008cff
+
+        );
+
+}
+
+/* ===========================
+   CHAT AREA
+=========================== */
+
+.chat-messages{
+
+    flex:1;
+
+    overflow-y:auto;
+
+    padding:20px;
+
+    background:
+
+        linear-gradient(
+
+            rgba(255,255,255,.01),
+
+            rgba(255,255,255,.03)
+
+        );
+
+}
+
+/* ===========================
+   MESSAGE
+=========================== */
+
+.message{
+
+    margin-bottom:20px;
+
+}
+
+.message strong{
+
+    color:white;
+
+}
+
+.message small{
+
+    color:#8d9ab4;
+
+}
+
+/* ===========================
+   CHAT BUBBLES
+=========================== */
+
+.chat-bubble{
+
+    margin-top:8px;
+
+    display:inline-block;
+
+    padding:14px 18px;
+
+    max-width:82%;
+
+    border-radius:18px;
+
+    background:#162133;
+
+    color:white;
+
+    position:relative;
+
+    transition:.3s;
+
+}
+
+.chat-bubble:hover{
+
+    transform:translateY(-2px);
+
+}
+
+.own-message{
+
+    background:
+
+        linear-gradient(
+
+            135deg,
+
+            #00bfff,
+
+            #008cff
+
+        );
+
+    color:white;
+
+}
+
+/* ===========================
+   TYPING
+=========================== */
+
+.typing{
+
+    padding:12px 20px;
+
+    color:#00bfff;
+
+    font-size:.9rem;
+
+}
+
+/* ===========================
+   INPUT
+=========================== */
+
+.chat-input{
+
+    padding:18px;
+
+    border-top:1px solid rgba(255,255,255,.08);
+
+    background:#101827;
+
+}
+
+.chat-input .input-group{
+
+    border-radius:16px;
+
+    overflow:hidden;
+
+}
+
+.chat-input button{
+
+    border:none;
+
+}
+
+.chat-input .btn{
+
+    transition:.3s;
+
+}
+
+.chat-input .btn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+/* ===========================
+   SEND
+=========================== */
+
+.chat-input .btn-info{
+
+    width:60px;
+
+}
+
+/* ===========================
+   SCROLLBAR
+=========================== */
+
+.chat-messages::-webkit-scrollbar{
+
+    width:7px;
+
+}
+
+.chat-messages::-webkit-scrollbar-thumb{
+
+    background:#00bfff;
+
+    border-radius:20px;
+
+}
+
+/* ===========================
+   ANIMATION
+=========================== */
+
+.message{
+
+    animation:slideMessage .4s ease;
+
+}
+
+@keyframes slideMessage{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(20px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+/* ===========================
+   MOBILE
+=========================== */
+
+@media(max-width:992px){
+
+    .chat-card{
+
+        height:650px;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .chat-bubble{
+
+        max-width:95%;
+
+    }
+
+}

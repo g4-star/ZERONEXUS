@@ -1,0 +1,297 @@
+/* ==========================================================
+   ZERONEXUS MODALS
+========================================================== */
+
+.modal-content{
+
+    background:rgba(14,22,36,.96);
+
+    backdrop-filter:blur(25px);
+
+    border-radius:24px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    overflow:hidden;
+
+    color:white;
+
+    box-shadow:
+
+        0 0 45px rgba(0,191,255,.18);
+
+}
+
+/* ===================================== */
+
+.modal-header{
+
+    background:
+
+        linear-gradient(
+
+            135deg,
+
+            rgba(0,191,255,.16),
+
+            rgba(0,191,255,.05)
+
+        );
+
+    border-bottom:1px solid rgba(255,255,255,.06);
+
+    padding:22px;
+
+}
+
+.modal-title{
+
+    font-weight:700;
+
+}
+
+.btn-close{
+
+    filter:invert(1);
+
+}
+
+/* ===================================== */
+
+.modal-body{
+
+    padding:30px;
+
+}
+
+/* ===================================== */
+
+.modal-footer{
+
+    background:rgba(255,255,255,.02);
+
+    border-top:1px solid rgba(255,255,255,.06);
+
+}
+
+/* ===================================== */
+
+.modal-backdrop.show{
+
+    backdrop-filter:blur(6px);
+
+}
+
+/* ===================================== */
+
+.modal.fade .modal-dialog{
+
+    transform:translateY(40px) scale(.96);
+
+    transition:.35s;
+
+}
+
+.modal.show .modal-dialog{
+
+    transform:translateY(0) scale(1);
+
+}
+
+/* ===================================== */
+
+.profile-section{
+
+    background:rgba(255,255,255,.03);
+
+    border-radius:16px;
+
+    padding:18px;
+
+    margin-bottom:18px;
+
+    border:1px solid rgba(255,255,255,.05);
+
+    transition:.3s;
+
+}
+
+.profile-section:hover{
+
+    border-color:#00bfff;
+
+    transform:translateY(-3px);
+
+}
+
+/* ===================================== */
+
+.profile-section h6{
+
+    color:#00bfff;
+
+    margin-bottom:12px;
+
+}
+
+/* ===================================== */
+
+.profile-item{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    padding:12px 0;
+
+    border-bottom:1px solid rgba(255,255,255,.05);
+
+}
+
+.profile-item:last-child{
+
+    border-bottom:none;
+
+}
+
+/* ===================================== */
+
+.link-button{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:15px;
+
+    margin-bottom:12px;
+
+    border-radius:14px;
+
+    background:rgba(255,255,255,.03);
+
+    color:white;
+
+    transition:.3s;
+
+}
+
+.link-button:hover{
+
+    background:rgba(0,191,255,.12);
+
+    color:#00bfff;
+
+    transform:translateX(8px);
+
+}
+
+/* ===================================== */
+
+.skill-pill{
+
+    display:inline-block;
+
+    padding:10px 18px;
+
+    margin:6px;
+
+    border-radius:30px;
+
+    background:#00bfff20;
+
+    border:1px solid #00bfff40;
+
+    transition:.3s;
+
+}
+
+.skill-pill:hover{
+
+    background:#00bfff;
+
+    color:#07111f;
+
+}
+
+/* ===================================== */
+
+.contact-card{
+
+    text-align:center;
+
+    padding:25px;
+
+}
+
+.contact-card i{
+
+    font-size:2rem;
+
+    color:#00bfff;
+
+    margin-bottom:12px;
+
+}
+
+/* ===================================== */
+
+.team-member{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:15px;
+
+    border-radius:16px;
+
+    transition:.3s;
+
+}
+
+.team-member:hover{
+
+    background:rgba(255,255,255,.04);
+
+}
+
+.team-member img{
+
+    width:60px;
+
+    height:60px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+}
+
+.member-status{
+
+    width:12px;
+
+    height:12px;
+
+    border-radius:50%;
+
+    background:#00ff88;
+
+    margin-left:auto;
+
+}
+
+/* ===================================== */
+
+.modal-btn{
+
+    border-radius:14px;
+
+    padding:10px 18px;
+
+}

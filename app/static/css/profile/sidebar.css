@@ -1,0 +1,373 @@
+/* ==========================================================
+   LEFT SIDEBAR
+========================================================== */
+
+.sidebar-card{
+
+    margin-bottom:24px;
+
+}
+
+/* ==========================================================
+   Quick Actions
+========================================================== */
+
+.quick-action{
+
+    width:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:14px 18px;
+
+    margin-bottom:12px;
+
+    border-radius:16px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    background:rgba(255,255,255,.03);
+
+    color:#fff;
+
+    transition:.35s ease;
+
+    cursor:pointer;
+
+}
+
+.quick-action i{
+
+    color:#00bfff;
+
+    font-size:1.1rem;
+
+}
+
+.quick-action:hover{
+
+    background:linear-gradient(
+        90deg,
+        rgba(0,191,255,.15),
+        rgba(0,229,255,.08)
+    );
+
+    border-color:#00bfff;
+
+    transform:translateX(8px);
+
+    box-shadow:
+
+        0 0 20px rgba(0,191,255,.18);
+
+}
+
+.quick-action span{
+
+    flex:1;
+
+    margin-left:15px;
+
+    font-weight:500;
+
+}
+
+.quick-action .bi-chevron-right{
+
+    color:#6c7ea5;
+
+}
+
+/* ==========================================================
+   XP Card
+========================================================== */
+
+.reputation-card{
+
+    text-align:center;
+
+    position:relative;
+
+    overflow:hidden;
+
+}
+
+.reputation-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:220px;
+
+    height:220px;
+
+    border-radius:50%;
+
+    background:
+
+        radial-gradient(
+
+            rgba(0,191,255,.22),
+
+            transparent 70%
+
+        );
+
+    top:-100px;
+
+    right:-100px;
+
+}
+
+.xp-number{
+
+    font-size:2.6rem;
+
+    font-weight:700;
+
+    color:#00bfff;
+
+}
+
+.level-badge{
+
+    display:inline-block;
+
+    margin-top:10px;
+
+    padding:8px 18px;
+
+    border-radius:30px;
+
+    background:#00bfff;
+
+    color:#07111f;
+
+    font-weight:600;
+
+}
+
+.reputation-progress{
+
+    height:10px;
+
+    margin-top:25px;
+
+    border-radius:30px;
+
+    overflow:hidden;
+
+}
+
+/* ==========================================================
+   Badges
+========================================================== */
+
+.badge-grid{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+}
+
+.skill-badge{
+
+    padding:10px 16px;
+
+    border-radius:30px;
+
+    background:rgba(0,191,255,.12);
+
+    color:#fff;
+
+    border:1px solid rgba(0,191,255,.25);
+
+    transition:.3s;
+
+}
+
+.skill-badge:hover{
+
+    background:#00bfff;
+
+    color:#07111f;
+
+    transform:translateY(-3px);
+
+    box-shadow:
+
+        0 0 18px rgba(0,191,255,.4);
+
+}
+
+/* ==========================================================
+   Sidebar Titles
+========================================================== */
+
+.sidebar-title{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    font-size:1rem;
+
+    margin-bottom:20px;
+
+    color:white;
+
+}
+
+.sidebar-title i{
+
+    color:#00bfff;
+
+}
+
+/* ==========================================================
+   Sidebar Links
+========================================================== */
+
+.sidebar-link{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:12px 15px;
+
+    margin-bottom:10px;
+
+    border-radius:14px;
+
+    color:#fff;
+
+    transition:.3s;
+
+}
+
+.sidebar-link:hover{
+
+    background:rgba(255,255,255,.05);
+
+    color:#00bfff;
+
+}
+
+.sidebar-link i{
+
+    width:22px;
+
+    text-align:center;
+
+}
+
+/* ==========================================================
+   User Rank
+========================================================== */
+
+.rank-card{
+
+    text-align:center;
+
+}
+
+.rank-circle{
+
+    width:130px;
+
+    height:130px;
+
+    margin:auto;
+
+    border-radius:50%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:
+
+        linear-gradient(
+            145deg,
+            #00bfff,
+            #0056ff
+        );
+
+    box-shadow:
+
+        0 0 35px rgba(0,191,255,.35);
+
+    font-size:2rem;
+
+    font-weight:bold;
+
+    color:white;
+
+}
+
+.rank-title{
+
+    margin-top:18px;
+
+    font-size:1.2rem;
+
+    font-weight:600;
+
+}
+
+.rank-description{
+
+    color:#98a5c0;
+
+}
+
+/* ==========================================================
+   Floating Effect
+========================================================== */
+
+.dashboard-card:hover .rank-circle{
+
+    transform:rotate(10deg) scale(1.06);
+
+    transition:.35s;
+
+}
+
+/* ==========================================================
+   Responsive
+========================================================== */
+
+@media(max-width:992px){
+
+    .quick-action:hover{
+
+        transform:none;
+
+    }
+
+    .rank-circle{
+
+        width:100px;
+
+        height:100px;
+
+        font-size:1.5rem;
+
+    }
+
+}

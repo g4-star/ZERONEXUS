@@ -1,0 +1,487 @@
+/* ==========================================================
+   DASHBOARD STATISTICS
+========================================================== */
+
+.stats-wrapper{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+    gap:25px;
+
+    margin-bottom:30px;
+
+}
+
+/* ==========================================================
+   Statistic Card
+========================================================== */
+
+.stat-card{
+
+    position:relative;
+
+    text-align:center;
+
+    padding:30px;
+
+    border-radius:24px;
+
+    overflow:hidden;
+
+    background:
+
+        linear-gradient(
+            145deg,
+            rgba(16,24,39,.95),
+            rgba(21,32,51,.90)
+        );
+
+    border:1px solid rgba(255,255,255,.08);
+
+    transition:.35s;
+
+}
+
+.stat-card:hover{
+
+    transform:translateY(-10px);
+
+    box-shadow:
+
+        0 0 35px rgba(0,191,255,.20),
+
+        0 20px 40px rgba(0,0,0,.45);
+
+}
+
+.stat-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:260px;
+
+    height:260px;
+
+    border-radius:50%;
+
+    top:-130px;
+
+    right:-130px;
+
+    background:
+
+        radial-gradient(
+
+            rgba(0,191,255,.18),
+
+            transparent 70%
+
+        );
+
+    animation:rotateGlow 14s linear infinite;
+
+}
+
+/* ==========================================================
+   SVG Circle
+========================================================== */
+
+.stat-circle{
+
+    position:relative;
+
+    width:170px;
+
+    height:170px;
+
+    margin:auto;
+
+}
+
+.stat-circle svg{
+
+    width:170px;
+
+    height:170px;
+
+    transform:rotate(-90deg);
+
+}
+
+.stat-circle circle{
+
+    fill:none;
+
+    stroke-width:10;
+
+    stroke-linecap:round;
+
+}
+
+.bg-circle{
+
+    stroke:rgba(255,255,255,.08);
+
+}
+
+.progress-circle{
+
+    stroke:#00bfff;
+
+    stroke-dasharray:377;
+
+    stroke-dashoffset:377;
+
+    animation:circleFill 2.5s ease forwards;
+
+    filter:
+
+        drop-shadow(0 0 12px rgba(0,191,255,.75));
+
+}
+
+/* ==========================================================
+   Circle Content
+========================================================== */
+
+.circle-content{
+
+    position:absolute;
+
+    inset:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+.circle-content h2{
+
+    font-size:2.4rem;
+
+    font-weight:700;
+
+    margin-bottom:5px;
+
+    color:white;
+
+}
+
+.circle-content small{
+
+    color:#9fb3d1;
+
+    letter-spacing:.6px;
+
+}
+
+/* ==========================================================
+   Different Colors
+========================================================== */
+
+.projects-circle .progress-circle{
+
+    stroke:#00bfff;
+
+}
+
+.meetings-circle .progress-circle{
+
+    stroke:#00ff9d;
+
+}
+
+.announcements-circle .progress-circle{
+
+    stroke:#ff6b6b;
+
+}
+
+.projects-circle{
+
+    box-shadow:
+
+        0 0 25px rgba(0,191,255,.10);
+
+}
+
+.meetings-circle{
+
+    box-shadow:
+
+        0 0 25px rgba(0,255,157,.10);
+
+}
+
+.announcements-circle{
+
+    box-shadow:
+
+        0 0 25px rgba(255,107,107,.10);
+
+}
+
+/* ==========================================================
+   Quick Insights
+========================================================== */
+
+.insight-card{
+
+    padding:18px;
+
+    border-radius:16px;
+
+    background:rgba(255,255,255,.03);
+
+    transition:.35s;
+
+    text-align:center;
+
+}
+
+.insight-card:hover{
+
+    background:rgba(0,191,255,.08);
+
+    transform:translateY(-5px);
+
+}
+
+.insight-card h4{
+
+    font-size:1.8rem;
+
+    margin-bottom:5px;
+
+    color:#00bfff;
+
+}
+
+.insight-card small{
+
+    color:#95a5c6;
+
+}
+
+/* ==========================================================
+   Progress Bars
+========================================================== */
+
+.analytics-progress{
+
+    margin-top:15px;
+
+    margin-bottom:25px;
+
+}
+
+.analytics-progress .progress{
+
+    height:12px;
+
+    border-radius:30px;
+
+    background:#0d1728;
+
+}
+
+.analytics-progress .progress-bar{
+
+    border-radius:30px;
+
+    animation:growWidth 2s ease;
+
+}
+
+/* ==========================================================
+   Hover Effects
+========================================================== */
+
+.stat-card:hover .circle-content h2{
+
+    transform:scale(1.1);
+
+    transition:.3s;
+
+}
+
+.stat-card:hover .progress-circle{
+
+    filter:
+
+        drop-shadow(0 0 20px rgba(0,191,255,.9));
+
+}
+
+/* ==========================================================
+   Counter Badge
+========================================================== */
+
+.live-badge{
+
+    position:absolute;
+
+    top:18px;
+
+    right:18px;
+
+    padding:6px 14px;
+
+    border-radius:20px;
+
+    background:#00bfff;
+
+    color:#08111d;
+
+    font-weight:600;
+
+    font-size:.75rem;
+
+}
+
+/* ==========================================================
+   Animations
+========================================================== */
+
+@keyframes circleFill{
+
+    from{
+
+        stroke-dashoffset:377;
+
+    }
+
+    to{
+
+        stroke-dashoffset:110;
+
+    }
+
+}
+
+@keyframes growWidth{
+
+    from{
+
+        width:0;
+
+    }
+
+}
+
+@keyframes rotateGlow{
+
+    from{
+
+        transform:rotate(0deg);
+
+    }
+
+    to{
+
+        transform:rotate(360deg);
+
+    }
+
+}
+
+/* ==========================================================
+   Pulse
+========================================================== */
+
+.stat-card:hover::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    border-radius:24px;
+
+    border:1px solid rgba(0,191,255,.25);
+
+    animation:pulseBorder 1.5s infinite;
+
+}
+
+@keyframes pulseBorder{
+
+    0%{
+
+        opacity:0;
+
+        transform:scale(1);
+
+    }
+
+    50%{
+
+        opacity:1;
+
+    }
+
+    100%{
+
+        opacity:0;
+
+        transform:scale(1.03);
+
+    }
+
+}
+
+/* ==========================================================
+   Mobile
+========================================================== */
+
+@media(max-width:992px){
+
+    .stat-circle{
+
+        width:140px;
+
+        height:140px;
+
+    }
+
+    .stat-circle svg{
+
+        width:140px;
+
+        height:140px;
+
+    }
+
+    .circle-content h2{
+
+        font-size:2rem;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .stats-wrapper{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .stat-card{
+
+        padding:20px;
+
+    }
+
+}

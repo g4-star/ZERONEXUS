@@ -1,0 +1,458 @@
+/* ==========================================================
+   PROFILE HEADER
+========================================================== */
+
+.profile-header-card{
+
+    border-radius:26px;
+
+    overflow:hidden;
+
+    background:rgba(17,25,40,.88);
+
+    backdrop-filter:blur(22px);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    position:relative;
+
+}
+
+/* ==========================================================
+   COVER
+========================================================== */
+
+.profile-cover{
+
+    position:relative;
+
+    min-height:300px;
+
+    padding:45px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #07111f 0%,
+            #0d2238 30%,
+            #103f63 65%,
+            #00bfff 100%
+        );
+
+    overflow:hidden;
+
+}
+
+/* Animated background */
+
+.profile-cover::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:700px;
+
+    height:700px;
+
+    background:
+
+        radial-gradient(
+
+            rgba(0,191,255,.35),
+
+            transparent 70%
+
+        );
+
+    top:-250px;
+
+    right:-250px;
+
+    animation:floatGlow 12s linear infinite;
+
+}
+
+.profile-cover::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+
+        linear-gradient(
+
+            rgba(0,0,0,.15),
+
+            rgba(0,0,0,.45)
+
+        );
+
+}
+
+/* ==========================================================
+   Overlay
+========================================================== */
+
+.profile-overlay{
+
+    position:absolute;
+
+    inset:0;
+
+    backdrop-filter:blur(1px);
+
+}
+
+/* ==========================================================
+   Avatar
+========================================================== */
+
+.avatar-wrapper{
+
+    position:relative;
+
+    display:inline-block;
+
+    z-index:5;
+
+}
+
+.profile-avatar{
+
+    width:170px;
+
+    height:170px;
+
+    object-fit:cover;
+
+    border-radius:50%;
+
+    border:6px solid rgba(255,255,255,.18);
+
+    background:#091321;
+
+    transition:.4s;
+
+    box-shadow:
+
+        0 0 25px rgba(0,191,255,.45);
+
+}
+
+.profile-avatar:hover{
+
+    transform:scale(1.05);
+
+    box-shadow:
+
+        0 0 45px rgba(0,191,255,.8);
+
+}
+
+.avatar-placeholder{
+
+    width:170px;
+
+    height:170px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:85px;
+
+    color:white;
+
+    background:
+
+        linear-gradient(
+
+            145deg,
+
+            #00bfff,
+
+            #0056ff
+
+        );
+
+    box-shadow:
+
+        0 0 30px rgba(0,191,255,.55);
+
+}
+
+/* ==========================================================
+   Online Status
+========================================================== */
+
+.online-status{
+
+    position:absolute;
+
+    right:18px;
+
+    bottom:18px;
+
+    width:22px;
+
+    height:22px;
+
+    border-radius:50%;
+
+    background:#00ff88;
+
+    border:4px solid #08121d;
+
+    animation:pulseOnline 2s infinite;
+
+}
+
+/* ==========================================================
+   User Information
+========================================================== */
+
+.profile-cover h2{
+
+    font-size:2.3rem;
+
+    font-weight:700;
+
+    letter-spacing:.5px;
+
+    position:relative;
+
+    z-index:5;
+
+}
+
+.profile-cover h5{
+
+    color:#d9e6ff;
+
+    position:relative;
+
+    z-index:5;
+
+}
+
+.profile-cover .badge{
+
+    font-size:.9rem;
+
+    position:relative;
+
+    z-index:5;
+
+}
+
+.profile-stat{
+
+    display:inline-flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:90px;
+
+    padding:12px 18px;
+
+    border-radius:16px;
+
+    background:rgba(255,255,255,.08);
+
+    backdrop-filter:blur(12px);
+
+    color:white;
+
+    transition:.35s;
+
+}
+
+.profile-stat:hover{
+
+    transform:translateY(-4px);
+
+    background:rgba(0,191,255,.15);
+
+    box-shadow:
+
+        0 0 18px rgba(0,191,255,.25);
+
+}
+
+.profile-stat strong{
+
+    font-size:1.4rem;
+
+}
+
+/* ==========================================================
+   Action Buttons
+========================================================== */
+
+.profile-cover .btn{
+
+    border-radius:14px;
+
+    padding:10px 18px;
+
+    font-weight:600;
+
+    transition:.35s;
+
+}
+
+.profile-cover .btn:hover{
+
+    transform:translateY(-3px);
+
+}
+
+.profile-cover .btn-info{
+
+    box-shadow:
+
+        0 0 20px rgba(0,191,255,.35);
+
+}
+
+/* ==========================================================
+   Decorative Grid
+========================================================== */
+
+.profile-cover .container-fluid{
+
+    position:relative;
+
+    z-index:10;
+
+}
+
+.profile-cover::before{
+
+    background-image:
+
+        radial-gradient(
+
+            rgba(255,255,255,.08) 2px,
+
+            transparent 2px
+
+        );
+
+    background-size:35px 35px;
+
+}
+
+/* ==========================================================
+   Floating Glow
+========================================================== */
+
+@keyframes floatGlow{
+
+    0%{
+
+        transform:translateY(0) rotate(0deg);
+
+    }
+
+    50%{
+
+        transform:translateY(25px) rotate(180deg);
+
+    }
+
+    100%{
+
+        transform:translateY(0) rotate(360deg);
+
+    }
+
+}
+
+/* ==========================================================
+   Online Pulse
+========================================================== */
+
+@keyframes pulseOnline{
+
+    0%{
+
+        box-shadow:0 0 0 0 rgba(0,255,136,.6);
+
+    }
+
+    70%{
+
+        box-shadow:0 0 0 15px rgba(0,255,136,0);
+
+    }
+
+    100%{
+
+        box-shadow:0 0 0 0 rgba(0,255,136,0);
+
+    }
+
+}
+
+/* ==========================================================
+   Responsive
+========================================================== */
+
+@media(max-width:992px){
+
+    .profile-cover{
+
+        text-align:center;
+
+        padding:30px;
+
+    }
+
+    .profile-avatar,
+
+    .avatar-placeholder{
+
+        width:140px;
+
+        height:140px;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .profile-cover{
+
+        min-height:auto;
+
+    }
+
+    .profile-cover h2{
+
+        font-size:1.8rem;
+
+    }
+
+    .profile-stat{
+
+        width:100%;
+
+        margin-bottom:10px;
+
+    }
+
+}

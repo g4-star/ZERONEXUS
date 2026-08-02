@@ -1,0 +1,175 @@
+<!-- ========================================= -->
+<!-- CONTRIBUTION STATISTICS -->
+<!-- ========================================= -->
+
+<div class="card border-0 shadow dashboard-card mb-4">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+
+        <h5 class="mb-0">
+
+            <i class="bi bi-bar-chart-fill text-primary"></i>
+
+            Contribution Statistics
+
+        </h5>
+
+        <span class="badge bg-primary">
+
+            This Month
+
+        </span>
+
+    </div>
+
+    <div class="card-body">
+
+        <!-- Projects -->
+
+        <div class="mb-4">
+
+            <div class="d-flex justify-content-between">
+
+                <strong>Projects Created</strong>
+
+                <span>{{ user.projects|length }}</span>
+
+            </div>
+
+            <div class="progress mt-2" style="height:10px;">
+
+                <div class="progress-bar bg-info progress-bar-striped progress-bar-animated"
+                     style="width:85%;">
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Announcements -->
+
+        <div class="mb-4">
+
+            <div class="d-flex justify-content-between">
+
+                <strong>Announcements</strong>
+
+                <span>{{ user.announcements|length }}</span>
+
+            </div>
+
+            <div class="progress mt-2" style="height:10px;">
+
+                <div class="progress-bar bg-success progress-bar-striped progress-bar-animated"
+                     style="width:60%;">
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Meetings -->
+
+        <div class="mb-4">
+
+            <div class="d-flex justify-content-between">
+
+                <strong>Meetings</strong>
+
+                <span>0</span>
+
+            </div>
+
+            <div class="progress mt-2" style="height:10px;">
+
+                <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated"
+                     style="width:35%;">
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Academy -->
+
+        <div class="mb-4">
+
+            <div class="d-flex justify-content-between">
+
+                <strong>ZeroNexus AI Academy</strong>
+
+                <span>72%</span>
+
+            </div>
+
+            <div class="progress mt-2" style="height:10px;">
+
+                <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated"
+                     style="width:72%;">
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <hr>
+
+        <div class="row text-center">
+
+            <div class="col">
+
+                <h4 class="text-info">
+
+                    145
+
+                </h4>
+
+                <small class="text-secondary">
+
+                    Commits
+
+                </small>
+
+            </div>
+
+            <div class="col">
+
+                <h4 class="text-success">
+
+                    28
+
+                </h4>
+
+                <small class="text-secondary">
+
+                    Collaborations
+
+                </small>
+
+            </div>
+
+            <div class="col">
+
+                <h4 class="text-warning">
+
+                    12
+
+                </h4>
+
+                <small class="text-secondary">
+
+                    Certificates
+
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

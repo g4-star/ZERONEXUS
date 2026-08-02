@@ -1,0 +1,180 @@
+/* ==========================================================
+   ACTIVITY TIMELINE
+========================================================== */
+
+.timeline{
+
+    position:relative;
+
+    padding-left:40px;
+
+}
+
+.timeline::before{
+
+    content:"";
+
+    position:absolute;
+
+    left:18px;
+
+    top:0;
+
+    bottom:0;
+
+    width:3px;
+
+    border-radius:10px;
+
+    background:linear-gradient(
+        180deg,
+        #00bfff,
+        #00ff9d,
+        #6f42c1
+    );
+
+}
+
+/* ========================================== */
+
+.timeline-item{
+
+    position:relative;
+
+    margin-bottom:35px;
+
+    animation:fadeTimeline .5s ease;
+
+}
+
+.timeline-item:last-child{
+
+    margin-bottom:0;
+
+}
+
+/* ========================================== */
+
+.timeline-icon{
+
+    position:absolute;
+
+    left:-33px;
+
+    width:42px;
+
+    height:42px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:#fff;
+
+    font-size:18px;
+
+    border:3px solid rgba(255,255,255,.12);
+
+    box-shadow:
+
+        0 0 18px rgba(0,191,255,.35);
+
+}
+
+.timeline-content{
+
+    background:rgba(255,255,255,.03);
+
+    border:1px solid rgba(255,255,255,.06);
+
+    border-radius:18px;
+
+    padding:18px 22px;
+
+    transition:.35s;
+
+}
+
+.timeline-content:hover{
+
+    transform:translateX(8px);
+
+    border-color:#00bfff;
+
+    box-shadow:
+
+        0 0 18px rgba(0,191,255,.15);
+
+}
+
+.timeline-content strong{
+
+    color:#fff;
+
+    font-size:1rem;
+
+}
+
+.timeline-content p{
+
+    margin:8px 0;
+
+    color:#aebbd5;
+
+}
+
+.timeline-content small{
+
+    color:#7384a5;
+
+}
+
+/* ========================================== */
+
+@keyframes fadeTimeline{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(25px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+/* ========================================== */
+
+@media(max-width:768px){
+
+    .timeline{
+
+        padding-left:25px;
+
+    }
+
+    .timeline-icon{
+
+        width:34px;
+
+        height:34px;
+
+        left:-24px;
+
+        font-size:14px;
+
+    }
+
+}
