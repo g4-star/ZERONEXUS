@@ -3,7 +3,6 @@ from flask_login import login_user, logout_user, login_required, current_user
 
 from app.extensions import db
 from app.models import (
-    AdminUser,
     Team,
     MemberProfile,
     Project,
@@ -35,13 +34,14 @@ import string
 # ==========================================
 
 admin_bp = Blueprint(
-    'admin',
+    "admin",
     __name__,
-    url_prefix='/admin'
+    url_prefix="/admin"
 )
 
 
 def generate_temp_password():
+    """Generate a temporary password for invited users."""
 
     chars = string.ascii_letters + string.digits
 
@@ -52,21 +52,26 @@ def generate_temp_password():
 
 
 def generate_username(full_name):
+    """
+    Generate a unique username from a user's full name.
+
+    Example:
+        John Doe  -> johndoe
+        John Doe  -> johndoe1
+        John Doe  -> johndoe2
+    """
 
     base_username = (
-        full_name.lower()
+        full_name.strip()
+        .lower()
         .replace(" ", "")
     )
 
     username = base_username
     counter = 1
 
-    while User.query.filter_by(
-        username=username
-    ).first():
-
+    while User.query.filter_by(username=username).first():
         username = f"{base_username}{counter}"
-
         counter += 1
 
     return username
@@ -76,25 +81,57 @@ def inject_admin_settings():
     settings = SiteSetting.query.first()
     return {'admin_settings': settings}
 
-@admin_bp.route('/login', methods=['GET', 'POST'])
+from sqlalchemy import or_
+
+
+@admin_bp.route("/login", methods=["GET", "POST"])
 def login():
+
     if current_user.is_authenticated:
-        return redirect(url_for('admin.dashboard'))
+
+        if current_user.role == "super_admin":
+            return redirect(url_for("admin.dashboard"))
+
+        elif current_user.role in ("team_admin", "team_lead"):
+            return redirect(url_for("team.dashboard"))
+
+        return redirect(url_for("user.profile"))
 
     form = AdminLoginForm()
 
     if form.validate_on_submit():
-        admin = AdminUser.query.filter_by(username=form.username.data).first()
+
+        admin = User.query.filter(
+            or_(
+                User.username == form.username.data,
+                User.email == form.username.data
+            ),
+            User.role == "super_admin"
+        ).first()
 
         if admin and admin.check_password(form.password.data):
+
             login_user(admin)
-            return redirect(url_for('admin.dashboard'))
 
-        flash('Invalid credentials.', 'danger')
+            flash(
+                "Welcome back.",
+                "success"
+            )
 
-    return render_template('admin/login.html', form=form)
+            return redirect(
+                url_for("admin.dashboard")
+            )
 
+        flash(
+            "Invalid credentials.",
+            "danger"
+        )
 
+    return render_template(
+        "admin/login.html",
+        form=form
+    )
+    
 @admin_bp.route("/dashboard")
 @login_required
 @super_admin_required
@@ -159,17 +196,14 @@ def add_member():
 
     form = AddMemberForm()
 
-
     teams = Team.query.order_by(
         Team.name.asc()
     ).all()
-
 
     form.team_id.choices = [
         (team.id, team.name)
         for team in teams
     ]
-
 
     if form.validate_on_submit():
 
@@ -180,76 +214,62 @@ def add_member():
             # ==============================
 
             member = MemberProfile(
-
                 full_name=form.full_name.data,
-
                 role=form.role.data,
-
                 bio=form.bio.data,
-
                 linkedin_url=form.linkedin_url.data,
-
                 github_url=form.github_url.data,
-
                 portfolio_url=form.portfolio_url.data,
-
                 email=form.email.data,
-
                 whatsapp_number=form.whatsapp_number.data,
-
                 skills=form.skills.data,
-
                 team_id=form.team_id.data
-
             )
 
-
             db.session.add(member)
-
-
 
             # ==============================
             # Create Login Account
             # ==============================
 
-            username = (
+            username = generate_username(
                 form.full_name.data
-                .lower()
-                .replace(" ", "")
             )
-
 
             temporary_password = generate_temp_password()
 
-
-
             user = User(
-
                 username=username,
-
                 email=form.email.data,
-
-                role="member",
-
+                role=form.role.data,
                 team_id=form.team_id.data
-
             )
-
 
             user.set_password(
                 temporary_password
             )
 
-
             db.session.add(user)
 
+            # ==============================
+            # Assign Team Admin
+            # ==============================
 
+            if user.role == "team_admin":
 
-            # Save both records
+                team = Team.query.get(
+                    user.team_id
+                )
+
+                if team:
+
+                    team.team_admin = user
+
+            # ==============================
+            # Save Records
+            # ==============================
 
             db.session.commit()
-
-
 
             # ==============================
             # Send Invitation Email
@@ -262,12 +282,10 @@ def add_member():
                     temporary_password
                 )
 
-
                 flash(
                     "Member account created and invitation email sent.",
                     "success"
                 )
-
 
             except Exception as e:
 
@@ -275,42 +293,32 @@ def add_member():
                     f"Invitation Email Error: {e}"
                 )
 
-
                 flash(
-                    "Account created but email failed.",
+                    "Account created but invitation email failed.",
                     "warning"
                 )
 
-
-
             return redirect(
                 url_for(
-                    'admin.manage_members'
+                    "admin.manage_members"
                 )
             )
 
-
-
         except Exception as e:
 
-
             db.session.rollback()
-
 
             print(
                 f"Member Creation Error: {e}"
             )
-
 
             flash(
                 f"Error creating member: {e}",
                 "danger"
             )
 
-
-
     return render_template(
-        'admin/add_member.html',
+        "admin/add_member.html",
         form=form
     )
     

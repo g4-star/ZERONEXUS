@@ -75,8 +75,16 @@ class Team(db.Model):
         db.String(255),
         default='img/placeholders/team_banner_placeholder.jpg'
     )
+    
+    # =====================================
+    # Team Administrator Account
+    # =====================================
 
-
+    team_admin_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        nullable=True
+    )
 
     # =====================================
     # Public Profiles
@@ -97,22 +105,22 @@ class Team(db.Model):
     # New Authentication System
     # =====================================
 
-    members = db.relationship(
-        'MemberProfile',
-        backref='team',
-        lazy=True,
-        cascade='all, delete-orphan'
-    )
-
-
     users = db.relationship(
         "User",
         back_populates="team",
+        foreign_keys="User.team_id",
         lazy=True,
-        cascade="all, delete-orphan"
+        cascade='all, delete-orphan'
+    )
+    
+    team_admin = db.relationship(
+        "User",
+        foreign_keys=[team_admin_id],
+        uselist=False
     )
 
 
+    
     # =====================================
     # Team Projects
     # =====================================

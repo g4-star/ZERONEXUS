@@ -25,7 +25,6 @@ class CreateUserForm(FlaskForm):
         ]
     )
 
-
     email = StringField(
         "Email",
         validators=[
@@ -34,34 +33,37 @@ class CreateUserForm(FlaskForm):
         ]
     )
 
-
     # ===============================
     # User Role
     #
-    # member:
-    # - Can edit own profile only
+    # member
+    # - Can edit own profile
+    # - Can participate in team discussions
+    # - Can view team projects
     #
-    # team_lead:
+    # team_lead
     # - Manages assigned team
-    # - Creates projects
+    # - Creates and manages projects
     # - Creates meetings
+    # - Posts announcements
     # - Manages team workspace
-    # - Cannot add/remove users
+    # - Cannot add/remove members
     #
+    # Note:
+    # super_admin is NOT created from this form.
+    # It is created manually by the system.
     # ===============================
 
     role = SelectField(
         "Role",
         choices=[
             ("member", "Member"),
-            ("team_lead", "Team Lead"),
-            ("team_admin", "Team Admin")
-       ],
+            ("team_lead", "Team Lead")
+        ],
         validators=[
             DataRequired()
         ]
     )
-
 
     # ===============================
     # Team Assignment
@@ -74,7 +76,6 @@ class CreateUserForm(FlaskForm):
             DataRequired()
         ]
     )
-
 
     # ===============================
     # Submit Button

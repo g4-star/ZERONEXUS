@@ -48,7 +48,3 @@ class AdminUser(UserMixin, db.Model):
             password
         )
 
-
-@login_manager.user_loader
-def load_user(user_id):
-    return AdminUser.query.get(int(user_id))

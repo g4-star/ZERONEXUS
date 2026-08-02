@@ -171,17 +171,40 @@ def activate_account(token):
 
     if form.validate_on_submit():
 
-        user.set_password(
-            form.password.data
-        )
+        try:
 
-        user.is_active = True
-        user.must_change_password = False
-        user.activation_token = None
+            print("========== ACTIVATION START ==========")
+            print("STEP 1")
 
-        db.session.commit()
+            user.set_password(
+                form.password.data
+            )
 
-        login_user(user)
+            print("STEP 2")
+
+            user.is_active = True
+            user.must_change_password = False
+            user.activation_token = None
+
+            print("STEP 3")
+
+            db.session.commit()
+
+            print("STEP 4 - DATABASE COMMIT SUCCESS")
+
+            login_user(user)
+
+            print("STEP 5 - LOGIN SUCCESS")
+            print("ROLE =", user.role)
+
+        except Exception:
+
+            db.session.rollback()
+
+            import traceback
+            traceback.print_exc()
+
+            raise
 
         flash(
             "Account activated successfully.",

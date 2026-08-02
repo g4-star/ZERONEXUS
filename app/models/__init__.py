@@ -1,4 +1,3 @@
-from .admin_user import AdminUser
 from .team import Team
 from .member_profile import MemberProfile
 from .project import Project

@@ -7,7 +7,7 @@ from werkzeug.security import (
     check_password_hash
 )
 
-from app.extensions import db
+from app.extensions import db, login_manager
 
 
 class User(UserMixin, db.Model):
@@ -45,16 +45,17 @@ class User(UserMixin, db.Model):
     )
 
     # =====================================================
-    # User Role
-    # admin
+    # User Roles
+    #
+    # super_admin
     # team_lead
     # member
     # =====================================================
 
     role = db.Column(
         db.String(50),
-        default="member",
-        nullable=False
+        nullable=False,
+        default="member"
     )
 
     # =====================================================
@@ -99,7 +100,8 @@ class User(UserMixin, db.Model):
 
     team = db.relationship(
         "Team",
-        back_populates="users"
+        back_populates="users",
+        foreign_keys=[team_id]
     )
 
     member_profile = db.relationship(
@@ -146,3 +148,8 @@ class User(UserMixin, db.Model):
     def __repr__(self):
 
         return f"<User {self.username}>"
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.get(User, int(user_id))

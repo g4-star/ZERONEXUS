@@ -105,7 +105,7 @@ def create_app(config_name=None):
     # Flask Shell
     @app.shell_context_processor
     def make_shell_context():
-        from app.models import Team, MemberProfile, Project, AdminUser
+        from app.models import Team, MemberProfile, Project, User
         from app.models.course import Course
         from app.models.lesson import Lesson
         from app.models.progress import UserProgress
@@ -115,7 +115,7 @@ def create_app(config_name=None):
             "Team": Team,
             "MemberProfile": MemberProfile,
             "Project": Project,
-            "AdminUser": AdminUser,
+            "User": User,
             "Course": Course,
             "Lesson": Lesson,
             "UserProgress": UserProgress,
