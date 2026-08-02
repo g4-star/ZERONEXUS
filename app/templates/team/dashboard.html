@@ -126,179 +126,232 @@
     </div>
 
     <!-- ========================================= -->
-    <!-- QUICK ACTIONS -->
-    <!-- ========================================= -->
+<!-- QUICK ACTIONS -->
+<!-- ========================================= -->
 
-    <div class="card bg-dark border-info shadow mb-5">
+<div class="card bg-dark border-info shadow mb-5">
 
-        <div class="card-header">
+    <div class="card-header">
 
-            <h4 class="mb-0 text-info">
+        <h4 class="mb-0 text-info">
 
-                <i class="bi bi-lightning-charge-fill me-2"></i>
+            <i class="bi bi-grid-fill me-2"></i>
 
-                Quick Actions
+            Workspace
 
-            </h4>
+        </h4>
 
-        </div>
+    </div>
 
-        <div class="card-body">
+    <div class="card-body">
 
-            {% if user.role == "super_admin" %}
+        <div class="row g-4">
 
-            <div class="row g-3">
+            <div class="col-lg-3 col-md-4 col-6">
 
-                <div class="col-md-4">
+                <a href="{{ url_for('team.projects') }}"
+                   class="text-decoration-none">
 
-                    <a href="{{ url_for('team.members') }}"
-                       class="btn btn-info w-100 py-3">
+                    <div class="card bg-black border-warning h-100 text-center shadow">
 
-                        <i class="bi bi-person-plus-fill me-2"></i>
+                        <div class="card-body">
 
-                        Manage Members
+                            <i class="bi bi-folder-fill text-warning fs-1"></i>
 
-                    </a>
+                            <h6 class="mt-3 text-light">
 
-                </div>
+                                Projects
 
-                <div class="col-md-4">
+                            </h6>
 
-                    <a href="{{ url_for('team.projects') }}"
-                       class="btn btn-warning w-100 py-3">
+                        </div>
 
-                        <i class="bi bi-folder-fill me-2"></i>
+                    </div>
 
-                        Manage Projects
-
-                    </a>
-
-                </div>
-
-                <div class="col-md-4">
-
-                    <a href="{{ url_for('team.meetings') }}"
-                       class="btn btn-success w-100 py-3">
-
-                        <i class="bi bi-calendar-event-fill me-2"></i>
-
-                        Meetings
-
-                    </a>
-
-                </div>
-
-                <div class="col-md-6">
-
-                    <a href="{{ url_for('team.announcements') }}"
-                       class="btn btn-danger w-100 py-3">
-
-                        <i class="bi bi-megaphone-fill me-2"></i>
-
-                        Announcements
-
-                    </a>
-
-                </div>
-
-                <div class="col-md-6">
-
-                    <a href="{{ url_for('team.messages') }}"
-                       class="btn btn-secondary w-100 py-3">
-
-                        <i class="bi bi-chat-dots-fill me-2"></i>
-
-                        Team Chat
-
-                    </a>
-
-                </div>
+                </a>
 
             </div>
 
-            {% elif user.role == "team_lead" %}
+            <div class="col-lg-3 col-md-4 col-6">
 
-            <div class="row g-3">
+                <a href="{{ url_for('team.members') }}"
+                   class="text-decoration-none">
 
-                <div class="col-md-4">
+                    <div class="card bg-black border-info h-100 text-center shadow">
 
-                    <a href="{{ url_for('team.projects') }}"
-                       class="btn btn-warning w-100 py-3">
+                        <div class="card-body">
 
-                        Manage Projects
+                            <i class="bi bi-people-fill text-info fs-1"></i>
 
-                    </a>
+                            <h6 class="mt-3 text-light">
 
-                </div>
+                                Members
 
-                <div class="col-md-4">
+                            </h6>
 
-                    <a href="{{ url_for('team.meetings') }}"
-                       class="btn btn-success w-100 py-3">
+                        </div>
 
-                        Meetings
+                    </div>
 
-                    </a>
-
-                </div>
-
-                <div class="col-md-4">
-
-                    <a href="{{ url_for('team.messages') }}"
-                       class="btn btn-secondary w-100 py-3">
-
-                        Team Chat
-
-                    </a>
-
-                </div>
+                </a>
 
             </div>
 
-            {% else %}
+            <div class="col-lg-3 col-md-4 col-6">
 
-            <div class="row g-3">
+                <a href="{{ url_for('team.meetings') }}"
+                   class="text-decoration-none">
 
-                <div class="col-md-4">
+                    <div class="card bg-black border-success h-100 text-center shadow">
 
-                    <a href="{{ url_for('team.projects') }}"
-                       class="btn btn-warning w-100 py-3">
+                        <div class="card-body">
 
-                        My Projects
+                            <i class="bi bi-calendar-event-fill text-success fs-1"></i>
 
-                    </a>
+                            <h6 class="mt-3 text-light">
 
-                </div>
+                                Meetings
 
-                <div class="col-md-4">
+                            </h6>
 
-                    <a href="{{ url_for('team.meetings') }}"
-                       class="btn btn-success w-100 py-3">
+                        </div>
 
-                        My Meetings
+                    </div>
 
-                    </a>
-
-                </div>
-
-                <div class="col-md-4">
-
-                    <a href="{{ url_for('team.messages') }}"
-                       class="btn btn-secondary w-100 py-3">
-
-                        Team Chat
-
-                    </a>
-
-                </div>
+                </a>
 
             </div>
 
-            {% endif %}
+            <div class="col-lg-3 col-md-4 col-6">
+
+                <a href="{{ url_for('team.announcements') }}"
+                   class="text-decoration-none">
+
+                    <div class="card bg-black border-danger h-100 text-center shadow">
+
+                        <div class="card-body">
+
+                            <i class="bi bi-megaphone-fill text-danger fs-1"></i>
+
+                            <h6 class="mt-3 text-light">
+
+                                Announcements
+
+                            </h6>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+            <div class="col-lg-3 col-md-4 col-6">
+
+                <a href="{{ url_for('team.messages') }}"
+                   class="text-decoration-none">
+
+                    <div class="card bg-black border-primary h-100 text-center shadow">
+
+                        <div class="card-body">
+
+                            <i class="bi bi-chat-dots-fill text-primary fs-1"></i>
+
+                            <h6 class="mt-3 text-light">
+
+                                Team Chat
+
+                            </h6>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+            <div class="col-lg-3 col-md-4 col-6">
+
+                <a href="{{ url_for('user.profile') }}"
+                   class="text-decoration-none">
+
+                    <div class="card bg-black border-secondary h-100 text-center shadow">
+
+                        <div class="card-body">
+
+                            <i class="bi bi-person-circle text-secondary fs-1"></i>
+
+                            <h6 class="mt-3 text-light">
+
+                                My Profile
+
+                            </h6>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+            <div class="col-lg-3 col-md-4 col-6">
+
+                <a href="#"
+                   class="text-decoration-none">
+
+                    <div class="card bg-black border-info h-100 text-center shadow">
+
+                        <div class="card-body">
+
+                            <i class="bi bi-robot text-info fs-1"></i>
+
+                            <h6 class="mt-3 text-light">
+
+                                Nexus AI
+
+                            </h6>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+            <div class="col-lg-3 col-md-4 col-6">
+
+                <a href="#"
+                   class="text-decoration-none">
+
+                    <div class="card bg-black border-light h-100 text-center shadow">
+
+                        <div class="card-body">
+
+                            <i class="bi bi-bar-chart-fill text-light fs-1"></i>
+
+                            <h6 class="mt-3 text-light">
+
+                                Analytics
+
+                            </h6>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
 
         </div>
 
     </div>
+
+</div>
 
     <!-- ========================================= -->
     <!-- RECENT PROJECTS -->

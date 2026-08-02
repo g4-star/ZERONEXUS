@@ -1,32 +1,155 @@
 {% extends "base.html" %}
 
 {% block title %}
-Team Messages
+Team Chat
 {% endblock %}
 
 {% block content %}
 
 <div class="container py-4">
 
-    <h2>Team Chat</h2>
+<div class="card bg-dark border-info shadow-lg">
 
-    <p class="text-muted">
-        Team communication will appear here.
-    </p>
+<div class="card-header d-flex justify-content-between">
 
-    <div class="card">
+<h3 class="text-info">
 
-        <div class="card-body">
+💬 {{ team.name }} Chat
 
-            <p class="text-muted text-center">
+</h3>
 
-                No messages yet.
+<span class="badge bg-info">
 
-            </p>
+{{ messages|length }} Messages
 
-        </div>
+</span>
 
-    </div>
+</div>
+
+<div class="card-body"
+     style="height:500px;
+            overflow-y:auto;">
+
+{% if messages %}
+
+{% for message in messages %}
+
+<div class="mb-4">
+
+<div class="d-flex">
+
+<div class="me-3">
+
+{% if message.author.profile_image %}
+
+<img
+src="{{ message.author.profile_image }}"
+width="50"
+height="50"
+class="rounded-circle border border-info"
+style="object-fit:cover;">
+
+{% else %}
+
+<i class="bi bi-person-circle
+text-info"
+style="font-size:45px;"></i>
+
+{% endif %}
+
+</div>
+
+<div>
+
+<h6 class="mb-1">
+
+{{ message.author.username }}
+
+<span class="badge bg-secondary">
+
+{{ message.author.role.replace("_"," ").title() }}
+
+</span>
+
+</h6>
+
+<div class="bg-secondary rounded p-3">
+
+{{ message.message }}
+
+</div>
+
+<small class="text-muted">
+
+{{ message.created_at.strftime("%d %b %Y %H:%M") }}
+
+</small>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<div class="text-center py-5">
+
+<h4 class="text-secondary">
+
+No messages yet
+
+</h4>
+
+<p>
+
+Start the conversation!
+
+</p>
+
+</div>
+
+{% endif %}
+
+</div>
+
+<div class="card-footer">
+
+<form method="POST">
+
+{{ form.hidden_tag() }}
+
+<div class="input-group">
+
+{{ form.message(
+
+class="form-control",
+
+rows="2",
+
+placeholder="Type your message..."
+
+) }}
+
+<button
+class="btn btn-info"
+type="submit">
+
+<i class="bi bi-send-fill"></i>
+
+Send
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
 
 </div>
 

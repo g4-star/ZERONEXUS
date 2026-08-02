@@ -4,7 +4,8 @@ from flask import (
     redirect,
     url_for,
     flash,
-    session
+    session,
+    request
 )
 
 from flask_login import (
@@ -33,8 +34,10 @@ from app.models import (
     Team,
     Project,
     Meeting,
-    Announcement
+    Announcement,
+    TeamMessage
 )
+from .message_forms import MessageForm
 
 
 def require_active_team():
@@ -395,19 +398,60 @@ def members():
 
 
 # =====================================================
-# TEAM MESSAGES
+# TEAM CHAT
 # =====================================================
 
-@team_bp.route("/messages")
+@team_bp.route(
+    "/messages",
+    methods=["GET", "POST"]
+)
 @login_required
 @member_required
 def messages():
 
-    if current_user.team is None:
-        abort(404)
+    team = require_active_team()
+
+    form = MessageForm()
+
+    if form.validate_on_submit():
+
+        message = TeamMessage(
+
+            message=form.message.data,
+
+            team_id=team.id,
+
+            user_id=current_user.id
+
+        )
+
+        db.session.add(message)
+
+        db.session.commit()
+
+        flash(
+            "Message sent.",
+            "success"
+        )
+
+        return redirect(
+            url_for("team.messages")
+        )
+
+    messages = TeamMessage.query.filter_by(
+        team_id=team.id
+    ).order_by(
+        TeamMessage.created_at.asc()
+    ).all()
 
     return render_template(
+
         "team/messages.html",
-        user=current_user,
-        team=current_user.team
+
+        form=form,
+
+        team=team,
+
+        messages=messages
+
     )

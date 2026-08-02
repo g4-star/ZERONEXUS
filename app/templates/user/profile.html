@@ -2,87 +2,127 @@
 
 {% block content %}
 
-<div class="container py-5">
+<div class="container py-4">
 
-    <div class="row g-4">
+    <!-- Cover -->
+    <div class="card bg-dark border-info shadow-lg mb-4">
+        <div class="card-body text-center py-5">
 
-        <!-- ========================= -->
-        <!-- PROFILE -->
-        <!-- ========================= -->
+            {% if user.profile_image %}
+                <img src="{{ user.profile_image }}"
+                     class="rounded-circle border border-info shadow"
+                     width="170"
+                     height="170"
+                     style="object-fit:cover;">
+            {% else %}
+                <i class="bi bi-person-circle text-info"
+                   style="font-size:170px;"></i>
+            {% endif %}
 
+            <h2 class="mt-3 text-info">
+                {{ user.username }}
+            </h2>
+
+            <p class="text-secondary mb-1">
+                {{ user.role.replace("_"," ").title() }}
+            </p>
+
+            {% if user.job_title %}
+            <p class="text-light">
+                {{ user.job_title }}
+                {% if user.company %}
+                    • {{ user.company }}
+                {% endif %}
+            </p>
+            {% endif %}
+
+            <a href="{{ url_for('user.edit_profile') }}"
+               class="btn btn-info mt-3">
+                <i class="bi bi-pencil-square"></i>
+                Edit Profile
+            </a>
+
+        </div>
+    </div>
+
+    <div class="row">
+
+        <!-- LEFT COLUMN -->
         <div class="col-lg-4">
 
-            <div class="card bg-dark border-info shadow-lg h-100">
+            <div class="card bg-dark border-info shadow mb-4">
+                <div class="card-header text-info">
+                    About
+                </div>
 
-                <div class="card-body text-center">
+                <div class="card-body">
 
-                    <i class="bi bi-person-circle text-info"
-                       style="font-size:90px;"></i>
-
-                    <h3 class="text-info mt-3">
-
-                        {{ user.username }}
-
-                    </h3>
-
-                    <p class="text-secondary">
-
-                        {{ user.role.replace("_", " ").title() }}
-
+                    <p>
+                        {{ user.bio or "No bio added yet." }}
                     </p>
 
                     <hr>
 
-                    <div class="text-start">
+                    <p>
+                        <i class="bi bi-envelope text-info"></i>
+                        {{ user.email }}
+                    </p>
 
-                        <p>
+                    {% if user.phone %}
+                    <p>
+                        <i class="bi bi-telephone text-info"></i>
+                        {{ user.phone }}
+                    </p>
+                    {% endif %}
 
-                            <strong>Email</strong>
+                    {% if user.location %}
+                    <p>
+                        <i class="bi bi-geo-alt text-info"></i>
+                        {{ user.location }}
+                    </p>
+                    {% endif %}
 
-                            <br>
+                    {% if user.team %}
+                    <p>
+                        <i class="bi bi-people text-info"></i>
+                        {{ user.team.name }}
+                    </p>
+                    {% endif %}
 
-                            {{ user.email }}
+                </div>
+            </div>
+
+            <div class="card bg-dark border-info shadow">
+
+                <div class="card-header text-info">
+
+                    Skills
+
+                </div>
+
+                <div class="card-body">
+
+                    {% if user.skills %}
+
+                        {% for skill in user.skills.split(",") %}
+
+                            <span class="badge bg-info text-dark mb-2">
+
+                                {{ skill.strip() }}
+
+                            </span>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <p class="text-secondary">
+
+                            No skills added.
 
                         </p>
 
-                        <p>
-
-                            <strong>Team</strong>
-
-                            <br>
-
-                            {% if user.team %}
-
-                                {{ user.team.name }}
-
-                            {% else %}
-
-                                Not Assigned
-
-                            {% endif %}
-
-                        </p>
-
-                        <p>
-
-                            <strong>Member Since</strong>
-
-                            <br>
-
-                            {{ user.created_at.strftime("%d %B %Y") }}
-
-                        </p>
-
-                    </div>
-
-                    <a href="#"
-                       class="btn btn-outline-info w-100 mt-3">
-
-                        <i class="bi bi-pencil-square me-2"></i>
-
-                        Edit Profile
-
-                    </a>
+                    {% endif %}
 
                 </div>
 
@@ -90,157 +130,80 @@
 
         </div>
 
-
-        <!-- ========================= -->
-        <!-- DASHBOARD -->
-        <!-- ========================= -->
-
+        <!-- RIGHT COLUMN -->
         <div class="col-lg-8">
 
-            <h2 class="text-info mb-4">
+            <div class="card bg-dark border-info shadow mb-4">
 
-                Welcome back,
-                {{ user.username }}
+                <div class="card-header text-info">
 
-            </h2>
-
-            <div class="row g-4">
-
-                <!-- Projects -->
-
-                <div class="col-md-6">
-
-                    <div class="card bg-dark border-info h-100 shadow">
-
-                        <div class="card-body text-center">
-
-                            <i class="bi bi-folder-fill text-info fs-1"></i>
-
-                            <h5 class="mt-3">
-
-                                My Projects
-
-                            </h5>
-
-                            <p class="text-secondary">
-
-                                View projects assigned to you.
-
-                            </p>
-
-                            <a href="#"
-                               class="btn btn-info">
-
-                                Open
-
-                            </a>
-
-                        </div>
-
-                    </div>
+                    Professional Links
 
                 </div>
 
-                <!-- Meetings -->
+                <div class="card-body">
 
-                <div class="col-md-6">
+                    <div class="row">
 
-                    <div class="card bg-dark border-info h-100 shadow">
-
-                        <div class="card-body text-center">
-
-                            <i class="bi bi-calendar-event text-info fs-1"></i>
-
-                            <h5 class="mt-3">
-
-                                Meetings
-
-                            </h5>
-
-                            <p class="text-secondary">
-
-                                Upcoming team meetings.
-
-                            </p>
-
-                            <a href="#"
-                               class="btn btn-info">
-
-                                Open
-
+                        {% if user.portfolio %}
+                        <div class="col-md-6 mb-3">
+                            🌐
+                            <a href="{{ user.portfolio }}"
+                               target="_blank">
+                                Portfolio
                             </a>
-
                         </div>
+                        {% endif %}
 
-                    </div>
-
-                </div>
-
-                <!-- Tasks -->
-
-                <div class="col-md-6">
-
-                    <div class="card bg-dark border-info h-100 shadow">
-
-                        <div class="card-body text-center">
-
-                            <i class="bi bi-list-check text-info fs-1"></i>
-
-                            <h5 class="mt-3">
-
-                                My Tasks
-
-                            </h5>
-
-                            <p class="text-secondary">
-
-                                Complete your assigned tasks.
-
-                            </p>
-
-                            <a href="#"
-                               class="btn btn-info">
-
-                                Open
-
+                        {% if user.github %}
+                        <div class="col-md-6 mb-3">
+                            💻
+                            <a href="{{ user.github }}"
+                               target="_blank">
+                                GitHub
                             </a>
-
                         </div>
+                        {% endif %}
 
-                    </div>
-
-                </div>
-
-                <!-- Announcements -->
-
-                <div class="col-md-6">
-
-                    <div class="card bg-dark border-info h-100 shadow">
-
-                        <div class="card-body text-center">
-
-                            <i class="bi bi-megaphone-fill text-info fs-1"></i>
-
-                            <h5 class="mt-3">
-
-                                Announcements
-
-                            </h5>
-
-                            <p class="text-secondary">
-
-                                Latest updates from your team.
-
-                            </p>
-
-                            <a href="#"
-                               class="btn btn-info">
-
-                                Open
-
+                        {% if user.linkedin %}
+                        <div class="col-md-6 mb-3">
+                            🔗
+                            <a href="{{ user.linkedin }}"
+                               target="_blank">
+                                LinkedIn
                             </a>
-
                         </div>
+                        {% endif %}
+
+                        {% if user.tryhackme %}
+                        <div class="col-md-6 mb-3">
+                            🎯
+                            <a href="{{ user.tryhackme }}"
+                               target="_blank">
+                                TryHackMe
+                            </a>
+                        </div>
+                        {% endif %}
+
+                        {% if user.hackthebox %}
+                        <div class="col-md-6 mb-3">
+                            🟥
+                            <a href="{{ user.hackthebox }}"
+                               target="_blank">
+                                Hack The Box
+                            </a>
+                        </div>
+                        {% endif %}
+
+                        {% if user.ctftime %}
+                        <div class="col-md-6 mb-3">
+                            🏆
+                            <a href="{{ user.ctftime }}"
+                               target="_blank">
+                                CTFTime
+                            </a>
+                        </div>
+                        {% endif %}
 
                     </div>
 
@@ -248,45 +211,28 @@
 
             </div>
 
-            <div class="card bg-dark border-info shadow-lg mt-4">
+            <div class="row">
 
-                <div class="card-body">
+                <div class="col-md-6 mb-4">
+                    <div class="card bg-dark border-info text-center shadow">
+                        <div class="card-body">
+                            <h1 class="text-info">
+                                {{ user.projects|length }}
+                            </h1>
+                            <p>Projects</p>
+                        </div>
+                    </div>
+                </div>
 
-                    <h4 class="text-info">
-
-                        Team Overview
-
-                    </h4>
-
-                    <hr>
-
-                    {% if user.team %}
-
-                        <h5>
-
-                            {{ user.team.name }}
-
-                        </h5>
-
-                        <p class="text-secondary">
-
-                            You are currently assigned to this team.
-
-                            Projects, meetings, announcements and tasks
-                            will appear here as they are created.
-
-                        </p>
-
-                    {% else %}
-
-                        <p class="text-warning">
-
-                            You haven't been assigned to a team yet.
-
-                        </p>
-
-                    {% endif %}
-
+                <div class="col-md-6 mb-4">
+                    <div class="card bg-dark border-info text-center shadow">
+                        <div class="card-body">
+                            <h1 class="text-info">
+                                {{ user.announcements|length }}
+                            </h1>
+                            <p>Announcements</p>
+                        </div>
+                    </div>
                 </div>
 
             </div>
