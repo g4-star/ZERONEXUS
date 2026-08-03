@@ -11,6 +11,5 @@ from .contact_message import ContactMessage
 from .user import User
 from .meeting import Meeting
 from .announcement import Announcement
-from .team_message import TeamMessage
 from .notification import Notification
-from .chat_message import ChatMessage
+from .chat import ChatMessage
