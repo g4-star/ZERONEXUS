@@ -1,0 +1,148 @@
+<aside class="sidebar" id="sidebar">
+
+    <div class="logo">
+
+        <div class="logo-icon">
+
+            <i class="fa-solid fa-shield-halved"></i>
+
+        </div>
+
+        <div class="logo-text">
+
+            <h1>ZeroNexus</h1>
+
+            <span>TEAM LEAD</span>
+
+        </div>
+
+    </div>
+
+    <nav class="nav">
+
+        <a href="{{ url_for('team.dashboard') }}"
+           class="nav-item active">
+
+            <i class="fa-solid fa-gauge-high"></i>
+
+            <span>Dashboard</span>
+
+        </a>
+
+        <button
+            type="button"
+            class="nav-item"
+            data-modal="chat">
+
+            <i class="fa-solid fa-comments"></i>
+
+            <span>Team Chat</span>
+
+            <span class="badge">
+
+                {{ messages|length if messages is defined else 0 }}
+
+            </span>
+
+        </button>
+
+        <a href="{{ url_for('team.projects') }}"
+           class="nav-item">
+
+            <i class="fa-solid fa-diagram-project"></i>
+
+            <span>Projects</span>
+
+        </a>
+
+        <a href="{{ url_for('team.tasks') }}"
+           class="nav-item">
+
+            <i class="fa-solid fa-list-check"></i>
+
+            <span>Tasks</span>
+
+            <span class="badge">
+
+                {{ tasks|length if tasks is defined else 0 }}
+
+            </span>
+
+        </a>
+
+        <button
+            type="button"
+            class="nav-item"
+            data-modal="calendar">
+
+            <i class="fa-solid fa-calendar-days"></i>
+
+            <span>Calendar</span>
+
+        </button>
+
+        <button
+            type="button"
+            class="nav-item"
+            data-modal="announcements">
+
+            <i class="fa-solid fa-bullhorn"></i>
+
+            <span>Announcements</span>
+
+        </button>
+
+        <a href="{{ url_for('team.members') }}"
+           class="nav-item">
+
+            <i class="fa-solid fa-users"></i>
+
+            <span>Team Members</span>
+
+        </a>
+
+        <button
+            type="button"
+            class="nav-item"
+            data-modal="reports">
+
+            <i class="fa-solid fa-chart-pie"></i>
+
+            <span>Reports</span>
+
+        </button>
+
+        <button
+            type="button"
+            class="nav-item"
+            data-modal="profile">
+
+            <i class="fa-solid fa-user"></i>
+
+            <span>Profile</span>
+
+        </button>
+
+        <button
+            type="button"
+            class="nav-item"
+            data-modal="settings">
+
+            <i class="fa-solid fa-gear"></i>
+
+            <span>Settings</span>
+
+        </button>
+
+    </nav>
+
+    <a href="{{ url_for('auth.logout') }}"
+       class="logout">
+
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+
+        <span>Logout</span>
+
+    </a>
+
+</aside>

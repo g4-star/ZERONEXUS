@@ -1,0 +1,64 @@
+/* ============ POPUP / MODAL SYSTEM ============ */
+.modal-backdrop{
+  position:fixed;inset:0;z-index:200;
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;
+  background:rgba(3,5,10,.72);
+  backdrop-filter:blur(6px);
+  animation:fadeIn .2s ease;
+}
+.modal-backdrop[hidden]{display:none}
+.modal-shell{
+  width:min(560px,100%);
+  max-height:min(78vh,720px);
+  display:flex;flex-direction:column;
+  background:linear-gradient(160deg,#0d1322,#0a0f1a);
+  border:1px solid var(--border-strong);
+  border-radius:20px;
+  box-shadow:var(--shadow),var(--glow);
+  overflow:hidden;
+  animation:popIn .25s cubic-bezier(.2,.9,.3,1.2);
+}
+.modal-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;
+  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.02);
+}
+.modal-head h3{
+  display:flex;align-items:center;gap:10px;
+  font-size:15.5px;font-weight:700;
+}
+.modal-head h3::before{
+  content:'\f075';font-family:'Font Awesome 6 Free';font-weight:900;
+  font-size:13px;color:var(--purple-light);
+}
+.modal-close{
+  width:32px;height:32px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--muted);font-size:14px;transition:.2s;
+}
+.modal-close:hover{color:#fff;background:rgba(239,68,68,.15)}
+.modal-slot{overflow-y:auto;padding:18px 20px;flex:1}
+
+/* Simple (reports/settings) popup content */
+.pop-simple{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding:18px 6px}
+.pop-simple-icon{
+  width:56px;height:56px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  background:rgba(255,255,255,.05);border:1px solid var(--border);
+}
+.pop-simple p{color:var(--muted);font-size:13.5px;line-height:1.6;max-width:360px}
+
+/* Shared info row (profile popup) */
+.pop-info{display:flex;flex-direction:column;gap:10px;width:100%}
+.pop-profile{display:flex;flex-direction:column;align-items:center;gap:12px}
+.pop-avatar{
+  width:74px;height:74px;border-radius:22px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;font-weight:800;color:#fff;
+  background:linear-gradient(135deg,var(--purple),var(--blue));
+  box-shadow:var(--glow);
+}
+.pop-profile h3{font-size:19px;font-weight:800}
+.pop-profile .role{font-size:12px}

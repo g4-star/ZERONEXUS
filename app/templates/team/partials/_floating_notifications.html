@@ -1,0 +1,59 @@
+<div class="notif-list" id="notifList">
+
+    {% if announcements %}
+
+        {% for announcement in announcements[:5] %}
+
+        <div class="notif-item {% if loop.first %}unread{% endif %}">
+
+            <i class="fa-solid fa-bullhorn c-purple"></i>
+
+            <div>
+
+                <b>{{ announcement.title }}</b>
+
+                <span>
+
+                    {{ announcement.created_at.strftime("%d %b %Y %H:%M") if announcement.created_at else "" }}
+
+                </span>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="notif-item">
+
+            <i class="fa-solid fa-circle-info c-blue"></i>
+
+            <div>
+
+                <b>No Notifications</b>
+
+                <span>You don't have any notifications yet.</span>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+<div class="text-center mt-3">
+
+    <button type="button"
+            class="notif-clear"
+            id="markAllRead">
+
+        <i class="fa-solid fa-check-double"></i>
+
+        Mark All as Read
+
+    </button>
+
+</div>

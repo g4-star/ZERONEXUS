@@ -1,0 +1,81 @@
+<div class="card">
+
+    <div class="card-head">
+
+        <div class="head-icon c-cyan">
+
+            <i class="fa-solid fa-bolt"></i>
+
+        </div>
+
+        <h3>Recent Activity</h3>
+
+    </div>
+
+    <div class="card-body">
+
+        {% if recent_activity is defined and recent_activity %}
+
+            {% for activity in recent_activity[:6] %}
+
+            <div class="activity-item">
+
+                <div class="act-icon">
+
+                    <i class="fa-solid {{ activity.icon|default('fa-circle-check') }}"></i>
+
+                </div>
+
+                <div class="act-main">
+
+                    <div class="act-text">
+
+                        {{ activity.text|default("Activity recorded.") }}
+
+                    </div>
+
+                    <div class="act-time">
+
+                        {{ activity.time|default("Just now") }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="activity-item">
+
+                <div class="act-icon">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                </div>
+
+                <div class="act-main">
+
+                    <div class="act-text">
+
+                        Welcome to ZeroNexus! No recent activity yet.
+
+                    </div>
+
+                    <div class="act-time">
+
+                        Just now
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>

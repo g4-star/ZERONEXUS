@@ -1,0 +1,82 @@
+<div class="chat-layout">
+
+    <div class="chat-messages" id="chatMessages" aria-live="polite">
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+            <div class="chat-message">
+
+                <div class="chat-avatar">
+
+                    {% if message.author.profile_image %}
+                        <img src="{{ message.author.profile_image }}" alt="">
+                    {% else %}
+                        {{ (message.author.full_name or message.author.username)[0]|upper }}
+                    {% endif %}
+
+                </div>
+
+                <div class="chat-content">
+
+                    <div class="chat-header">
+
+                        <strong>
+                            {{ message.author.full_name or message.author.username }}
+                        </strong>
+
+                        <small>
+                            {{ message.created_at.strftime("%H:%M") }}
+                        </small>
+
+                    </div>
+
+                    <div class="chat-text">
+
+                        {{ message.message }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="chat-empty">
+
+                <i class="fa-solid fa-comments"></i>
+
+                <p>No messages yet. Start the conversation.</p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+    <form class="chat-form"
+          method="POST"
+          action="{{ url_for('team.send_chat') }}">
+
+        <input
+            type="text"
+            name="message"
+            placeholder="Type a message..."
+            maxlength="1000"
+            required>
+
+        <button
+            type="submit"
+            class="chat-send">
+
+            <i class="fa-solid fa-paper-plane"></i>
+
+        </button>
+
+    </form>
+
+</div>

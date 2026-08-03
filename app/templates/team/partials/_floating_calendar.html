@@ -1,0 +1,99 @@
+<div class="cal-layout">
+
+    <div class="cal-nav">
+
+        <button type="button"
+                class="icon-btn"
+                id="calPrev">
+
+            <i class="fa-solid fa-chevron-left"></i>
+
+        </button>
+
+        <span class="cal-label">
+
+            Calendar
+
+        </span>
+
+        <button type="button"
+                class="icon-btn"
+                id="calNext">
+
+            <i class="fa-solid fa-chevron-right"></i>
+
+        </button>
+
+    </div>
+
+    <div class="cal-events">
+
+        <h4>
+
+            <i class="fa-solid fa-video"></i>
+
+            Upcoming Meetings
+
+        </h4>
+
+        {% if meetings %}
+
+            {% for meeting in meetings %}
+
+            <div class="cal-event">
+
+                <div class="ev-date">
+
+                    {% if meeting.meeting_date %}
+
+                        <b>{{ meeting.meeting_date.strftime("%d") }}</b>
+
+                        <span>{{ meeting.meeting_date.strftime("%b") }}</span>
+
+                    {% else %}
+
+                        <b>--</b>
+
+                        <span>---</span>
+
+                    {% endif %}
+
+                </div>
+
+                <div class="ev-main">
+
+                    <b>{{ meeting.title }}</b>
+
+                    <span>
+
+                        {% if meeting.meeting_date %}
+
+                            {{ meeting.meeting_date.strftime("%A · %I:%M %p") }}
+
+                        {% else %}
+
+                            Date not scheduled
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="text-muted">
+
+                No upcoming meetings scheduled.
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>

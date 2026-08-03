@@ -1,0 +1,75 @@
+<header class="topbar">
+
+    <button
+        type="button"
+        class="icon-btn"
+        id="menuBtn"
+        aria-label="Toggle Menu">
+
+        <i class="fa-solid fa-bars"></i>
+
+    </button>
+
+    <div class="topbar-right">
+
+        <!-- Notifications -->
+
+        <button
+            type="button"
+            class="icon-btn"
+            data-modal="notifications"
+            aria-label="Notifications">
+
+            <i class="fa-regular fa-bell"></i>
+
+            <span class="notif-badge">
+
+                {{ unread_notifications|default(0) }}
+
+            </span>
+
+        </button>
+
+        <!-- User -->
+
+        <div
+            class="top-user"
+            data-modal="profile"
+            role="button"
+            tabindex="0">
+
+            <div class="mini-avatar">
+
+                {% if current_user.is_authenticated and current_user.username %}
+
+                    {{ current_user.username[:2]|upper }}
+
+                {% else %}
+
+                    ZN
+
+                {% endif %}
+
+            </div>
+
+            <span>
+
+                {% if current_user.is_authenticated %}
+
+                    {{ current_user.username }}
+
+                {% else %}
+
+                    Guest
+
+                {% endif %}
+
+            </span>
+
+            <i class="fa-solid fa-chevron-down"></i>
+
+        </div>
+
+    </div>
+
+</header>

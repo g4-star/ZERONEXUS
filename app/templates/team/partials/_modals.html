@@ -1,0 +1,227 @@
+{# ============================================================
+   Reusable Modal Windows
+   No Jinja {% call %} macros.
+   Each modal is standalone to avoid caller errors.
+   ============================================================ #}
+
+<!-- ================= REPORTS MODAL ================= -->
+<div class="modal-backdrop" id="modal-reports" hidden>
+
+    <div class="modal-shell">
+
+        <div class="modal-head">
+
+            <h3>Reports</h3>
+
+            <button type="button"
+                    class="modal-close"
+                    data-close>
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <div class="modal-body">
+
+            <div class="pop-simple">
+
+                <div class="pop-simple-icon c-purple">
+
+                    <i class="fa-solid fa-chart-pie"></i>
+
+                </div>
+
+                <p>
+
+                    View project progress, member productivity,
+                    security metrics and analytics.
+
+                </p>
+
+                <a href="{{ url_for('team.reports') }}"
+                   class="edit-btn">
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                    Open Reports
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= SETTINGS MODAL ================= -->
+<div class="modal-backdrop" id="modal-settings" hidden>
+
+    <div class="modal-shell">
+
+        <div class="modal-head">
+
+            <h3>Settings</h3>
+
+            <button type="button"
+                    class="modal-close"
+                    data-close>
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <div class="modal-body">
+
+            <div class="pop-simple">
+
+                <div class="pop-simple-icon c-blue">
+
+                    <i class="fa-solid fa-gear"></i>
+
+                </div>
+
+                <p>
+
+                    Configure workspace preferences,
+                    notifications and team settings.
+
+                </p>
+
+                <a href="{{ url_for('team.settings') }}"
+                   class="edit-btn">
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                    Open Settings
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= CHAT MODAL ================= -->
+<div class="modal-backdrop" id="modal-chat" hidden>
+
+    <div class="modal-shell modal-lg">
+
+        <div class="modal-head">
+
+            <h3>Team Chat</h3>
+
+            <button type="button"
+                    class="modal-close"
+                    data-close>
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <div class="modal-body">
+
+            {% include "team/partials/_floating_chat.html" ignore missing %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= ANNOUNCEMENTS MODAL ================= -->
+<div class="modal-backdrop" id="modal-announcements" hidden>
+
+    <div class="modal-shell">
+
+        <div class="modal-head">
+
+            <h3>Announcements</h3>
+
+            <button type="button"
+                    class="modal-close"
+                    data-close>
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <div class="modal-body">
+
+            {% include "team/partials/_floating_announcements.html" ignore missing %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= CALENDAR MODAL ================= -->
+<div class="modal-backdrop" id="modal-calendar" hidden>
+
+    <div class="modal-shell">
+
+        <div class="modal-head">
+
+            <h3>Calendar</h3>
+
+            <button type="button"
+                    class="modal-close"
+                    data-close>
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <div class="modal-body">
+
+            {% include "team/partials/_floating_calendar.html" ignore missing %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= PROFILE MODAL ================= -->
+<div class="modal-backdrop" id="modal-profile" hidden>
+
+    <div class="modal-shell">
+
+        <div class="modal-head">
+
+            <h3>Profile</h3>
+
+            <button type="button"
+                    class="modal-close"
+                    data-close>
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <div class="modal-body">
+
+            {% include "team/partials/_floating_profile.html" ignore missing %}
+
+        </div>
+
+    </div>
+
+</div>

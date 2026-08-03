@@ -1,0 +1,98 @@
+<div class="pop-profile">
+
+    <div class="pop-avatar">
+
+        {{ (current_user.username[:2] if current_user.username else "ZN")|upper }}
+
+    </div>
+
+    <h3>
+
+        {{ user.full_name or current_user.username }}
+
+    </h3>
+
+    <span class="role">
+
+        {{ (current_user.role or "Member").replace("_"," ").title() }}
+
+    </span>
+
+    <div class="completion">
+
+        <div class="comp-top">
+
+            <span>Profile Completion</span>
+
+            <b>85%</b>
+
+        </div>
+
+        <div class="comp-bar">
+
+            <div class="comp-fill" style="width:85%;"></div>
+
+        </div>
+
+    </div>
+
+    <div class="pop-info">
+
+        <div class="info-row">
+
+            <i class="fa-solid fa-envelope"></i>
+
+            <div>
+
+                <b>Email</b>
+
+                <span>{{ current_user.email or "Not provided" }}</span>
+
+            </div>
+
+        </div>
+
+        <div class="info-row">
+
+            <i class="fa-solid fa-phone"></i>
+
+            <div>
+
+                <b>Phone</b>
+
+                <span>{{ user.phone or "Not provided" }}</span>
+
+            </div>
+
+        </div>
+
+        <div class="info-row">
+
+            <i class="fa-solid fa-users"></i>
+
+            <div>
+
+                <b>Team</b>
+
+                <span>{{ team.name if team else "No Team" }}</span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="mt-3">
+
+        <a href="{{ url_for('team.profile') }}"
+           class="edit-btn">
+
+            <i class="fa-solid fa-pen"></i>
+
+            Edit Profile
+
+        </a>
+
+    </div>
+
+</div>
