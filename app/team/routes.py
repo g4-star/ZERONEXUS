@@ -536,23 +536,7 @@ def messages_api():
 @login_required
 @member_required
 def profile():
-    team = require_active_team()
-
-    stats = {
-        "projects": Project.query.filter_by(team_id=team.id).count(),
-        "meetings": Meeting.query.filter_by(team_id=team.id).count(),
-        "announcements": Announcement.query.filter_by(team_id=team.id).count(),
-    }
-
-    recent_members = team.users
-
-    return render_template(
-        "team/profile.html",
-        stats=stats,
-        user=current_user,
-        team=team,
-        recent_members=recent_members
-    )
+    return redirect(url_for("team.dashboard"))
     
 # =====================================================
 # TEAM TASKS
