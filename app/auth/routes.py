@@ -31,23 +31,36 @@ from .forms import (
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
 
+    # -----------------------------------------
     # Already logged in
+    # -----------------------------------------
     if current_user.is_authenticated:
 
         if current_user.role == "super_admin":
             return redirect(url_for("admin.dashboard"))
 
-        elif current_user.role == "team_lead":
-            return redirect(url_for("team.dashboard"))
+        elif current_user.role in ["team_lead", "member"]:
 
-        elif current_user.role == "member":
-            return redirect(url_for("member.dashboard"))
+            if not current_user.team_id:
+                flash("You are not assigned to any team.", "warning")
+                logout_user()
+                return redirect(url_for("auth.login"))
+
+            return redirect(
+                url_for(
+                    "team.dashboard",
+                    team_id=current_user.team_id
+                )
+            )
 
         else:
             flash("Your account role is invalid.", "danger")
             logout_user()
             return redirect(url_for("auth.login"))
 
+    # -----------------------------------------
+    # Login Form
+    # -----------------------------------------
     form = LoginForm()
 
     if form.validate_on_submit():
@@ -57,10 +70,12 @@ def login():
             (User.email == form.username.data)
         ).first()
 
+        # User not found
         if not user:
             flash("Invalid username or password.", "danger")
             return redirect(url_for("auth.login"))
 
+        # Account inactive
         if not user.is_active:
             flash("Please activate your account first.", "warning")
             return redirect(
@@ -70,12 +85,15 @@ def login():
                 )
             )
 
+        # Wrong password
         if not user.check_password(form.password.data):
             flash("Invalid username or password.", "danger")
             return redirect(url_for("auth.login"))
 
+        # Login successful
         login_user(user)
 
+        # Force password change
         if user.must_change_password:
             return redirect(
                 url_for(
@@ -91,11 +109,19 @@ def login():
         if user.role == "super_admin":
             return redirect(url_for("admin.dashboard"))
 
-        elif user.role == "team_lead":
-            return redirect(url_for("team.dashboard"))
+        elif user.role in ["team_lead", "member"]:
 
-        elif user.role == "member":
-            return redirect(url_for("member.dashboard"))
+            if not user.team_id:
+                flash("You are not assigned to any team.", "warning")
+                logout_user()
+                return redirect(url_for("auth.login"))
+
+            return redirect(
+                url_for(
+                    "team.dashboard",
+                    team_id=user.team_id
+                )
+            )
 
         else:
             logout_user()
