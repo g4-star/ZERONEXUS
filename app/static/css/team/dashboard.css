@@ -1,0 +1,418 @@
+.workspace-grid{
+
+    display:grid;
+
+    grid-template-columns:2fr 1fr;
+
+    gap:25px;
+
+    margin-top:25px;
+
+}
+
+.widget{
+
+    background:#182233;
+
+    border:1px solid rgba(255,255,255,.06);
+
+    border-radius:18px;
+
+    padding:22px;
+
+    margin-bottom:25px;
+
+    transition:.25s;
+
+}
+
+.widget:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:0 18px 35px rgba(0,0,0,.35);
+
+}
+
+.widget-title{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:20px;
+
+}
+
+.widget-title h5{
+
+    margin:0;
+
+}
+
+.project-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:18px 0;
+
+    border-bottom:1px solid rgba(255,255,255,.05);
+
+}
+
+.project-row:last-child{
+
+    border-bottom:none;
+
+}
+
+.project-row small{
+
+    display:block;
+
+    color:#94a3b8;
+
+}
+
+.project-status{
+
+    background:#22c55e;
+
+    color:white;
+
+    border-radius:30px;
+
+    padding:6px 14px;
+
+    font-size:12px;
+
+}
+
+.announcement-card{
+
+    display:flex;
+
+    gap:16px;
+
+    margin-bottom:18px;
+
+    padding-bottom:18px;
+
+    border-bottom:1px solid rgba(255,255,255,.05);
+
+}
+
+.announcement-card:last-child{
+
+    border:none;
+
+    margin-bottom:0;
+
+    padding-bottom:0;
+
+}
+
+.announcement-icon{
+
+    width:45px;
+
+    height:45px;
+
+    background:#2563eb;
+
+    border-radius:14px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:white;
+
+}
+
+.announcement-content p{
+
+    margin:6px 0;
+
+    color:#94a3b8;
+
+}
+
+.announcement-content small{
+
+    color:#64748b;
+
+}
+.calendar-event{
+
+    display:flex;
+
+    gap:16px;
+
+    align-items:center;
+
+    margin-bottom:16px;
+
+}
+
+.calendar-date{
+
+    width:55px;
+
+    height:55px;
+
+    background:#2563eb;
+
+    color:white;
+
+    border-radius:14px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-weight:bold;
+
+}
+
+.calendar-date span{
+
+    font-size:11px;
+
+}
+.task-row{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin-bottom:16px;
+
+}
+
+.task-row input{
+
+    width:20px;
+
+    height:20px;
+
+}
+.hero-banner{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:35px;
+
+    border-radius:24px;
+
+    margin-bottom:30px;
+
+    background:
+    linear-gradient(
+    135deg,
+    #2563eb,
+    #7c3aed);
+
+    overflow:hidden;
+
+}
+
+.hero-banner h2{
+
+    font-size:34px;
+
+    font-weight:700;
+
+}
+
+.hero-banner p{
+
+    opacity:.9;
+
+    margin:15px 0 25px;
+
+    max-width:500px;
+
+}
+
+.hero-buttons{
+
+    display:flex;
+
+    gap:15px;
+
+}
+
+.hero-circle{
+
+    width:180px;
+
+    height:180px;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.12);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+.hero-circle i{
+
+    font-size:80px;
+
+    color:white;
+
+}
+
+.progress-item{
+
+    margin-bottom:20px;
+
+}
+
+.progress{
+
+    margin-top:10px;
+
+    height:8px;
+
+    background:#0f172a;
+
+}
+
+.member-row{
+
+display:flex;
+
+align-items:center;
+
+justify-content:space-between;
+
+margin-bottom:16px;
+
+}
+
+.member-row img{
+
+width:42px;
+
+height:42px;
+
+border-radius:50%;
+
+margin-right:15px;
+
+}
+
+.online-badge{
+
+background:#22c55e;
+
+padding:6px 12px;
+
+border-radius:30px;
+
+font-size:12px;
+
+color:white;
+
+}
+.ai-widget{
+
+background:
+
+linear-gradient(
+145deg,
+#1d4ed8,
+#312e81);
+
+}
+#loader{
+
+position:fixed;
+
+inset:0;
+
+background:#08111d;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+z-index:99999;
+
+transition:.4s;
+
+}
+.notification{
+
+display:flex;
+
+align-items:center;
+
+gap:14px;
+
+padding:14px 0;
+
+border-bottom:1px solid rgba(255,255,255,.05);
+
+}
+
+.status-row{
+
+display:flex;
+
+justify-content:space-between;
+
+padding:12px 0;
+
+border-bottom:1px solid rgba(255,255,255,.05);
+
+}
+
+.overview-grid{
+
+display:grid;
+
+grid-template-columns:repeat(2,1fr);
+
+gap:18px;
+
+text-align:center;
+
+}
+
+.overview-grid h3{
+
+font-size:34px;
+
+margin-bottom:5px;
+
+color:#38bdf8;
+
+}

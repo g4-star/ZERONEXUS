@@ -1,0 +1,55 @@
+<div class="widget">
+
+<div class="widget-title">
+
+<h5>
+
+Online Members
+
+</h5>
+
+<a href="{{ url_for('team.members') }}">
+
+View All
+
+</a>
+
+</div>
+
+{% for member in recent_members[:6] %}
+
+<div class="member-row">
+
+<div>
+
+<img src="https://ui-avatars.com/api/?name={{ member.username }}">
+
+</div>
+
+<div>
+
+<strong>
+
+{{ member.username }}
+
+</strong>
+
+<small>
+
+{{ member.role.replace("_"," ").title() }}
+
+</small>
+
+</div>
+
+<span class="online-badge">
+
+Online
+
+</span>
+
+</div>
+
+{% endfor %}
+
+</div>

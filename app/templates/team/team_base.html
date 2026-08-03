@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team/variables.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team/layout.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team/sidebar.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team/topbar.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team/chat.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team/profile.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team/cards.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team/dashboard.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team/calendar.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team/animations.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team/responsive.css') }}">
+
+<div class="team-layout">
+
+    {% include "team/components/sidebar.html" %}
+
+    {% include "team/components/chat_panel.html" %}
+
+    <main class="team-main">
+
+        {% include "team/components/topbar.html" %}
+
+        {% block team_content %}
+        {% endblock %}
+
+    </main>
+
+    {% include "team/components/profile_panel.html" %}
+
+</div>
+
+<script src="{{ url_for('static', filename='js/team/sidebar.js') }}"></script>
+<script src="{{ url_for('static', filename='js/team/dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/team/chat.js') }}"></script>
+<script src="{{ url_for('static', filename='js/team/calendar.js') }}"></script>
+<script src="{{ url_for('static', filename='js/team/notifications.js') }}"></script>
+<script src="{{ url_for('static', filename='js/team/animations.js') }}"></script>
+
+{% endblock %}

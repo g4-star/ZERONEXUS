@@ -1,0 +1,52 @@
+<div class="hero-banner">
+
+    <div>
+
+        <h2>
+
+            Welcome back,
+            {{ user.username }}
+
+        </h2>
+
+        <p>
+
+            Manage your cybersecurity team,
+            projects, meetings and AI assistant
+            from one workspace.
+
+        </p>
+
+        <div class="hero-buttons">
+
+            <a href="{{ url_for('team.projects') }}"
+               class="btn btn-primary">
+
+                <i class="bi bi-folder-plus"></i>
+
+                New Project
+
+            </a>
+
+            <a href="{{ url_for('team.members') }}"
+               class="btn btn-outline-light">
+
+                Invite Member
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <div class="hero-right">
+
+        <div class="hero-circle">
+
+            <i class="bi bi-shield-lock-fill"></i>
+
+        </div>
+
+    </div>
+
+</div>

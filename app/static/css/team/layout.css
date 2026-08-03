@@ -1,0 +1,42 @@
+body{
+
+    background:var(--bg);
+    color:var(--text);
+
+}
+
+.team-layout{
+
+    display:grid;
+
+    grid-template-columns:
+        90px
+        320px
+        1fr
+        330px;
+
+    min-height:100vh;
+
+}
+
+.team-main{
+
+    padding:30px;
+
+    overflow:auto;
+
+}
+
+.glass{
+
+    background:rgba(255,255,255,.04);
+
+    border:1px solid var(--border);
+
+    backdrop-filter:blur(18px);
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow);
+
+}

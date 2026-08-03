@@ -1,0 +1,39 @@
+{% extends "team/team_base.html" %}
+
+{% block team_content %}
+
+{% include "team/components/hero_banner.html" %}
+
+{% include "team/components/stats_cards.html" %}
+
+<div class="workspace-grid">
+
+<div>
+
+{% include "team/components/project_overview.html" %}
+
+{% include "team/components/recent_activity.html" %}
+
+{% include "team/components/team_overview.html" %}
+
+</div>
+
+<div>
+
+{% include "team/components/announcement_feed.html" %}
+
+{% include "team/components/calendar_widget.html" %}
+
+{% include "team/components/task_list.html" %}
+
+{% include "team/components/notifications_panel.html" %}
+
+{% include "team/components/server_status.html" %}
+
+{% include "team/components/storage_widget.html" %}
+
+</div>
+
+</div>
+
+{% endblock %}

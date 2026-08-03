@@ -1,10 +1,16 @@
-{% extends "base.html" %}
+{% extends "team/team_base.html" %}
 
-{% block title %}
-{{ team.name }} Workspace
+{% block team_content %}
+
+<h2 class="mb-4">
+    Welcome back, {{ user.username }}
+</h2>
+
+{% include "team/components/stats_cards.html" %}
+{% include "team/components/project_overview.html" %}
+{% include "team/components/announcement_feed.html" %}
+
 {% endblock %}
-
-{% block content %}
 
 <div class="container py-5">
 
