@@ -536,7 +536,14 @@ def messages_api():
 @login_required
 @member_required
 def profile():
-    return redirect(url_for("team.dashboard"))
+
+    team = require_active_team()
+
+    return render_template(
+        "team/profile.html",
+        user=current_user,
+        team=team
+    )
     
 # =====================================================
 # TEAM TASKS
