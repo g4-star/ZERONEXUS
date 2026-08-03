@@ -13,3 +13,4 @@ from .meeting import Meeting
 from .announcement import Announcement
 from .notification import Notification
 from .chat import ChatMessage
+from .team_message import TeamMessage
