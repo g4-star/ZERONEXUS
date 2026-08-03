@@ -480,7 +480,7 @@ a{color:inherit;text-decoration:none}
 (function () {
   const fileInput = document.getElementById('profile_image');
   if (!fileInput) return;
-  const avatarImg = document.getElementById('avatarImg');
+  let avatarImg = document.getElementById('avatarImg');
   const initials  = document.getElementById('avatarInitials');
   const toast     = document.getElementById('toastMsg');
   const MAX_BYTES = 2 * 1024 * 1024; // 2 MB
