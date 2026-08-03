@@ -42,7 +42,8 @@ from flask import redirect, url_for
 from flask import render_template
 from flask_login import current_user, login_required
 from app.models import Team, User, Project
-
+from app.models import TeamMessage
+from flask import jsonify
 
 def require_active_team():
 
@@ -401,14 +402,12 @@ def members():
     )
 
 
-# =====================================================
+
+    # =====================================================
 # TEAM CHAT
 # =====================================================
 
-@team_bp.route(
-    "/messages",
-    methods=["GET", "POST"]
-)
+@team_bp.route("/messages", methods=["GET", "POST"])
 @login_required
 @member_required
 def messages():
@@ -420,45 +419,114 @@ def messages():
     if form.validate_on_submit():
 
         message = TeamMessage(
-
             message=form.message.data,
-
             team_id=team.id,
-
             user_id=current_user.id
-
         )
 
         db.session.add(message)
-
         db.session.commit()
 
-        flash(
-            "Message sent.",
-            "success"
-        )
+        flash("Message sent.", "success")
 
-        return redirect(
-            url_for("team.messages")
-        )
+        return redirect(url_for("team.messages"))
 
-    messages = TeamMessage.query.filter_by(
-        team_id=team.id
-    ).order_by(
-        TeamMessage.created_at.asc()
-    ).all()
+    messages = (
+        TeamMessage.query
+        .filter_by(team_id=team.id)
+        .order_by(TeamMessage.created_at.asc())
+        .all()
+    )
 
     return render_template(
-
         "team/messages.html",
-
         form=form,
-
         team=team,
-
         messages=messages
-
     )
+
+
+# =====================================================
+# DASHBOARD CHAT SEND
+# =====================================================
+
+@team_bp.route("/chat/send", methods=["POST"])
+@login_required
+@member_required
+def send_chat():
+
+    team = require_active_team()
+
+    # Support JSON and HTML forms
+    if request.is_json:
+        data = request.get_json()
+        text = (data.get("message") or "").strip()
+    else:
+        text = request.form.get("message", "").strip()
+
+    if not text:
+
+        if request.is_json:
+            return jsonify({
+                "ok": False,
+                "error": "Empty message"
+            }), 400
+
+        return redirect(url_for("team.dashboard"))
+
+    chat = TeamMessage(
+        message=text,
+        team_id=team.id,
+        user_id=current_user.id
+    )
+
+    db.session.add(chat)
+    db.session.commit()
+
+    # JavaScript request
+    if request.is_json:
+
+        return jsonify({
+            "ok": True,
+            "message": {
+                "id": chat.id,
+                "author": current_user.username,
+                "message": chat.message,
+                "time": chat.created_at.strftime("%H:%M")
+            }
+        })
+
+    # Normal HTML form
+    return redirect(url_for("team.dashboard"))
+
+
+# =====================================================
+# CHAT HISTORY API
+# =====================================================
+
+@team_bp.route("/messages/api")
+@login_required
+@member_required
+def messages_api():
+
+    team = require_active_team()
+
+    messages = (
+        TeamMessage.query
+        .filter_by(team_id=team.id)
+        .order_by(TeamMessage.created_at.asc())
+        .all()
+    )
+
+    return jsonify([
+        {
+            "id": m.id,
+            "author": m.author.username,
+            "message": m.message,
+            "time": m.created_at.strftime("%H:%M")
+        }
+        for m in messages
+    ])
 
 # =====================================================
 # TEAM PROFILE
