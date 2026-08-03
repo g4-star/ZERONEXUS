@@ -9,10 +9,28 @@ from app.extensions import (
     csrf,
     limiter,
     mail,
+    socketio
 )
+def create_app():
+    
+    app = Flask(__name__)
 
+    ...
+
+    db.init_app(app)
+
+    login_manager.init_app(app)
+
+    socketio.init_app(app)
+
+    ...
 from app.cloudinary_config import configure_cloudinary
 from app.academy import academy
+from app.api.chat import chat_api
+
+app.register_blueprint(chat_api)
+from app.api.dashboard import dashboard_api
+app.register_blueprint(dashboard_api)
 
 
 def create_app(config_name=None):

@@ -7,57 +7,71 @@ class Notification(db.Model):
 
     __tablename__ = "notifications"
 
+    # =====================================================
+    # Primary Key
+    # =====================================================
+
     id = db.Column(
-
         db.Integer,
-
         primary_key=True
-
     )
 
-    title = db.Column(
+    # =====================================================
+    # Receiver
+    # =====================================================
 
-        db.String(200),
-
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
         nullable=False
+    )
 
+    # =====================================================
+    # Notification Details
+    # =====================================================
+
+    title = db.Column(
+        db.String(255),
+        nullable=False
     )
 
     message = db.Column(
-
         db.Text,
-
         nullable=False
+    )
 
+    type = db.Column(
+        db.String(50),
+        nullable=False
+    )
+
+    link = db.Column(
+        db.String(255),
+        nullable=True
     )
 
     is_read = db.Column(
-
         db.Boolean,
-
         default=False
-
     )
+
+    # =====================================================
+    # Timestamps
+    # =====================================================
 
     created_at = db.Column(
-
         db.DateTime,
-
         default=datetime.utcnow
-
     )
 
-    user_id = db.Column(
+    # =====================================================
+    # Relationships
+    # =====================================================
 
-        db.Integer,
-
-        db.ForeignKey("users.id")
-
+    user = db.relationship(
+        "User",
+        back_populates="notifications"
     )
-
-    def mark_read(self):
-
-        self.is_read = True
 
     def __repr__(self):
 

@@ -1,69 +1,121 @@
 from datetime import datetime
 
-try:
-    from app.models.chat_message import ChatMessage
-except ImportError:
-    ChatMessage = None
-
 from app.extensions import db
+from app.models.chat import (
+    ChatChannel,
+    ChatMessage,
+    MessageRead
+)
 
 
 class ChatService:
 
+    # =====================================================
+    # CHANNELS
+    # =====================================================
+
     @staticmethod
-    def latest(team_id=None, limit=50):
+    def create_channel(team, creator, name, description=""):
 
-        if not ChatMessage:
-            return []
+        channel = ChatChannel(
+            team_id=team.id,
+            created_by=creator.id,
+            name=name,
+            description=description
+        )
 
-        query = ChatMessage.query
+        db.session.add(channel)
+        db.session.commit()
 
-        if team_id and hasattr(ChatMessage, "team_id"):
+        return channel
 
-            query = query.filter_by(team_id=team_id)
+    @staticmethod
+    def get_team_channels(team_id):
 
-        if hasattr(ChatMessage, "created_at"):
+        return ChatChannel.query.filter_by(
+            team_id=team_id
+        ).order_by(ChatChannel.name.asc()).all()
 
-            query = query.order_by(
-                ChatMessage.created_at.desc()
+    # =====================================================
+    # MESSAGES
+    # =====================================================
+
+    @staticmethod
+    def send_message(channel, sender, content):
+
+        message = ChatMessage(
+            channel_id=channel.id,
+            sender_id=sender.id,
+            content=content
+        )
+
+        db.session.add(message)
+        db.session.commit()
+
+        return message
+
+    @staticmethod
+    def get_messages(channel_id, limit=100):
+
+        return ChatMessage.query.filter_by(
+            channel_id=channel_id
+        ).order_by(ChatMessage.created_at.asc()).limit(limit).all()
+
+    @staticmethod
+    def edit_message(message, new_content):
+
+        message.content = new_content
+        message.edited = True
+        message.updated_at = datetime.utcnow()
+
+        db.session.commit()
+
+        return message
+
+    @staticmethod
+    def delete_message(message):
+
+        message.deleted = True
+
+        db.session.commit()
+
+        return message
+
+    # =====================================================
+    # READ RECEIPTS
+    # =====================================================
+
+    @staticmethod
+    def mark_as_read(message, user):
+
+        exists = MessageRead.query.filter_by(
+            message_id=message.id,
+            user_id=user.id
+        ).first()
+
+        if exists:
+            return exists
+
+        read = MessageRead(
+            message_id=message.id,
+            user_id=user.id
+        )
+
+        db.session.add(read)
+        db.session.commit()
+
+        return read
+
+    # =====================================================
+    # HELPERS
+    # =====================================================
+
+    @staticmethod
+    def unread_count(user, channel):
+
+        return ChatMessage.query.filter(
+            ChatMessage.channel_id == channel.id,
+            ~ChatMessage.reads.any(
+                MessageRead.user_id == user.id
             )
-
-        return query.limit(limit).all()
-
-    @staticmethod
-    def create(user, message, team_id=None):
-
-        if not ChatMessage:
-
-            return None
-
-        data = {
-
-            "message": message,
-
-            "created_at": datetime.utcnow()
-
-        }
-
-        if hasattr(ChatMessage, "user_id"):
-
-            data["user_id"] = user.id
-
-        if team_id and hasattr(ChatMessage, "team_id"):
-
-            data["team_id"] = team_id
-
-        chat = ChatMessage(**data)
-
-        db.session.add(chat)
-
-        db.session.commit()
-
-        return chat
-
-    @staticmethod
-    def delete(chat):
-
-        db.session.delete(chat)
-
-        db.session.commit()
+        ).count()

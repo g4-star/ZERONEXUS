@@ -1,89 +1,115 @@
-try:
-    from app.models.notification import Notification
-except ImportError:
-    Notification = None
-
 from app.extensions import db
+from app.models.notification import Notification
 
 
 class NotificationService:
 
-    @staticmethod
-    def unread(user):
-
-        if not Notification:
-
-            return []
-
-        query = Notification.query
-
-        if hasattr(Notification, "user_id"):
-
-            query = query.filter_by(
-                user_id=user.id
-            )
-
-        if hasattr(Notification, "is_read"):
-
-            query = query.filter_by(
-                is_read=False
-            )
-
-        return query.all()
+    # =====================================================
+    # Create Notification
+    # =====================================================
 
     @staticmethod
-    def count(user):
+    def create(
+        user,
+        title,
+        message,
+        notification_type,
+        link=None
+    ):
 
-        return len(
-
-            NotificationService.unread(user)
-
+        notification = Notification(
+            user_id=user.id,
+            title=title,
+            message=message,
+            type=notification_type,
+            link=link
         )
 
-    @staticmethod
-    def create(user, title, message):
-
-        if not Notification:
-
-            return None
-
-        data = {
-
-            "title": title,
-
-            "message": message
-
-        }
-
-        if hasattr(Notification, "user_id"):
-
-            data["user_id"] = user.id
-
-        notification = Notification(**data)
-
         db.session.add(notification)
-
         db.session.commit()
 
         return notification
 
+    # =====================================================
+    # Notify Entire Team
+    # =====================================================
+
+    @staticmethod
+    def notify_team(
+        team,
+        title,
+        message,
+        notification_type,
+        link=None
+    ):
+
+        notifications = []
+
+        for member in team.users:
+
+            notification = Notification(
+                user_id=member.id,
+                title=title,
+                message=message,
+                type=notification_type,
+                link=link
+            )
+
+            db.session.add(notification)
+            notifications.append(notification)
+
+        db.session.commit()
+
+        return notifications
+
+    # =====================================================
+    # Mark Notification Read
+    # =====================================================
+
+    @staticmethod
+    def mark_read(notification):
+
+        notification.is_read = True
+
+        db.session.commit()
+
+    # =====================================================
+    # Mark All Read
+    # =====================================================
+
     @staticmethod
     def mark_all_read(user):
 
-        if not Notification:
-
-            return
-
-        notifications = Notification.query.filter_by(
-
+        Notification.query.filter_by(
             user_id=user.id,
-
             is_read=False
-
-        ).all()
-
-        for item in notifications:
-
-            item.is_read = True
+        ).update(
+            {"is_read": True}
+        )
 
         db.session.commit()
+
+    # =====================================================
+    # Unread Count
+    # =====================================================
+
+    @staticmethod
+    def unread_count(user):
+
+        return Notification.query.filter_by(
+            user_id=user.id,
+            is_read=False
+        ).count()
+
+    # =====================================================
+    # User Notifications
+    # =====================================================
+
+    @staticmethod
+    def get_notifications(user):
+
+        return Notification.query.filter_by(
+            user_id=user.id
+        ).order_by(
+            Notification.created_at.desc()
+        ).all()
