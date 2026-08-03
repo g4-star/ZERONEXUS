@@ -1,231 +1,551 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Profile — ZeroNexus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+</head>
+<body>
 
-{% block title %}Edit Profile{% endblock %}
+{% macro field(f, icon, ph, type='text', rows=4, help='') %}
+<div class="form-group">
+  <label for="{{ f.id }}">
+    <i class="fa-solid fa-{{ icon }}"></i>
+    {{ f.label.text }}
+  </label>
+  {% if f.type == 'SelectField' %}
+    {{ f(class='form-select' ~ (' is-invalid' if f.errors else '')) }}
+  {% elif f.type == 'TextAreaField' %}
+    {{ f(class='form-control' ~ (' is-invalid' if f.errors else ''), placeholder=ph, rows=rows) }}
+  {% else %}
+    {{ f(class='form-control' ~ (' is-invalid' if f.errors else ''), placeholder=ph) }}
+  {% endif %}
+  {% if f.errors %}
+    <div class="invalid-feedback d-block">
+      {% for e in f.errors %}<span>{{ e }}</span>{% if not loop.last %}<br>{% endif %}{% endfor %}
+    </div>
+  {% endif %}
+  {% if help %}<div class="form-text">{{ help }}</div>{% endif %}
+</div>
+{% endmacro %}
 
-{% block content %}
+<div class="page-wrap">
 
-<div class="container py-5">
+  <!-- ===================== HEADER ===================== -->
+  <header class="page-header glass">
+    <a href="{{ url_for('team.profile') }}" class="back-link" aria-label="Back to profile">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    <div class="header-text">
+      <h1><i class="fa-solid fa-user-pen"></i> Edit Profile</h1>
+      <p>Update your personal details, links and cybersecurity profiles.</p>
+    </div>
+  </header>
 
-    <div class="row justify-content-center">
+  <!-- ===================== FORM ===================== -->
+  <form method="POST" enctype="multipart/form-data" id="profileForm" novalidate>
 
-        <div class="col-lg-10">
+    {{ form.hidden_tag() }}
 
-            <div class="card shadow-lg border-0">
+    <div class="layout-grid">
 
-                <div class="card-header bg-dark text-white">
-                    <h3 class="mb-0">
-                        <i class="fas fa-user-edit"></i>
-                        Edit Profile
-                    </h3>
+      <!-- ============ LEFT COLUMN ============ -->
+      <div class="col-left">
+
+        <!-- Photo card -->
+        <div class="glass card-photo">
+          <div class="section-title">
+            <i class="fa-solid fa-camera c-purple"></i>
+            <h3>Profile Picture</h3>
+          </div>
+
+          <div class="upload-area">
+            <div class="avatar-preview" id="avatarPreview">
+              {% if user.profile_image %}
+                <img src="{{ url_for('static', filename=user.profile_image) }}"
+                     id="avatarImg" alt="Profile picture">
+              {% else %}
+                <div class="avatar-initials" id="avatarInitials">
+                  {{ user.username[:2]|upper if user.username else 'ZN' }}
                 </div>
-
-                <div class="card-body">
-
-                    <form method="POST">
-
-                        <h5 class="mb-3">
-                            Personal Information
-                        </h5>
-
-                        <div class="mb-3">
-                            <label class="form-label">Bio</label>
-                            <textarea
-                                name="bio"
-                                class="form-control"
-                                rows="4">{{ user.bio or "" }}</textarea>
-                        </div>
-
-                        <div class="row">
-
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Phone</label>
-                                <input
-                                    type="text"
-                                    name="phone"
-                                    class="form-control"
-                                    value="{{ user.phone or '' }}">
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Location</label>
-                                <input
-                                    type="text"
-                                    name="location"
-                                    class="form-control"
-                                    value="{{ user.location or '' }}">
-                            </div>
-
-                        </div>
-
-                        <hr>
-
-                        <h5 class="mb-3">
-                            Professional Information
-                        </h5>
-
-                        <div class="row">
-
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">
-                                    Job Title
-                                </label>
-
-                                <input
-                                    type="text"
-                                    name="job_title"
-                                    class="form-control"
-                                    value="{{ user.job_title or '' }}">
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-
-                                <label class="form-label">
-                                    Company
-                                </label>
-
-                                <input
-                                    type="text"
-                                    name="company"
-                                    class="form-control"
-                                    value="{{ user.company or '' }}">
-
-                            </div>
-
-                        </div>
-
-                        <div class="mb-4">
-
-                            <label class="form-label">
-                                Skills
-                            </label>
-
-                            <textarea
-                                name="skills"
-                                rows="3"
-                                class="form-control">{{ user.skills or "" }}</textarea>
-
-                        </div>
-
-                        <hr>
-
-                        <h5 class="mb-3">
-                            Social Links
-                        </h5>
-
-                        <div class="mb-3">
-                            <label>Portfolio Website</label>
-
-                            <input
-                                type="url"
-                                name="portfolio"
-                                class="form-control"
-                                value="{{ user.portfolio or '' }}">
-                        </div>
-
-                        <div class="mb-3">
-                            <label>GitHub</label>
-
-                            <input
-                                type="url"
-                                name="github"
-                                class="form-control"
-                                value="{{ user.github or '' }}">
-                        </div>
-
-                        <div class="mb-3">
-                            <label>LinkedIn</label>
-
-                            <input
-                                type="url"
-                                name="linkedin"
-                                class="form-control"
-                                value="{{ user.linkedin or '' }}">
-                        </div>
-
-                        <div class="mb-3">
-                            <label>X / Twitter</label>
-
-                            <input
-                                type="url"
-                                name="twitter"
-                                class="form-control"
-                                value="{{ user.twitter or '' }}">
-                        </div>
-
-                        <hr>
-
-                        <h5 class="mb-3">
-                            Cybersecurity Profiles
-                        </h5>
-
-                        <div class="mb-3">
-
-                            <label>TryHackMe</label>
-
-                            <input
-                                type="url"
-                                name="tryhackme"
-                                class="form-control"
-                                value="{{ user.tryhackme or '' }}">
-
-                        </div>
-
-                        <div class="mb-3">
-
-                            <label>Hack The Box</label>
-
-                            <input
-                                type="url"
-                                name="hackthebox"
-                                class="form-control"
-                                value="{{ user.hackthebox or '' }}">
-
-                        </div>
-
-                        <div class="mb-4">
-
-                            <label>CTFtime</label>
-
-                            <input
-                                type="url"
-                                name="ctftime"
-                                class="form-control"
-                                value="{{ user.ctftime or '' }}">
-
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-
-                            <a
-                                href="{{ url_for('user.profile') }}"
-                                class="btn btn-secondary">
-
-                                Cancel
-
-                            </a>
-
-                            <button
-                                class="btn btn-primary"
-                                type="submit">
-
-                                <i class="fas fa-save"></i>
-
-                                Save Profile
-
-                            </button>
-
-                        </div>
-
-                    </form>
-
-                </div>
-
+              {% endif %}
             </div>
 
+            {{ form.profile_image(
+                 id="profile_image",
+                 class="d-none",
+                 accept="image/*",
+                 aria_label="Upload profile picture"
+            ) }}
+
+            <label for="profile_image" class="upload-btn" role="button">
+              <i class="fa-solid fa-arrow-up-from-bracket"></i>
+              Upload New Photo
+            </label>
+            <p class="upload-hint">JPG, PNG or GIF — max 2 MB</p>
+
+            {% if form.profile_image.errors %}
+              <div class="invalid-feedback d-block text-center mt-2">
+                {% for e in form.profile_image.errors %}<span>{{ e }}</span>{% endfor %}
+              </div>
+            {% endif %}
+          </div>
         </div>
 
+        <!-- Personal info card -->
+        <div class="glass">
+          <div class="section-title">
+            <i class="fa-solid fa-id-card c-blue"></i>
+            <h3>Personal Information</h3>
+          </div>
+
+          {{ field(form.full_name, 'user', 'e.g. Brian Otieno') }}
+          {{ field(form.username, 'at', 'e.g. brian_o', help='Your unique username — used for mentions and profile URL.') }}
+
+          <div class="form-group">
+            <label for="bio"><i class="fa-solid fa-align-left"></i> {{ form.bio.label.text }}</label>
+            {{ form.bio(class='form-control' ~ (' is-invalid' if form.bio.errors else ''), placeholder='Tell your team a bit about yourself…', rows=4) }}
+            {% if form.bio.errors %}
+              <div class="invalid-feedback d-block">
+                {% for e in form.bio.errors %}<span>{{ e }}</span>{% endfor %}
+              </div>
+            {% endif %}
+            <div class="form-text char-count"><span id="bioCount">0</span> / 500 characters</div>
+          </div>
+
+          <div class="two-col">
+            {{ field(form.phone, 'phone', 'e.g. +254 712 345 678') }}
+            {{ field(form.whatsapp, 'brands fa-whatsapp', 'e.g. +254 712 345 678') }}
+          </div>
+
+          {{ field(form.location, 'location-dot', 'e.g. Nairobi, Kenya') }}
+
+          <div class="two-col">
+            {{ field(form.job_title, 'briefcase', 'e.g. Security Engineer') }}
+            {{ field(form.company, 'building', 'e.g. ZeroNexus') }}
+          </div>
+
+          <div class="two-col">
+            {{ field(form.experience_level, 'chart-line', 'e.g. Intermediate') }}
+            {{ field(form.favorite_language, 'code', 'e.g. Python') }}
+          </div>
+
+          <div class="form-group">
+            <label for="skills"><i class="fa-solid fa-wand-magic-sparkles"></i> {{ form.skills.label.text }}</label>
+            {{ form.skills(class='form-control' ~ (' is-invalid' if form.skills.errors else ''), placeholder='e.g. Python, Nmap, Burp Suite, OWASP Top 10', rows=3) }}
+            {% if form.skills.errors %}
+              <div class="invalid-feedback d-block">
+                {% for e in form.skills.errors %}<span>{{ e }}</span>{% endfor %}
+              </div>
+            {% endif %}
+            <div class="form-text char-count"><span id="skillsCount">0</span> / 300 characters</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ============ RIGHT COLUMN ============ -->
+      <div class="col-right">
+
+        <!-- Account info (read-only) -->
+        <div class="glass">
+          <div class="section-title">
+            <i class="fa-solid fa-shield-halved c-green"></i>
+            <h3>Account Information</h3>
+            <span class="ro-badge"><i class="fa-solid fa-lock"></i> Read-only</span>
+          </div>
+
+          <div class="info-rows">
+            <div class="info-row">
+              <div class="info-icon c-purple"><i class="fa-solid fa-envelope"></i></div>
+              <div class="info-body">
+                <span class="info-label">Email</span>
+                <span class="info-value">{{ user.email or '—' }}</span>
+              </div>
+            </div>
+            <div class="info-row">
+              <div class="info-icon c-blue"><i class="fa-solid fa-users"></i></div>
+              <div class="info-body">
+                <span class="info-label">Team</span>
+                <span class="info-value">{{ user.team.name if user.team else 'Not assigned' }}</span>
+              </div>
+            </div>
+            <div class="info-row">
+              <div class="info-icon c-green"><i class="fa-solid fa-user-shield"></i></div>
+              <div class="info-body">
+                <span class="info-label">Role</span>
+                <span class="info-value">{{ user.role.replace('_', ' ').title() if user.role else '—' }}</span>
+              </div>
+            </div>
+            <div class="info-row">
+              <div class="info-icon c-orange"><i class="fa-solid fa-calendar-check"></i></div>
+              <div class="info-body">
+                <span class="info-label">Date Joined</span>
+                <span class="info-value">{{ user.created_at.strftime('%B %d, %Y') if user.created_at else '—' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Professional links -->
+        <div class="glass">
+          <div class="section-title">
+            <i class="fa-solid fa-link c-cyan"></i>
+            <h3>Professional Links</h3>
+          </div>
+
+          {{ field(form.portfolio, 'globe', 'https://yourportfolio.com') }}
+          {{ field(form.github, 'brands fa-github', 'https://github.com/username') }}
+          {{ field(form.linkedin, 'brands fa-linkedin', 'https://linkedin.com/in/username') }}
+          {{ field(form.twitter, 'brands fa-x-twitter', 'https://x.com/username') }}
+        </div>
+
+        <!-- Cybersecurity profiles -->
+        <div class="glass">
+          <div class="section-title">
+            <i class="fa-solid fa-bug c-red"></i>
+            <h3>Cybersecurity Profiles</h3>
+          </div>
+
+          {{ field(form.tryhackme, 'flag', 'https://tryhackme.com/p/username') }}
+          {{ field(form.hackthebox, 'cube', 'https://app.hackthebox.com/profile/12345') }}
+          {{ field(form.ctftime, 'trophy', 'https://ctftime.org/user/12345') }}
+        </div>
+
+      </div>
     </div>
 
+    <!-- ===================== ACTION BAR ===================== -->
+    <div class="action-bar glass">
+      <a href="{{ url_for('team.profile') }}" class="btn btn-cancel">
+        <i class="fa-solid fa-xmark"></i> Cancel
+      </a>
+      <button type="submit" class="btn btn-save">
+        <i class="fa-solid fa-floppy-disk"></i> Save Changes
+      </button>
+    </div>
+
+  </form>
 </div>
 
-{% endblock %}
+<!-- ===================== TOAST ===================== -->
+<div class="toast-msg" id="toastMsg"></div>
+
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --bg:#06090f;
+  --text:#e8ecf4;
+  --muted:#8a92a6;
+  --muted-2:#5c6375;
+  --purple:#8b5cf6;
+  --blue:#3b82f6;
+  --green:#22c55e;
+  --orange:#f59e0b;
+  --red:#ef4444;
+  --cyan:#06b6d4;
+  --radius:20px;
+  --border:rgba(255,255,255,.08);
+  --shadow:0 8px 32px rgba(0,0,0,.45);
+  --glow:0 0 24px rgba(139,92,246,.35);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  padding:28px 0 60px;
+  background-image:
+    radial-gradient(900px 500px at -5% -10%, rgba(139,92,246,.14), transparent 60%),
+    radial-gradient(800px 500px at 105% 0%, rgba(59,130,246,.10), transparent 60%),
+    radial-gradient(700px 600px at 50% 110%, rgba(34,197,94,.06), transparent 60%);
+}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:rgba(139,92,246,.5)}
+a{color:inherit;text-decoration:none}
+
+.page-wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+/* ============ GLASS ============ */
+.glass{
+  background:rgba(255,255,255,.035);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  box-shadow:var(--shadow);
+  transition:border-color .25s, transform .25s;
+}
+.glass:hover{border-color:rgba(139,92,246,.28)}
+
+/* ============ HEADER ============ */
+.page-header{
+  display:flex;align-items:center;gap:16px;
+  padding:18px 24px;margin-bottom:24px;
+  animation:rise .45s ease backwards;
+}
+.back-link{
+  width:42px;height:42px;border-radius:12px;flex:none;
+  display:grid;place-items:center;font-size:16px;color:var(--muted);
+  background:rgba(255,255,255,.04);border:1px solid var(--border);transition:.2s;
+}
+.back-link:hover{color:#fff;background:rgba(139,92,246,.18);transform:translateX(-3px)}
+.header-text h1{font-size:22px;font-weight:800;letter-spacing:-.3px}
+.header-text h1 i{color:var(--purple-light,#a78bfa);margin-right:8px}
+.header-text p{color:var(--muted);font-size:13px;margin-top:4px}
+
+/* ============ GRID ============ */
+.layout-grid{
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:24px;
+  align-items:start;
+}
+.col-left,.col-right{display:flex;flex-direction:column;gap:24px;min-width:0}
+
+/* ============ CARD HEADERS ============ */
+.section-title{
+  display:flex;align-items:center;gap:11px;
+  padding:18px 22px 0;
+}
+.section-title i{
+  width:34px;height:34px;border-radius:10px;flex:none;
+  display:grid;place-items:center;font-size:14px;
+}
+.section-title h3{font-size:15px;font-weight:700;margin:0}
+.ro-badge{
+  margin-left:auto;font-size:10px;font-weight:700;letter-spacing:1px;
+  color:var(--muted);background:rgba(255,255,255,.05);
+  border:1px solid var(--border);border-radius:99px;padding:4px 10px;
+}
+.ro-badge i{font-size:9px;margin-right:4px}
+
+/* ============ PHOTO CARD ============ */
+.card-photo{padding-bottom:22px}
+.upload-area{
+  display:flex;flex-direction:column;align-items:center;
+  padding:22px 22px 0;gap:0;
+}
+.avatar-preview{
+  width:150px;height:150px;border-radius:50%;
+  border:4px solid rgba(139,92,246,.45);
+  box-shadow:var(--glow), var(--shadow);
+  overflow:hidden;display:grid;place-items:center;
+  background:linear-gradient(135deg,#7c3aed,#3b82f6 55%,#06b6d4);
+  animation:rise .5s ease backwards;
+}
+.avatar-preview img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar-initials{
+  font-size:48px;font-weight:800;color:#fff;
+  text-shadow:0 2px 12px rgba(0,0,0,.35);
+}
+.upload-btn{
+  margin-top:16px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--purple),#6d28d9);
+  color:#fff;font-size:13px;font-weight:600;
+  padding:11px 20px;border-radius:12px;
+  box-shadow:0 6px 18px rgba(139,92,246,.4);
+  transition:.2s;
+}
+.upload-btn:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(139,92,246,.55)}
+.upload-btn i{font-size:13px}
+.upload-hint{color:var(--muted-2);font-size:11px;margin-top:10px}
+
+/* ============ FORM FIELDS ============ */
+.form-group{margin-bottom:18px}
+.form-group label{
+  display:flex;align-items:center;gap:8px;
+  font-size:12px;font-weight:600;color:var(--muted);
+  letter-spacing:.3px;margin-bottom:7px;
+}
+.form-group label i{
+  width:24px;height:24px;border-radius:7px;flex:none;
+  display:grid;place-items:center;font-size:11px;
+  color:var(--purple-light,#a78bfa);
+  background:rgba(139,92,246,.14);
+}
+.form-control,.form-select{
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--border);
+  color:var(--text);
+  border-radius:12px;
+  padding:11px 14px;
+  font-size:13.5px;
+  transition:.2s;
+}
+.form-control::placeholder,.form-select::placeholder{color:var(--muted-2)}
+.form-control:focus,.form-select:focus{
+  background:rgba(255,255,255,.07);
+  border-color:var(--purple);
+  box-shadow:0 0 0 4px rgba(139,92,246,.18);
+  color:#fff;
+}
+.form-control.is-invalid,.form-select.is-invalid{border-color:var(--red)}
+.invalid-feedback{font-size:12px;color:#f87171;margin-top:6px;font-weight:500}
+.form-text{color:var(--muted-2);font-size:11px;margin-top:6px}
+.char-count{text-align:right}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* ============ READ-ONLY ROWS ============ */
+.info-rows{padding:18px 22px 22px;display:flex;flex-direction:column;gap:14px}
+.info-row{display:flex;gap:12px;align-items:flex-start;animation:rise .45s ease backwards}
+.info-row:nth-child(2){animation-delay:.06s}
+.info-row:nth-child(3){animation-delay:.12s}
+.info-row:nth-child(4){animation-delay:.18s}
+.info-icon{
+  width:36px;height:36px;border-radius:10px;flex:none;
+  display:grid;place-items:center;font-size:14px;
+}
+.info-body{display:flex;flex-direction:column;gap:2px;min-width:0}
+.info-label{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted-2)}
+.info-value{font-size:13.5px;font-weight:500;color:var(--text);word-break:break-word}
+
+/* accent chips */
+.c-purple{background:rgba(139,92,246,.16);color:#a78bfa}
+.c-blue{background:rgba(59,130,246,.15);color:#60a5fa}
+.c-green{background:rgba(34,197,94,.14);color:#4ade80}
+.c-orange{background:rgba(245,158,11,.15);color:#fbbf24}
+.c-red{background:rgba(239,68,68,.14);color:#f87171}
+.c-cyan{background:rgba(6,182,212,.14);color:#22d3ee}
+
+/* ============ ACTION BAR ============ */
+.action-bar{
+  position:sticky;bottom:16px;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:14px;padding:16px 20px;margin-top:28px;
+  background:rgba(13,18,30,.85);
+}
+.btn-save{
+  display:inline-flex;align-items:center;gap:9px;
+  background:linear-gradient(135deg,var(--purple),var(--blue));
+  color:#fff;font-size:14px;font-weight:700;
+  padding:13px 30px;border-radius:13px;border:none;
+  box-shadow:0 8px 24px rgba(139,92,246,.45);
+  transition:.22s;
+}
+.btn-save:hover{
+  color:#fff;transform:translateY(-2px);
+  box-shadow:0 12px 32px rgba(139,92,246,.6);
+}
+.btn-cancel{
+  display:inline-flex;align-items:center;gap:9px;
+  background:rgba(255,255,255,.05);
+  color:var(--muted);font-size:14px;font-weight:600;
+  padding:13px 26px;border-radius:13px;
+  border:1px solid var(--border);transition:.2s;
+}
+.btn-cancel:hover{
+  color:#f87171;background:rgba(239,68,68,.1);
+  border-color:rgba(239,68,68,.35);
+}
+
+/* ============ TOAST ============ */
+.toast-msg{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(90px);
+  background:rgba(20,26,42,.98);border:1px solid rgba(139,92,246,.35);color:#fff;
+  padding:12px 24px;border-radius:12px;font-size:13px;font-weight:600;
+  box-shadow:var(--shadow);z-index:200;transition:.35s;opacity:0;
+  backdrop-filter:blur(16px);pointer-events:none;
+}
+.toast-msg.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* ============ ANIMATION ============ */
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:1024px){
+  .layout-grid{grid-template-columns:1fr}
+  .two-col{grid-template-columns:1fr 1fr}
+}
+@media (max-width:640px){
+  body{padding:16px 0 40px}
+  .page-wrap{padding:0 14px}
+  .two-col{grid-template-columns:1fr}
+  .action-bar{flex-direction:column-reverse;align-items:stretch}
+  .btn-save,.btn-cancel{justify-content:center}
+  .header-text h1{font-size:18px}
+}
+</style>
+
+<script>
+/* ============ PROFILE IMAGE PREVIEW ============ */
+(function () {
+  const fileInput = document.getElementById('profile_image');
+  if (!fileInput) return;
+  const avatarImg = document.getElementById('avatarImg');
+  const initials  = document.getElementById('avatarInitials');
+  const toast     = document.getElementById('toastMsg');
+  const MAX_BYTES = 2 * 1024 * 1024; // 2 MB
+
+  function showToast(text, ok) {
+    toast.textContent = text;
+    toast.style.borderColor = ok ? 'rgba(139,92,246,.35)' : 'rgba(239,68,68,.5)';
+    toast.classList.add('show');
+    setTimeout(function () { toast.classList.remove('show'); }, 2600);
+  }
+
+  fileInput.addEventListener('change', function (e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showToast('Please choose an image file (JPG, PNG or GIF).', false);
+      fileInput.value = '';
+      return;
+    }
+    if (file.size > MAX_BYTES) {
+      showToast('Image is too large — maximum size is 2 MB.', false);
+      fileInput.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (ev) {
+      if (!avatarImg) {
+        /* No image tag yet — create one */
+        const preview = document.getElementById('avatarPreview');
+        const img = document.createElement('img');
+        img.id = 'avatarImg';
+        img.alt = 'Profile picture preview';
+        preview.innerHTML = '';
+        preview.appendChild(img);
+        avatarImg = img;
+      }
+      avatarImg.src = ev.target.result;
+      avatarImg.style.display = 'block';
+      if (initials) initials.style.display = 'none';
+      showToast('Profile picture ready — don\'t forget to save.', true);
+    };
+    reader.readAsDataURL(file);
+  });
+})();
+
+/* ============ CHARACTER COUNTERS ============ */
+(function () {
+  const bio = document.getElementById('bio');
+  const skills = document.getElementById('skills');
+  if (bio) {
+    const counter = document.getElementById('bioCount');
+    const update = function () { counter.textContent = bio.value.length; };
+    bio.addEventListener('input', update);
+    update();
+  }
+  if (skills) {
+    const counter = document.getElementById('skillsCount');
+    const update = function () { counter.textContent = skills.value.length; };
+    skills.addEventListener('input', update);
+    update();
+  }
+})();
+</script>
+
+</body>
+</html>
