@@ -5,9 +5,11 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from flask_socketio import SocketIO
-
-db = SQLAlchemy()
+try:
+    from flask_socketio import SocketIO
+    socketio = SocketIO(cors_allowed_origins="*")
+except ImportError:
+    socketio = None
 
 login_manager = LoginManager()
 
