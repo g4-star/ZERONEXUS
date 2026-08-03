@@ -441,7 +441,7 @@ input{font-family:inherit}
       <a class="nav-item"><i class="fa-solid fa-diagram-project"></i><span>Projects</span></a>
       <a class="nav-item"><i class="fa-solid fa-list-check"></i><span>Tasks</span><span class="badge">5</span></a>
       <a class="nav-item"><i class="fa-solid fa-calendar-days"></i><span>Calendar</span></a>
-      <a class="nav-item"><i class="fa-solid fa-bullhorn"></i><span>Announcements</span></a>
+      <a href="{{ url_for('team.announcements') }}" class="nav-item"><i class="fa-solid fa-bullhorn"></i><span>Announcements</span></a>
       <a class="nav-item"><i class="fa-solid fa-users"></i><span>Team Members</span></a>
       <a class="nav-item"><i class="fa-solid fa-chart-pie"></i><span>Reports</span></a>
       <a class="nav-item"><i class="fa-solid fa-user"></i><span>Profile</span></a>
@@ -726,7 +726,7 @@ input{font-family:inherit}
             <div class="card-head">
               <div class="head-icon c-purple"><i class="fa-solid fa-bullhorn"></i></div>
               <h3>Team Announcements</h3>
-              <button class="btn-primary"><i class="fa-solid fa-plus" style="margin-right:6px"></i>New Announcement</button>
+              <a href="{{ url_for('team.create_announcement') }}" class="btn-primary"><i class="fa-solid fa-plus" style="margin-right:6px"></i>New Announcement</a>
             </div>
             <div class="card-body">
               <div class="announcement">
@@ -753,7 +753,7 @@ input{font-family:inherit}
                   Dickson Kiprono · Yesterday
                 </div>
               </div>
-              <a class="view-all">View all announcements <i class="fa-solid fa-arrow-right" style="margin-left:5px"></i></a>
+              <a href="{{ url_for('team.announcements') }}" class="view-all">View all announcements <i class="fa-solid fa-arrow-right" style="margin-left:5px"></i></a>
             </div>
           </div>
 
@@ -910,7 +910,7 @@ input{font-family:inherit}
       </div>
       <div class="qa-item">
         <div class="qa-icon c-green"><i class="fa-solid fa-bullhorn"></i></div>
-        <div><b>New Announcement</b><small>Post to the whole team</small></div>
+        <a href="{{ url_for('team.create_announcement') }}" class="quick-action"><i class="fa-solid fa-bullhorn"></i><div><b>New Announcement</b><small>Post to the whole team</small></div><i class="fa-solid fa-chevron-right"></i></a>
         <i class="fa-solid fa-chevron-right qa-arrow"></i>
       </div>
     </div>
