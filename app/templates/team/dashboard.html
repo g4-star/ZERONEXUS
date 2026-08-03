@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ZeroNexus — Team Lead Dashboard</title>
@@ -942,6 +943,7 @@ const toast = document.getElementById('toast');
 const SEND_URL   = "{{ url_for('team.send_chat') }}";
 const MSGS_URL = "{{ url_for('team.messages_api') }}";
 const MY_USER    = "{{ current_user.username }}";
+const CSRF = document.querySelector('meta[name="csrf-token"]')?.content || '';
 let currentChannel = 'General';
 let lastMsgId = 0;
 
@@ -983,29 +985,41 @@ async function sendMsg() {
   try {
     const res = await fetch(SEND_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'fetch' },
-      body: JSON.stringify({ message: text, channel: currentChannel })
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': CSRF,
+        'X-Requested-With': 'fetch'
+      },
+      body: JSON.stringify({ message: text })
     });
     const data = await res.json();
-    if (data.ok) appendMessage(data.message, true);
-  } catch (err) { /* SSE picks it up on next poll if this failed */ }
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2200);
+    if (data.ok) {
+      appendMessage(data.message, true);
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+  } catch (err) { /* next poll will pick it up */ }
 }
 document.getElementById('sendBtn').addEventListener('click', sendMsg);
 chatMsg.addEventListener('keydown', e => { if (e.key === 'Enter') sendMsg(); });
 
-/* SSE: real-time push (auto-reconnects on network drop) */
-function connectStream() {
-  if (es) es.close();
-  es = new EventSource(STREAM_URL + '?last_id=' + lastMsgId +
-                       '&channel=' + encodeURIComponent(currentChannel));
-  es.onmessage = e => {
-    const m = JSON.parse(e.data);
-    lastMsgId = Math.max(lastMsgId, m.id);
-    appendMessage(m, m.author === MY_USER);
-  };
+/* Poll for new messages — this is what the broken setInterval was missing */
+async function loadMessages() {
+  try {
+    const res = await fetch(MSGS_URL, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) return;
+    const list = await res.json();
+    let newest = lastMsgId;
+    list.forEach(m => {
+      if (m.id > lastMsgId) {
+        appendMessage(m, m.author === MY_USER);
+        newest = Math.max(newest, m.id);
+      }
+    });
+    lastMsgId = newest;
+  } catch (err) { /* ignore transient errors */ }
 }
+setInterval(loadMessages, 3000);
 
 /* ===== Chat item selection ===== */
 
@@ -1043,6 +1057,7 @@ document.querySelectorAll('.chat-item[data-channel]').forEach(item => {
             }
 
             list.forEach(appendMessage);
+            list.forEach(m => lastMsgId = Math.max(lastMsgId, m.id));
 
         } catch (err) {
 
@@ -1070,8 +1085,6 @@ document.querySelectorAll('.chat-item:not([data-channel])').forEach(item => {
 });
 
 
-/* Auto refresh messages every 2 seconds */
-setInterval(loadMessages, 2000);
 
 /* ===== Dropdowns ===== */
 const bellBtn = document.getElementById('bellBtn'), notifDrop = document.getElementById('notifDrop');
