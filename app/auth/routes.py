@@ -31,58 +31,38 @@ from .forms import (
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
 
+    # Already logged in
     if current_user.is_authenticated:
 
-        if current_user.role == "admin":
-
-            return redirect(
-                url_for("admin.dashboard")
-            )
+        if current_user.role == "super_admin":
+            return redirect(url_for("admin.dashboard"))
 
         elif current_user.role == "team_lead":
+            return redirect(url_for("team.dashboard"))
 
-            return redirect(
-                url_for("team.dashboard")
-            )
+        elif current_user.role == "member":
+            return redirect(url_for("member.dashboard"))
 
         else:
-
-            return redirect(
-                url_for("user.profile")
-            )
+            flash("Your account role is invalid.", "danger")
+            logout_user()
+            return redirect(url_for("auth.login"))
 
     form = LoginForm()
 
     if form.validate_on_submit():
 
         user = User.query.filter(
-            (
-                User.username == form.username.data
-            )
-            |
-            (
-                User.email == form.username.data
-            )
+            (User.username == form.username.data) |
+            (User.email == form.username.data)
         ).first()
 
         if not user:
-
-            flash(
-                "Invalid username or password.",
-                "danger"
-            )
-
-            return redirect(
-                url_for("main.index")
-            )
+            flash("Invalid username or password.", "danger")
+            return redirect(url_for("auth.login"))
 
         if not user.is_active:
-
-            flash(
-                "Please activate your account first.",
-                "warning"
-            )
-
+            flash("Please activate your account first.", "warning")
             return redirect(
                 url_for(
                     "auth.activate_account",
@@ -90,23 +70,13 @@ def login():
                 )
             )
 
-        if not user.check_password(
-            form.password.data
-        ):
-
-            flash(
-                "Invalid username or password.",
-                "danger"
-            )
-
-            return redirect(
-                url_for("auth.login")
-            )
+        if not user.check_password(form.password.data):
+            flash("Invalid username or password.", "danger")
+            return redirect(url_for("auth.login"))
 
         login_user(user)
 
         if user.must_change_password:
-
             return redirect(
                 url_for(
                     "auth.activate_account",
@@ -118,23 +88,19 @@ def login():
         # Redirect according to role
         # -----------------------------------------
 
-        if user.role == "admin":
-
-            return redirect(
-                url_for("admin.dashboard")
-            )
+        if user.role == "super_admin":
+            return redirect(url_for("admin.dashboard"))
 
         elif user.role == "team_lead":
+            return redirect(url_for("team.dashboard"))
 
-            return redirect(
-                url_for("team.dashboard")
-            )
+        elif user.role == "member":
+            return redirect(url_for("member.dashboard"))
 
         else:
-
-            return redirect(
-                url_for("user.profile")
-            )
+            logout_user()
+            flash("Your account role is invalid.", "danger")
+            return redirect(url_for("auth.login"))
 
     return render_template(
         "auth/login.html",
