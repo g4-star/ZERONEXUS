@@ -38,6 +38,10 @@ from app.models import (
     TeamMessage
 )
 from .message_forms import MessageForm
+from flask import redirect, url_for
+from flask import render_template
+from flask_login import current_user, login_required
+from app.models import Team, User, Project
 
 
 def require_active_team():
@@ -454,4 +458,83 @@ def messages():
 
         messages=messages
 
+    )
+
+# =====================================================
+# TEAM PROFILE
+# =====================================================
+
+@team_bp.route("/profile")
+@login_required
+@member_required
+def profile():
+    team = require_active_team()
+
+    stats = {
+        "projects": Project.query.filter_by(team_id=team.id).count(),
+        "meetings": Meeting.query.filter_by(team_id=team.id).count(),
+        "announcements": Announcement.query.filter_by(team_id=team.id).count(),
+    }
+
+    recent_members = team.users
+
+    return render_template(
+        "team/profile.html",
+        stats=stats,
+        user=current_user,
+        team=team,
+        recent_members=recent_members
+    )
+    
+# =====================================================
+# TEAM TASKS
+# =====================================================
+
+@team_bp.route("/tasks")
+@login_required
+@member_required
+def tasks():
+
+    team = require_active_team()
+
+    return render_template(
+        "team/tasks.html",
+        user=current_user,
+        team=team
+    )
+
+
+# =====================================================
+# TEAM REPORTS
+# =====================================================
+
+@team_bp.route("/reports")
+@login_required
+@member_required
+def reports():
+
+    team = require_active_team()
+
+    return render_template(
+        "team/reports.html",
+        user=current_user,
+        team=team
+    )
+
+
+# =====================================================
+# TEAM SETTINGS
+# =====================================================
+
+@team_bp.route("/settings")
+@login_required
+@member_required
+def settings():
+
+    team = require_active_team()
+
+    return render_template(
+        "team/settings.html",
+        user=current_user,
+        team=team
     )
