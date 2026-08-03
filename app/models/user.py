@@ -7,7 +7,7 @@ from app.extensions import db, login_manager
 
 
 class User(UserMixin, db.Model):
-
+    
     __tablename__ = "users"
 
     # =====================================================
@@ -42,10 +42,6 @@ class User(UserMixin, db.Model):
 
     # =====================================================
     # User Roles
-    #
-    # super_admin
-    # team_lead
-    # member
     # =====================================================
 
     role = db.Column(
@@ -98,12 +94,22 @@ class User(UserMixin, db.Model):
         nullable=True
     )
 
+    full_name = db.Column(
+        db.String(120),
+        nullable=True
+    )
+
     bio = db.Column(
         db.Text,
         nullable=True
     )
 
     phone = db.Column(
+        db.String(30),
+        nullable=True
+    )
+
+    whatsapp = db.Column(
         db.String(30),
         nullable=True
     )
@@ -124,6 +130,16 @@ class User(UserMixin, db.Model):
 
     company = db.Column(
         db.String(120),
+        nullable=True
+    )
+
+    experience_level = db.Column(
+        db.String(80),
+        nullable=True
+    )
+
+    favorite_language = db.Column(
+        db.String(80),
         nullable=True
     )
 
@@ -179,14 +195,12 @@ class User(UserMixin, db.Model):
     # Relationships
     # =====================================================
 
-    # Team the user belongs to
     team = db.relationship(
         "Team",
         back_populates="users",
         foreign_keys=[team_id]
     )
 
-    # Member profile
     member_profile = db.relationship(
         "MemberProfile",
         back_populates="user",
@@ -194,25 +208,22 @@ class User(UserMixin, db.Model):
         cascade="all, delete-orphan"
     )
 
-    # Projects created by this user
     projects = db.relationship(
         "Project",
         back_populates="creator",
         lazy=True
     )
 
-    # Announcements created by this user
     announcements = db.relationship(
         "Announcement",
         back_populates="author",
         lazy=True
     )
-    
+
     # =====================================================
     # Team Chat
     # =====================================================
 
-    # Messages sent by this user
     sent_messages = db.relationship(
         "ChatMessage",
         foreign_keys="ChatMessage.sender_id",
@@ -220,14 +231,13 @@ class User(UserMixin, db.Model):
         lazy=True
     )
 
-    # Channels created by this user
     created_channels = db.relationship(
         "ChatChannel",
         foreign_keys="ChatChannel.created_by",
         back_populates="creator",
         lazy=True
     )
-    
+
     # =====================================================
     # Notifications
     # =====================================================
@@ -255,7 +265,6 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return f"<User {self.username}>"
-
 
 @login_manager.user_loader
 def load_user(user_id):

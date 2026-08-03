@@ -1,22 +1,24 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
+
 from wtforms import (
     StringField,
     TextAreaField,
     SubmitField
 )
+
 from wtforms.validators import (
-    Length,
     Optional,
+    Length,
     URL
 )
 
 
 class EditProfileForm(FlaskForm):
 
-    # ==========================================
-    # Profile Photo
-    # ==========================================
+    # =====================================================
+    # Profile Picture
+    # =====================================================
 
     profile_image = FileField(
         "Profile Picture",
@@ -28,15 +30,23 @@ class EditProfileForm(FlaskForm):
         ]
     )
 
-    # ==========================================
+    # =====================================================
     # Basic Information
-    # ==========================================
+    # =====================================================
 
     full_name = StringField(
         "Full Name",
         validators=[
             Optional(),
             Length(max=120)
+        ]
+    )
+
+    username = StringField(
+        "Username",
+        validators=[
+            Optional(),
+            Length(min=3, max=50)
         ]
     )
 
@@ -56,6 +66,14 @@ class EditProfileForm(FlaskForm):
         ]
     )
 
+    whatsapp = StringField(
+        "WhatsApp",
+        validators=[
+            Optional(),
+            Length(max=40)
+        ]
+    )
+
     location = StringField(
         "Location",
         validators=[
@@ -63,6 +81,10 @@ class EditProfileForm(FlaskForm):
             Length(max=120)
         ]
     )
+
+    # =====================================================
+    # Professional Information
+    # =====================================================
 
     job_title = StringField(
         "Job Title",
@@ -80,6 +102,22 @@ class EditProfileForm(FlaskForm):
         ]
     )
 
+    experience_level = StringField(
+        "Experience Level",
+        validators=[
+            Optional(),
+            Length(max=80)
+        ]
+    )
+
+    favorite_language = StringField(
+        "Favorite Programming Language",
+        validators=[
+            Optional(),
+            Length(max=80)
+        ]
+    )
+
     skills = TextAreaField(
         "Skills",
         validators=[
@@ -88,12 +126,12 @@ class EditProfileForm(FlaskForm):
         ]
     )
 
-    # ==========================================
+    # =====================================================
     # Professional Links
-    # ==========================================
+    # =====================================================
 
     portfolio = StringField(
-        "Portfolio",
+        "Portfolio Website",
         validators=[
             Optional(),
             URL()
@@ -124,6 +162,10 @@ class EditProfileForm(FlaskForm):
         ]
     )
 
+    # =====================================================
+    # Cybersecurity Profiles
+    # =====================================================
+
     tryhackme = StringField(
         "TryHackMe",
         validators=[
@@ -148,10 +190,8 @@ class EditProfileForm(FlaskForm):
         ]
     )
 
-    # ==========================================
+    # =====================================================
     # Submit
-    # ==========================================
+    # =====================================================
 
-    submit = SubmitField(
-        "Save Changes"
-    )
+    submit = SubmitField("Save Changes")

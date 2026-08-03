@@ -34,10 +34,7 @@ def profile():
 # EDIT PROFILE
 # =====================================================
 
-@user_bp.route(
-    "/profile/edit",
-    methods=["GET", "POST"]
-)
+@user_bp.route("/profile/edit", methods=["GET", "POST"])
 @login_required
 def edit_profile():
 
@@ -48,13 +45,18 @@ def edit_profile():
     # ----------------------------------------
 
     if request.method == "GET":
-
+        form.full_name.data = current_user.full_name
+        form.username.data = current_user.username
         form.bio.data = current_user.bio
         form.phone.data = current_user.phone
+        form.whatsapp.data = current_user.whatsapp
         form.location.data = current_user.location
+
+        form.skills.data = current_user.skills
         form.job_title.data = current_user.job_title
         form.company.data = current_user.company
-        form.skills.data = current_user.skills
+        form.experience_level.data = current_user.experience_level
+        form.favorite_language.data = current_user.favorite_language
 
         form.portfolio.data = current_user.portfolio
         form.github.data = current_user.github
@@ -66,18 +68,23 @@ def edit_profile():
         form.ctftime.data = current_user.ctftime
 
     # ----------------------------------------
-    # Save Profile
+    # Save profile
     # ----------------------------------------
 
     if form.validate_on_submit():
 
+        current_user.full_name = form.full_name.data
+        current_user.username = form.username.data
         current_user.bio = form.bio.data
         current_user.phone = form.phone.data
+        current_user.whatsapp = form.whatsapp.data
         current_user.location = form.location.data
 
+        current_user.skills = form.skills.data
         current_user.job_title = form.job_title.data
         current_user.company = form.company.data
-        current_user.skills = form.skills.data
+        current_user.experience_level = form.experience_level.data
+        current_user.favorite_language = form.favorite_language.data
 
         current_user.portfolio = form.portfolio.data
         current_user.github = form.github.data
@@ -88,29 +95,15 @@ def edit_profile():
         current_user.hackthebox = form.hackthebox.data
         current_user.ctftime = form.ctftime.data
 
-        # ----------------------------------------
-        # Profile Image
-        # (Cloudinary next step)
-        # ----------------------------------------
-
         if form.profile_image.data:
-
-            image_url = upload_image(
-                form.profile_image.data
-            )
-            
+            image_url = upload_image(form.profile_image.data)
             current_user.profile_image = image_url
 
         db.session.commit()
 
-        flash(
-            "Profile updated successfully!",
-            "success"
-        )
+        flash("Profile updated successfully!", "success")
 
-        return redirect(
-            url_for("user.profile")
-        )
+        return redirect(url_for("user.profile"))
 
     return render_template(
         "user/edit_profile.html",
