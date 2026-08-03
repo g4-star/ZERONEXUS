@@ -106,6 +106,14 @@ def dashboard():
         Announcement.pinned.desc(),
         Announcement.created_at.desc()
     ).all()
+    
+    messages = (
+        TeamMessage.query
+        .filter_by(team_id=team.id)
+        .order_by(TeamMessage.created_at.desc())
+        .limit(5)
+        .all()
+    )
 
     return render_template(
         "team/dashboard.html",
@@ -122,6 +130,7 @@ def dashboard():
         meetings=meetings,
 
         announcements=announcements,
+        messages=messages,
 
         member_count=len(members),
 
@@ -404,7 +413,7 @@ def members():
     )
 
 
-    # =====================================================
+# =====================================================
 # TEAM CHAT
 # =====================================================
 

@@ -452,81 +452,107 @@ input{font-family:inherit}
   </aside>
 
   <!-- ============ TEAM CHAT PANEL ============ -->
-  <aside class="chat-panel">
+<aside class="chat-panel">
+
     <div class="chat-header">
-      <div class="chat-title">
-        <h2>Team Chat</h2>
-        <span class="online-dot"></span>
-        <div class="chat-icons">
-          <button title="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
-          <button title="More"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+
+        <div class="chat-title">
+
+            <h2>Team Chat</h2>
+
+            <span class="online-dot"></span>
+
+            <div class="chat-icons">
+
+                <a href="{{ url_for('team.messages') }}" title="Open Chat">
+                    <i class="fa-solid fa-comments"></i>
+                </a>
+
+            </div>
+
         </div>
-      </div>
-      <div class="chat-online"><b>14 members</b> online · 16 total</div>
+
+        <div class="chat-online">
+
+            <b>{{ member_count }}</b> member(s) • {{ messages|length }} message(s)
+
+        </div>
+
     </div>
 
-    <!-- Channels + DMs -->
     <div class="chat-list">
-      <div class="chat-group-label">CHANNELS</div>
-      <div class="chat-item active" data-channel="General">
-        <div class="avatar channel" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9)"><i class="fa-solid fa-hashtag"></i></div>
-        <div class="chat-meta">
-          <div class="chat-name"><span class="hash">#</span> General</div>
-          <div class="chat-preview">Team-wide discussion</div>
-        </div>
-        <div class="chat-right"><span class="chat-time">09:24</span></div>
-      </div>
-      <div class="chat-item" data-channel="Project Alpha">
-        <div class="avatar channel" style="background:linear-gradient(135deg,#3b82f6,#2563eb)"><i class="fa-solid fa-hashtag"></i></div>
-        <div class="chat-meta">
-          <div class="chat-name"><span class="hash">#</span> Project Alpha</div>
-          <div class="chat-preview">Sprint & deploy chatter</div>
-        </div>
-        <div class="chat-right"><span class="chat-time">08:51</span></div>
-      </div>
-      <div class="chat-item" data-channel="CyberSec Group">
-        <div class="avatar channel" style="background:linear-gradient(135deg,#22c55e,#16a34a)"><i class="fa-solid fa-hashtag"></i></div>
-        <div class="chat-meta">
-          <div class="chat-name"><span class="hash">#</span> CyberSec Group</div>
-          <div class="chat-preview">Threat intel & reports</div>
-        </div>
-        <div class="chat-right"><span class="chat-time">Yest.</span></div>
-      </div>
 
-      <div class="chat-group-label">DIRECT MESSAGES</div>
-      <div class="chat-item">
-        <div class="avatar" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">BO<span class="presence"></span></div>
-        <div class="chat-meta">
-          <div class="chat-name">Brian Otieno</div>
-          <div class="chat-preview">Sure, let's sync later</div>
+        <div class="chat-group-label">
+            RECENT TEAM MESSAGES
         </div>
-        <div class="chat-right"><span class="chat-time">09:12</span></div>
-      </div>
-      <div class="chat-item">
-        <div class="avatar" style="background:linear-gradient(135deg,#06b6d4,#3b82f6)">GW<span class="presence"></span></div>
-        <div class="chat-meta">
-          <div class="chat-name">Grace Wanjiru</div>
-          <div class="chat-preview">On it 👍</div>
-        </div>
-        <div class="chat-right"><span class="chat-time">08:47</span></div>
-      </div>
-      <div class="chat-item">
-        <div class="avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">KM<span class="presence away"></span></div>
-        <div class="chat-meta">
-          <div class="chat-name">Kevin Mwangi</div>
-          <div class="chat-preview">Can you review the patch?</div>
-        </div>
-        <div class="chat-right"><span class="chat-time">Yest.</span></div>
-      </div>
-      <div class="chat-item">
-        <div class="avatar" style="background:linear-gradient(135deg,#22c55e,#06b6d4)">AY<span class="presence"></span></div>
-        <div class="chat-meta">
-          <div class="chat-name">Amina Yusuf</div>
-          <div class="chat-preview">Meeting moved to 2pm</div>
-        </div>
-        <div class="chat-right"><span class="chat-time">Yest.</span></div>
-      </div>
+
+        {% if messages %}
+
+            {% for message in messages[:5] %}
+
+            <a href="{{ url_for('team.messages') }}"
+               class="chat-item"
+               style="text-decoration:none;color:inherit;">
+
+                {% if message.author.profile_image %}
+
+                    <img src="{{ message.author.profile_image }}"
+                         class="avatar"
+                         style="width:48px;height:48px;border-radius:50%;object-fit:cover;">
+
+                {% else %}
+
+                    <div class="avatar">
+
+                        {{ (message.author.full_name or message.author.username)[0]|upper }}
+
+                    </div>
+
+                {% endif %}
+
+                <div class="chat-meta">
+
+                    <div class="chat-name">
+
+                        {{ message.author.full_name or message.author.username }}
+
+                    </div>
+
+                    <div class="chat-preview">
+
+                        {{ message.message[:45] }}{% if message.message|length > 45 %}...{% endif %}
+
+                    </div>
+
+                </div>
+
+                <div class="chat-right">
+
+                    <span class="chat-time">
+
+                        {{ message.created_at.strftime('%H:%M') }}
+
+                    </span>
+
+                </div>
+
+            </a>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="text-center p-4 text-muted">
+
+                No team messages yet.
+
+            </div>
+
+        {% endif %}
+
     </div>
+
+</aside>
 
     <!-- Live message thread -->
     <div class="chat-messages" id="chatMessages">
@@ -625,7 +651,7 @@ input{font-family:inherit}
             </svg>
             <div class="ring-value">75%</div>
           </div>
-          <div class="stat-sub">24 of 32 tasks</div>
+          <div class="stat-sub">{{ tasks|selectattr('status', 'equalto', 'completed')|list|length }} of {{ tasks|length }} tasks completed</div>
           <svg class="spark" viewBox="0 0 100 30" preserveAspectRatio="none">
             <polygon points="0,26 14,22 28,24 42,16 56,18 70,10 84,12 100,4 100,30 0,30" fill="url(#sPurple)"/>
             <polyline points="0,26 14,22 28,24 42,16 56,18 70,10 84,12 100,4" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round"/>
@@ -651,7 +677,7 @@ input{font-family:inherit}
               <circle class="ring-bg" cx="40" cy="40" r="34"/>
               <circle class="ring-fg" cx="40" cy="40" r="34" stroke="url(#gGreen)" data-pct="100"/>
             </svg>
-            <div class="ring-value">8</div>
+            <div class="ring-value">{{ project_count }}</div>
           </div>
           <div class="stat-sub">8 projects in progress</div>
           <svg class="spark" viewBox="0 0 100 30" preserveAspectRatio="none">
@@ -679,9 +705,9 @@ input{font-family:inherit}
               <circle class="ring-bg" cx="40" cy="40" r="34"/>
               <circle class="ring-fg" cx="40" cy="40" r="34" stroke="url(#gOrange)" data-pct="100"/>
             </svg>
-            <div class="ring-value">12</div>
+            <div class="ring-value">{{ member_count }}</div>
           </div>
-          <div class="stat-sub">12 members active</div>
+          <div class="stat-sub">{{ member_count }} active team member(s)</div>
           <svg class="spark" viewBox="0 0 100 30" preserveAspectRatio="none">
             <polygon points="0,28 14,24 28,26 42,20 56,22 70,16 84,14 100,6 100,30 0,30" fill="url(#sOrange)"/>
             <polyline points="0,28 14,24 28,26 42,20 56,22 70,16 84,14 100,6" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"/>
@@ -707,9 +733,9 @@ input{font-family:inherit}
               <circle class="ring-bg" cx="40" cy="40" r="34"/>
               <circle class="ring-fg" cx="40" cy="40" r="34" stroke="url(#gBlue)" data-pct="100"/>
             </svg>
-            <div class="ring-value">5</div>
+            <div class="ring-value">{{ meetings|length }}</div>
           </div>
-          <div class="stat-sub">5 scheduled meetings</div>
+          <div class="stat-sub">{{ meetings|length }} scheduled meeting(s)</div>
           <svg class="spark" viewBox="0 0 100 30" preserveAspectRatio="none">
             <polygon points="0,26 14,28 28,22 42,24 56,18 70,12 84,16 100,8 100,30 0,30" fill="url(#sBlue)"/>
             <polyline points="0,26 14,28 28,22 42,24 56,18 70,12 84,16 100,8" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/>
@@ -772,7 +798,7 @@ input{font-family:inherit}
             </div>
             <div class="cal-grid" id="calGrid"></div>
             <div class="events">
-              <div class="event"><span class="dot" style="background:var(--purple)"></span><div><b>Team Sync Meeting</b><small>Today · 10:00 AM · War Room</small></div></div>
+              {% for meeting in meetings[:1] %}<div class="event"><span class="dot" style="background:var(--purple)"></span><div><b>{{ meeting.title }}</b><small>{{ meeting.meeting_date.strftime('%d %b %Y %I:%M %p') if meeting.meeting_date else 'Date not set' }}{% if meeting.location %} · {{ meeting.location }}{% endif %}</small></div></div>{% else %}<div class="event"><span class="dot" style="background:var(--purple)"></span><div><b>No upcoming meetings</b><small>Create your first meeting.</small></div></div>{% endfor %}
               <div class="event"><span class="dot" style="background:var(--blue)"></span><div><b>Project Alpha Review</b><small>Aug 7 · 2:00 PM · Conference B</small></div></div>
               <div class="event"><span class="dot" style="background:var(--green)"></span><div><b>CyberSec Workshop</b><small>Aug 12 · 11:00 AM · Online</small></div></div>
             </div>
