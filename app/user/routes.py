@@ -16,6 +16,9 @@ from app.extensions import db
 from . import user_bp
 from .forms import EditProfileForm
 from app.cloudinary_config import upload_image
+from app.models.project import Project
+from app.models.announcement import Announcement
+from app.models.meeting import Meeting
 
 
 # =====================================================
@@ -26,9 +29,54 @@ from app.cloudinary_config import upload_image
 @login_required
 def profile():
 
+    projects = (
+        Project.query
+        .filter_by(team_id=current_user.team_id)
+        .order_by(Project.updated_at.desc())
+        .limit(5)
+        .all()
+    )
+
+    announcements = (
+        Announcement.query
+        .filter_by(team_id=current_user.team_id)
+        .order_by(
+            Announcement.pinned.desc(),
+            Announcement.created_at.desc()
+        )
+        .limit(5)
+        .all()
+    )
+
+    meetings = (
+        Meeting.query
+        .filter_by(team_id=current_user.team_id)
+        .order_by(Meeting.meeting_date.asc())
+        .limit(5)
+        .all()
+    )
+
+    stats = {
+        "projects": Project.query.filter_by(
+            team_id=current_user.team_id
+        ).count(),
+
+        "announcements": Announcement.query.filter_by(
+            team_id=current_user.team_id
+        ).count(),
+
+        "meetings": Meeting.query.filter_by(
+            team_id=current_user.team_id
+        ).count()
+    }
+
     return render_template(
         "user/profile.html",
-        user=current_user
+        user=current_user,
+        projects=projects,
+        announcements=announcements,
+        meetings=meetings,
+        stats=stats
     )
 
 
