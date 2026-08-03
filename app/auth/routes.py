@@ -73,7 +73,7 @@ def login():
             )
 
             return redirect(
-                url_for("auth.login")
+                url_for("main.index")
             )
 
         if not user.is_active:
