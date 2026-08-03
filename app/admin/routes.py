@@ -250,6 +250,7 @@ def edit_team(team_id):
         team.lead_role = form.lead_role.data
 
         db.session.commit()
+        print("AFTER COMMIT:", user.activation_token)
 
         flash(
             "Team updated successfully.",
@@ -290,7 +291,8 @@ def manage_members():
         teams=teams
     )
 
-@admin_bp.route('/members/add', methods=['GET', 'POST'])
+
+@admin_bp.route("/members/add", methods=["GET", "POST"])
 @login_required
 def add_member():
 
@@ -342,8 +344,18 @@ def add_member():
                 username=username,
                 email=form.email.data,
                 role=form.role.data,
-                team_id=form.team_id.data
+                team_id=form.team_id.data,
+                is_active=False,
+                must_change_password=True,
+                activation_token=secrets.token_urlsafe(48)
             )
+
+            print("=" * 60)
+            print("NEW USER CREATED")
+            print("USERNAME:", user.username)
+            print("TOKEN:", user.activation_token)
+            print("ACTIVE:", user.is_active)
+            print("=" * 60)
 
             user.set_password(
                 temporary_password
@@ -351,18 +363,23 @@ def add_member():
 
             db.session.add(user)
 
+            print("BEFORE COMMIT:", user.activation_token)
+
             # ==============================
-            # Assign Team Admin
+            # Link Profile to User
             # ==============================
 
-            if user.role == "team_admin":
+            member.user = user
 
-                team = Team.query.get(
-                    user.team_id
-                )
+            # ==============================
+            # Assign Team Lead
+            # ==============================
+
+            if user.role == "team_lead":
+
+                team = Team.query.get(user.team_id)
 
                 if team:
-
                     team.team_admin = user
 
             # ==============================
@@ -370,6 +387,8 @@ def add_member():
             # ==============================
 
             db.session.commit()
+
+            print("AFTER COMMIT:", user.activation_token)
 
             # ==============================
             # Send Invitation Email
@@ -389,9 +408,7 @@ def add_member():
 
             except Exception as e:
 
-                print(
-                    f"Invitation Email Error: {e}"
-                )
+                print(f"Invitation Email Error: {e}")
 
                 flash(
                     "Account created but invitation email failed.",
@@ -399,18 +416,17 @@ def add_member():
                 )
 
             return redirect(
-                url_for(
-                    "admin.manage_members"
-                )
+                url_for("admin.manage_members")
             )
 
         except Exception as e:
 
             db.session.rollback()
 
-            print(
-                f"Member Creation Error: {e}"
-            )
+            print(f"Member Creation Error: {e}")
+
+            import traceback
+            traceback.print_exc()
 
             flash(
                 f"Error creating member: {e}",
