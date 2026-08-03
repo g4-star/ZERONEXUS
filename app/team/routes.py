@@ -392,15 +392,16 @@ def create_announcement():
 @member_required
 def members():
 
-    if current_user.team is None:
-        abort(404)
+    team = require_active_team()
+
+    members = User.query.filter_by(team_id=team.id).order_by(User.full_name).all()
 
     return render_template(
         "team/members.html",
         user=current_user,
-        team=current_user.team
+        team=team,
+        members=members
     )
-
 
 
     # =====================================================

@@ -1,24 +1,121 @@
 {% extends "base.html" %}
 
-{% block title %}
-Team Members
-{% endblock %}
+{% block title %}Team Members{% endblock %}
 
 {% block content %}
 
 <div class="container py-4">
 
-    <h2>Team Members</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">Team Members</h2>
+            <p class="text-muted">
+                {{ members|length }} member(s) in {{ team.name }}
+            </p>
+        </div>
+    </div>
 
-    <p class="text-muted">
+    <div class="row">
 
-        Members belonging to {{ team.name }}
+        {% if members %}
 
-    </p>
+            {% for member in members %}
 
-    <div class="alert alert-secondary">
+            <div class="col-lg-4 col-md-6 mb-4">
 
-        Member list will appear here.
+                <div class="card shadow-sm border-0 h-100">
+
+                    <div class="card-body text-center">
+
+                        {% if member.profile_image %}
+                            <img
+                                src="{{ member.profile_image }}"
+                                class="rounded-circle mb-3"
+                                width="100"
+                                height="100"
+                                style="object-fit: cover;"
+                                alt="Profile">
+                        {% else %}
+                            <img
+                                src="https://ui-avatars.com/api/?name={{ member.full_name or member.username }}&background=0D6EFD&color=ffffff&size=100"
+                                class="rounded-circle mb-3"
+                                width="100"
+                                height="100"
+                                alt="Avatar">
+                        {% endif %}
+
+                        <h5 class="fw-bold">
+                            {{ member.full_name or "No Name" }}
+                        </h5>
+
+                        <p class="text-muted mb-1">
+                            @{{ member.username }}
+                        </p>
+
+                        <p class="small text-muted">
+                            {{ member.email }}
+                        </p>
+
+                        <span class="badge bg-primary">
+                            {{ member.role.replace("_", " ")|title }}
+                        </span>
+
+                        <hr>
+
+                        <div class="text-start">
+
+                            <p>
+                                <strong>ID:</strong>
+                                {{ member.id }}
+                            </p>
+
+                            <p>
+                                <strong>Joined:</strong>
+
+                                {% if member.created_at %}
+                                    {{ member.created_at.strftime("%d %b %Y") }}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </p>
+
+                            <p>
+                                <strong>Status:</strong>
+
+                                {% if member.is_active %}
+                                    <span class="text-success">Active</span>
+                                {% else %}
+                                    <span class="text-danger">Inactive</span>
+                                {% endif %}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="col-12">
+
+                <div class="alert alert-info text-center">
+
+                    <h5>No Team Members</h5>
+
+                    <p class="mb-0">
+                        There are currently no members assigned to this team.
+                    </p>
+
+                </div>
+
+            </div>
+
+        {% endif %}
 
     </div>
 
