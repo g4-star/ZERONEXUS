@@ -4,10 +4,12 @@ from app.extensions import db
 
 
 class Project(db.Model):
+
     __tablename__ = "projects"
 
+
     # =====================================================
-    # Primary Key
+    # PRIMARY KEY
     # =====================================================
 
     id = db.Column(
@@ -15,8 +17,9 @@ class Project(db.Model):
         primary_key=True
     )
 
+
     # =====================================================
-    # Basic Information
+    # BASIC INFORMATION
     # =====================================================
 
     title = db.Column(
@@ -24,26 +27,69 @@ class Project(db.Model):
         nullable=False
     )
 
+
     description = db.Column(
         db.Text,
         nullable=False
     )
+
 
     image = db.Column(
         db.String(255),
         default="img/placeholders/project_placeholder.jpg"
     )
 
+
     github_url = db.Column(
-        db.String(255)
+        db.String(255),
+        nullable=True
     )
+
 
     demo_url = db.Column(
-        db.String(255)
+        db.String(255),
+        nullable=True
     )
 
+
     # =====================================================
-    # Project Workflow
+    # PROJECT FILE UPLOAD
+    # =====================================================
+
+    project_file = db.Column(
+        db.String(500),
+        nullable=True
+    )
+
+
+    file_name = db.Column(
+        db.String(255),
+        nullable=True
+    )
+
+
+    file_size = db.Column(
+        db.String(50),
+        nullable=True
+    )
+
+
+    # =====================================================
+    # ACCESS CONTROL
+    # =====================================================
+
+    # team  -> only assigned team members
+    # all   -> every team can access
+
+    visibility = db.Column(
+        db.String(30),
+        default="team",
+        nullable=False
+    )
+
+
+    # =====================================================
+    # PROJECT STATUS
     # =====================================================
 
     status = db.Column(
@@ -52,11 +98,13 @@ class Project(db.Model):
         nullable=False
     )
 
+
     priority = db.Column(
         db.String(20),
         default="Medium",
         nullable=False
     )
+
 
     progress = db.Column(
         db.Integer,
@@ -64,12 +112,15 @@ class Project(db.Model):
         nullable=False
     )
 
+
     deadline = db.Column(
-        db.Date
+        db.Date,
+        nullable=True
     )
 
+
     # =====================================================
-    # Ownership
+    # TIMESTAMPS
     # =====================================================
 
     created_at = db.Column(
@@ -77,21 +128,26 @@ class Project(db.Model):
         default=datetime.utcnow
     )
 
+
     updated_at = db.Column(
         db.DateTime,
         default=datetime.utcnow,
         onupdate=datetime.utcnow
     )
 
+
     # =====================================================
-    # Relationships
+    # OWNERSHIP
     # =====================================================
+
+    # NULL means global admin project
 
     team_id = db.Column(
         db.Integer,
         db.ForeignKey("teams.id"),
-        nullable=False
+        nullable=True
     )
+
 
     created_by = db.Column(
         db.Integer,
@@ -99,19 +155,36 @@ class Project(db.Model):
         nullable=True
     )
 
+
+    # =====================================================
+    # RELATIONSHIPS
+    # =====================================================
+
     team = db.relationship(
         "Team",
         back_populates="projects"
     )
+
 
     creator = db.relationship(
         "User",
         back_populates="projects"
     )
 
+
     # =====================================================
-    # Representation
+    # HELPERS
     # =====================================================
+
+    def is_global(self):
+
+        return self.visibility == "all"
+
+
+    def is_team_project(self):
+
+        return self.visibility == "team"
+
 
     def __repr__(self):
 

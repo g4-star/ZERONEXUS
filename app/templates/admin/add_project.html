@@ -1,0 +1,195 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">
+        <i class="fa-solid fa-upload"></i>
+        Upload Project
+    </h2>
+
+
+    <form method="POST"
+          enctype="multipart/form-data">
+
+
+        <!-- Project Title -->
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Project Title
+            </label>
+
+            <input type="text"
+                   name="title"
+                   class="form-control"
+                   required>
+
+        </div>
+
+
+
+        <!-- Description -->
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Description
+            </label>
+
+            <textarea
+                name="description"
+                class="form-control"
+                rows="5"
+                required></textarea>
+
+        </div>
+
+
+
+        <!-- Github -->
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Github Repository
+            </label>
+
+            <input type="url"
+                   name="github_url"
+                   class="form-control">
+
+        </div>
+
+
+
+        <!-- Demo -->
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Live Demo
+            </label>
+
+            <input type="url"
+                   name="demo_url"
+                   class="form-control">
+
+        </div>
+
+
+
+        <!-- ZIP Upload -->
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Upload Project ZIP
+            </label>
+
+            <input type="file"
+                   name="project_file"
+                   class="form-control"
+                   accept=".zip">
+
+            <small class="text-muted">
+                Only ZIP files allowed
+            </small>
+
+        </div>
+
+
+
+
+        <!-- Visibility -->
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Project Access
+            </label>
+
+
+            <select name="visibility"
+                    class="form-select">
+
+
+                <option value="all_teams">
+                    All Teams
+                </option>
+
+
+                <option value="team">
+                    Specific Team
+                </option>
+
+
+            </select>
+
+        </div>
+
+
+
+
+        <!-- Team -->
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Select Team
+            </label>
+
+
+            <select name="team_id"
+                    class="form-select">
+
+
+                <option value="">
+                    No Team (All Teams)
+                </option>
+
+
+                {% for team in teams %}
+
+                <option value="{{ team.id }}">
+
+                    {{ team.name }}
+
+                </option>
+
+
+                {% endfor %}
+
+
+            </select>
+
+
+        </div>
+
+
+
+
+        <!-- Submit -->
+
+
+        <button type="submit"
+                class="btn btn-primary">
+
+
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+
+            Upload Project
+
+
+        </button>
+
+
+    </form>
+
+
+</div>
+
+
+{% endblock %}

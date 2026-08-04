@@ -7,7 +7,8 @@ from wtforms import (
     IntegerField,
     SelectField,
     DateField,
-    SubmitField
+    SubmitField,
+    FileField
 )
 
 from wtforms.validators import (
@@ -17,6 +18,12 @@ from wtforms.validators import (
     NumberRange
 )
 
+from flask_wtf.file import FileAllowed
+
+
+# =====================================================
+# CREATE PROJECT FORM
+# =====================================================
 
 class CreateProjectForm(FlaskForm):
 
@@ -27,12 +34,36 @@ class CreateProjectForm(FlaskForm):
         ]
     )
 
+
     description = TextAreaField(
         "Description",
         validators=[
             DataRequired()
         ]
     )
+
+
+    # ===============================
+    # ZIP FILE UPLOAD
+    # ===============================
+
+    project_file = FileField(
+        "Project ZIP File",
+        validators=[
+            Optional(),
+            FileAllowed(
+                [
+                    "zip"
+                ],
+                "Only ZIP files are allowed."
+            )
+        ]
+    )
+
+
+    # ===============================
+    # LINKS
+    # ===============================
 
     github_url = URLField(
         "GitHub Repository",
@@ -42,6 +73,7 @@ class CreateProjectForm(FlaskForm):
         ]
     )
 
+
     demo_url = URLField(
         "Live Demo",
         validators=[
@@ -50,39 +82,91 @@ class CreateProjectForm(FlaskForm):
         ]
     )
 
+
+    # ===============================
+    # VISIBILITY
+    # ===============================
+
+    visibility = SelectField(
+        "Project Visibility",
+        choices=[
+            (
+                "team",
+                "Only My Team"
+            ),
+            (
+                "all_teams",
+                "All Teams"
+            )
+        ],
+        default="team"
+    )
+
+
+    # ===============================
+    # PROJECT STATUS
+    # ===============================
+
     status = SelectField(
         "Status",
         choices=[
-            ("Planning", "Planning"),
-            ("In Progress", "In Progress"),
-            ("Testing", "Testing"),
-            ("Completed", "Completed")
+            (
+                "Planning",
+                "Planning"
+            ),
+            (
+                "In Progress",
+                "In Progress"
+            ),
+            (
+                "Testing",
+                "Testing"
+            ),
+            (
+                "Completed",
+                "Completed"
+            )
         ],
         default="Planning"
     )
 
+
     priority = SelectField(
         "Priority",
         choices=[
-            ("Low", "Low"),
-            ("Medium", "Medium"),
-            ("High", "High"),
-            ("Critical", "Critical")
+            (
+                "Low",
+                "Low"
+            ),
+            (
+                "Medium",
+                "Medium"
+            ),
+            (
+                "High",
+                "High"
+            ),
+            (
+                "Critical",
+                "Critical"
+            )
         ],
         default="Medium"
     )
 
+
     progress = IntegerField(
         "Progress (%)",
-        default=0,
         validators=[
             DataRequired(),
             NumberRange(
                 min=0,
                 max=100
             )
-        ]
+        ],
+        default=0
     )
+
 
     deadline = DateField(
         "Deadline",
@@ -92,17 +176,26 @@ class CreateProjectForm(FlaskForm):
         ]
     )
 
+
     submit = SubmitField(
         "Save Project"
     )
+
+
+
+# =====================================================
+# CREATE MEETING FORM
+# =====================================================
+
 class CreateMeetingForm(FlaskForm):
-    
+
     title = StringField(
         "Meeting Title",
         validators=[
             DataRequired()
         ]
     )
+
 
     description = TextAreaField(
         "Description",
@@ -111,6 +204,7 @@ class CreateMeetingForm(FlaskForm):
         ]
     )
 
+
     meeting_date = DateField(
         "Meeting Date",
         validators=[
@@ -118,12 +212,14 @@ class CreateMeetingForm(FlaskForm):
         ]
     )
 
+
     meeting_time = StringField(
         "Meeting Time",
         validators=[
             DataRequired()
         ]
     )
+
 
     submit = SubmitField(
         "Save Meeting"

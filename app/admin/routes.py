@@ -39,6 +39,13 @@ from flask import (
 from app.auth.decorators import (
     super_admin_required
 )
+import os
+
+from werkzeug.utils import secure_filename
+
+from app.models import Project, Team
+from app.cloudinary_config import upload_project_file
+
 from flask import current_app
 import secrets
 import string
@@ -539,53 +546,370 @@ def manage_projects():
         projects=projects
     )
 
-@admin_bp.route('/projects/add', methods=['GET', 'POST'])
+# =====================================================
+# ADD PROJECT
+# =====================================================
+
+@admin_bp.route(
+    "/projects/add",
+    methods=[
+        "GET",
+        "POST"
+    ]
+)
 @login_required
 def add_project():
+
     teams = Team.query.all()
 
-    if request.method == 'POST':
-        project = Project(
-            title=request.form.get('title'),
-            description=request.form.get('description'),
-            github_url=request.form.get('github_url'),
-            live_url=request.form.get('live_url'),
-            team_id=request.form.get('team_id')
-        )
 
-        db.session.add(project)
-        db.session.commit()
+    if request.method == "POST":
 
-        flash('Project added successfully.', 'success')
-        return redirect(url_for('admin.manage_projects'))
+        try:
 
-    return render_template('admin/add_project.html', teams=teams)
+            # =====================================
+            # FORM DATA
+            # =====================================
+
+            title = request.form.get(
+                "title"
+            )
+
+            description = request.form.get(
+                "description"
+            )
+
+            github_url = request.form.get(
+                "github_url"
+            )
+
+            demo_url = request.form.get(
+                "demo_url"
+            )
+
+            visibility = request.form.get(
+                "visibility",
+                "team"
+            )
+
+            team_id = request.form.get(
+                "team_id"
+            )
 
 
-@admin_bp.route('/projects/<int:project_id>/edit', methods=['GET', 'POST'])
-@login_required
-def edit_project(project_id):
-    project = Project.query.get_or_404(project_id)
-    teams = Team.query.all()
+            uploaded_file = request.files.get(
+                "project_file"
+            )
 
-    if request.method == 'POST':
-        project.title = request.form.get('title')
-        project.description = request.form.get('description')
-        project.github_url = request.form.get('github_url')
-        project.live_url = request.form.get('live_url')
-        project.team_id = request.form.get('team_id')
 
-        db.session.commit()
+            # =====================================
+            # FILE DATA
+            # =====================================
 
-        flash('Project updated successfully.', 'success')
-        return redirect(url_for('admin.manage_projects'))
+            file_url = None
+            file_name = None
+            file_size = None
+
+
+            # =====================================
+            # CLOUDINARY ZIP UPLOAD
+            # =====================================
+
+            if uploaded_file and uploaded_file.filename:
+
+
+                filename = secure_filename(
+                    uploaded_file.filename
+                )
+
+
+                if not filename.lower().endswith(".zip"):
+
+                    flash(
+                        "Only ZIP files are allowed.",
+                        "danger"
+                    )
+
+                    return redirect(
+                        url_for(
+                            "admin.add_project"
+                        )
+                    )
+
+
+                upload_result = upload_project_file(
+                    uploaded_file
+                )
+
+
+                file_url = upload_result["url"]
+
+                file_name = filename
+
+
+                # Calculate size
+                uploaded_file.seek(0)
+
+                size = uploaded_file.content_length
+
+
+                if size:
+
+                    file_size = (
+                        f"{round(size / 1024, 2)} KB"
+                    )
+
+
+
+            # =====================================
+            # VISIBILITY CONTROL
+            # =====================================
+
+            if visibility == "all_teams":
+
+                team_id = None
+
+
+            else:
+
+                if not team_id:
+
+                    flash(
+                        "Please select a team.",
+                        "danger"
+                    )
+
+                    return redirect(
+                        url_for(
+                            "admin.add_project"
+                        )
+                    )
+
+
+
+            # =====================================
+            # CREATE PROJECT
+            # =====================================
+
+            project = Project(
+
+                title=title,
+
+                description=description,
+
+                github_url=github_url,
+
+                demo_url=demo_url,
+
+
+                project_file=file_url,
+
+                file_name=file_name,
+
+                file_size=file_size,
+
+
+                visibility=visibility,
+
+                team_id=team_id,
+
+
+                created_by=current_user.id
+
+            )
+
+
+            db.session.add(
+                project
+            )
+
+            db.session.commit()
+
+
+
+            flash(
+                "Project uploaded successfully.",
+                "success"
+            )
+
+
+            return redirect(
+                url_for(
+                    "admin.manage_projects"
+                )
+            )
+
+
+
+        except Exception as e:
+
+
+            db.session.rollback()
+
+
+            flash(
+                f"Project upload failed: {e}",
+                "danger"
+            )
+
+
+            return redirect(
+                url_for(
+                    "admin.add_project"
+                )
+            )
+
+
 
     return render_template(
-        'admin/edit_project.html',
+        "admin/add_project.html",
+        teams=teams
+    )
+    
+@login_required
+def edit_project(project_id):
+
+
+    project = Project.query.get_or_404(
+        project_id
+    )
+
+
+    teams = Team.query.all()
+
+
+
+    if request.method == "POST":
+
+
+        project.title = request.form.get(
+            "title"
+        )
+
+
+        project.description = request.form.get(
+            "description"
+        )
+
+
+        project.github_url = request.form.get(
+            "github_url"
+        )
+
+
+        project.demo_url = request.form.get(
+            "demo_url"
+        )
+
+
+        project.visibility = request.form.get(
+            "visibility"
+        )
+
+
+        team_id = request.form.get(
+            "team_id"
+        )
+
+
+
+        if project.visibility == "all":
+
+            project.team_id = None
+
+        else:
+
+            project.team_id = team_id
+
+
+
+        uploaded_file = request.files.get(
+            "project_file"
+        )
+
+
+
+        if uploaded_file and uploaded_file.filename:
+
+
+            filename = secure_filename(
+                uploaded_file.filename
+            )
+
+
+            upload_folder = os.path.join(
+
+                current_app.root_path,
+
+                "static",
+
+                "uploads",
+
+                "projects"
+
+            )
+
+
+            os.makedirs(
+                upload_folder,
+                exist_ok=True
+            )
+
+
+            save_path = os.path.join(
+                upload_folder,
+                filename
+            )
+
+
+            uploaded_file.save(
+                save_path
+            )
+
+
+            project.project_file = (
+                "uploads/projects/"
+                + filename
+            )
+
+
+            project.file_name = filename
+
+
+            size = os.path.getsize(
+                save_path
+            )
+
+
+            project.file_size = (
+                f"{round(size/1024,2)} KB"
+            )
+
+
+
+        db.session.commit()
+
+
+
+        flash(
+            "Project updated successfully.",
+            "success"
+        )
+
+
+        return redirect(
+            url_for(
+                "admin.manage_projects"
+            )
+        )
+
+
+
+    return render_template(
+        "admin/edit_project.html",
         project=project,
         teams=teams
     )
-
 
 @admin_bp.route('/projects/<int:project_id>/delete')
 @login_required
