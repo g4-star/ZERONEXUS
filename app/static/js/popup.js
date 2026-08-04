@@ -1,22 +1,24 @@
 /* ============================================================
  * ZeroNexus Popup System
- * Safe Version
  * ============================================================ */
 
 (function () {
     "use strict";
 
-    // Create namespace if it doesn't exist
     window.ZeroNexus = window.ZeroNexus || {};
 
     const registry = {};
     let currentModal = null;
 
+    function getModal(name) {
+        return document.getElementById(`modal-${name}`);
+    }
+
     function openModal(name) {
 
         if (!name) return;
 
-        const backdrop = document.getElementById(`modal-${name}`);
+        const backdrop = getModal(name);
 
         if (!backdrop) {
             console.warn(`Modal "${name}" not found.`);
@@ -30,14 +32,19 @@
             const template = document.getElementById(`tpl-${name}`);
 
             if (template && template.content) {
+
                 slot.appendChild(template.content.cloneNode(true));
+
             }
 
             slot.dataset.loaded = "true";
+
         }
 
         if (currentModal && currentModal !== name) {
+
             closeModal(currentModal);
+
         }
 
         backdrop.hidden = false;
@@ -47,21 +54,27 @@
 
         currentModal = name;
 
-        const closeBtn = backdrop.querySelector("[data-close]");
+        const closeButton = backdrop.querySelector("[data-close]");
 
-        if (closeBtn) {
-            closeBtn.focus();
+        if (closeButton) {
+
+            closeButton.focus();
+
         }
 
-        if (registry[name]?.onOpen) {
+        if (registry[name] && typeof registry[name].onOpen === "function") {
+
             registry[name].onOpen(backdrop);
+
         }
 
     }
 
     function closeModal(name) {
 
-        const backdrop = document.getElementById(`modal-${name}`);
+        if (!name) return;
+
+        const backdrop = getModal(name);
 
         if (!backdrop) return;
 
@@ -69,11 +82,17 @@
 
         delete backdrop.dataset.open;
 
-        if (registry[name]?.onClose) {
+        if (registry[name] && typeof registry[name].onClose === "function") {
+
             registry[name].onClose(backdrop);
+
         }
 
-        currentModal = null;
+        if (currentModal === name) {
+
+            currentModal = null;
+
+        }
 
         document.body.classList.remove("no-scroll");
 
@@ -85,13 +104,17 @@
 
     }
 
-    document.addEventListener("click", function (e) {
+    document.addEventListener("click", function (event) {
 
-        const opener = e.target.closest("[data-modal]");
+        /* -----------------------------
+           OPEN MODAL
+        ------------------------------ */
+
+        const opener = event.target.closest("[data-modal]");
 
         if (opener) {
 
-            e.preventDefault();
+            event.preventDefault();
 
             openModal(opener.dataset.modal);
 
@@ -99,17 +122,23 @@
 
         }
 
-        const closer = e.target.closest("[data-close]");
+        /* -----------------------------
+           CLOSE BUTTON
+        ------------------------------ */
+
+        const closer = event.target.closest("[data-close]");
 
         if (closer) {
 
-            e.preventDefault();
+            event.preventDefault();
 
             const modal = closer.closest(".modal-backdrop");
 
             if (modal) {
 
-                closeModal(modal.dataset.modalRoot);
+                const name = modal.id.replace("modal-", "");
+
+                closeModal(name);
 
             }
 
@@ -117,17 +146,25 @@
 
         }
 
-        if (e.target.classList.contains("modal-backdrop")) {
+        /* -----------------------------
+           CLICK OUTSIDE MODAL
+        ------------------------------ */
 
-            closeModal(e.target.dataset.modalRoot);
+        const backdrop = event.target.closest(".modal-backdrop");
+
+        if (backdrop && event.target === backdrop) {
+
+            const name = backdrop.id.replace("modal-", "");
+
+            closeModal(name);
 
         }
 
     });
 
-    document.addEventListener("keydown", function (e) {
+    document.addEventListener("keydown", function (event) {
 
-        if (e.key === "Escape" && currentModal) {
+        if (event.key === "Escape" && currentModal) {
 
             closeModal(currentModal);
 
@@ -135,7 +172,6 @@
 
     });
 
-    // Don't overwrite the namespace
     window.ZeroNexus.openModal = openModal;
     window.ZeroNexus.closeModal = closeModal;
     window.ZeroNexus.registerModal = registerModal;
