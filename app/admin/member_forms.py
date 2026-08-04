@@ -10,7 +10,7 @@ from wtforms.validators import DataRequired, Email, Optional
 
 class AddMemberForm(FlaskForm):
     full_name = StringField('Full Name', validators=[DataRequired()])
-    role = StringField('Role', validators=[DataRequired()])
+    role = SelectField("Role", choices=[("member","Member"),("team_lead","Team Lead")], validators=[DataRequired()])
 
     team_id = SelectField(
         'Team / Group',
