@@ -975,31 +975,70 @@ def manage_announcements():
 # CREATE ANNOUNCEMENT
 # =====================================================
 
-@admin_bp.route("/announcements/create", methods=["GET", "POST"])
+@admin_bp.route(
+    "/announcements/create",
+    methods=["GET", "POST"]
+)
 @login_required
 @super_admin_required
 def create_announcement():
 
     form = CreateAnnouncementForm()
 
+    # Add "All Teams" option
+    teams = Team.query.order_by(Team.name).all()
+    form.team_id.choices = [(-1, "🌍 All Teams")] + [
+        (team.id, team.name) for team in teams
+    ]
+
     if form.validate_on_submit():
 
-        announcement = Announcement(
-            title=form.title.data,
-            content=form.content.data,
-            category=form.category.data,
-            pinned=form.pinned.data,
-            team_id=form.team_id.data,
-            author_id=current_user.id
-        )
+        # --------------------------------------------------
+        # Send announcement to ALL teams
+        # --------------------------------------------------
+        if form.team_id.data == -1:
 
-        db.session.add(announcement)
-        db.session.commit()
+            for team in teams:
 
-        flash(
-            "Announcement published.",
-            "success"
-        )
+                announcement = Announcement(
+                    title=form.title.data,
+                    content=form.content.data,
+                    category=form.category.data,
+                    pinned=form.pinned.data,
+                    team_id=team.id,
+                    author_id=current_user.id
+                )
+
+                db.session.add(announcement)
+
+            db.session.commit()
+
+            flash(
+                "Announcement sent to all teams.",
+                "success"
+            )
+
+        # --------------------------------------------------
+        # Send announcement to one team
+        # --------------------------------------------------
+        else:
+
+            announcement = Announcement(
+                title=form.title.data,
+                content=form.content.data,
+                category=form.category.data,
+                pinned=form.pinned.data,
+                team_id=form.team_id.data,
+                author_id=current_user.id
+            )
+
+            db.session.add(announcement)
+            db.session.commit()
+
+            flash(
+                "Announcement published.",
+                "success"
+            )
 
         return redirect(
             url_for("admin.manage_announcements")

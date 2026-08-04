@@ -17,10 +17,13 @@
 
     <div class="card-body">
 
-        <form method="post"
-              novalidate>
+        <form method="POST" novalidate>
 
             {{ form.hidden_tag() }}
+
+            <!-- ========================= -->
+            <!-- Title -->
+            <!-- ========================= -->
 
             <div class="mb-3">
 
@@ -32,10 +35,16 @@
                 ) }}
 
                 {% for error in form.title.errors %}
-                    <div class="invalid-feedback">{{ error }}</div>
+                    <div class="invalid-feedback">
+                        {{ error }}
+                    </div>
                 {% endfor %}
 
             </div>
+
+            <!-- ========================= -->
+            <!-- Content -->
+            <!-- ========================= -->
 
             <div class="mb-3">
 
@@ -44,16 +53,22 @@
                 {{ form.content(
                     class="form-control" + (" is-invalid" if form.content.errors else ""),
                     rows=6,
-                    placeholder="Write the announcement…"
+                    placeholder="Write the announcement..."
                 ) }}
 
                 {% for error in form.content.errors %}
-                    <div class="invalid-feedback">{{ error }}</div>
+                    <div class="invalid-feedback">
+                        {{ error }}
+                    </div>
                 {% endfor %}
 
             </div>
 
             <div class="row">
+
+                <!-- ========================= -->
+                <!-- Category -->
+                <!-- ========================= -->
 
                 <div class="col-md-6 mb-3">
 
@@ -64,26 +79,57 @@
                     ) }}
 
                     {% for error in form.category.errors %}
-                        <div class="invalid-feedback">{{ error }}</div>
+                        <div class="invalid-feedback">
+                            {{ error }}
+                        </div>
                     {% endfor %}
 
                 </div>
 
+                <!-- ========================= -->
+                <!-- Target Team -->
+                <!-- ========================= -->
+
                 <div class="col-md-6 mb-3">
 
-                    {{ form.team_id.label(class="form-label") }}
+                    <label for="team_id" class="form-label">
 
-                    {{ form.team_id(
-                        class="form-select" + (" is-invalid" if form.team_id.errors else "")
-                    ) }}
+                        Target Team
 
-                    {% for error in form.team_id.errors %}
-                        <div class="invalid-feedback">{{ error }}</div>
-                    {% endfor %}
+                    </label>
+
+                    <select
+                        name="team_id"
+                        id="team_id"
+                        class="form-select">
+
+                        <option value="all">
+
+                            🌍 All Teams
+
+                        </option>
+
+                        {% for team in teams %}
+
+                        <option
+                            value="{{ team.id }}"
+                            {% if form.team_id.data == team.id %}selected{% endif %}>
+
+                            {{ team.name }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
 
                 </div>
 
             </div>
+
+            <!-- ========================= -->
+            <!-- Pin -->
+            <!-- ========================= -->
 
             <div class="form-check mb-4">
 
@@ -92,6 +138,10 @@
                 {{ form.pinned.label(class="form-check-label") }}
 
             </div>
+
+            <!-- ========================= -->
+            <!-- Submit -->
+            <!-- ========================= -->
 
             {{ form.submit(class="btn btn-primary") }}
 
