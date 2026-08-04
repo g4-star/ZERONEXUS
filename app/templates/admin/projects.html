@@ -5,32 +5,22 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
 
     <div>
-
         <h1 class="page-title mb-1">
-
             Manage Projects
-
         </h1>
 
         <p class="text-muted mb-0">
-
             View and manage all ZeroNexus projects.
-
         </p>
-
     </div>
 
-    <a
-        href="{{ url_for('admin.add_project') }}"
-        class="btn btn-info"
-    >
-
-        ➕ Add Project
-
+    <a href="{{ url_for('admin.add_project') }}"
+       class="btn btn-info">
+        <i class="fa-solid fa-plus"></i>
+        Add Project
     </a>
 
 </div>
-
 
 <div class="panel-card">
 
@@ -41,27 +31,14 @@
             <thead>
 
                 <tr>
-
                     <th>Title</th>
-
                     <th>Team</th>
-
                     <th>Created By</th>
-
                     <th>Status</th>
-
                     <th>Priority</th>
-
                     <th>Deadline</th>
-
                     <th>GitHub</th>
-
-                    <th class="text-end">
-
-                        Actions
-
-                    </th>
-
+                    <th class="text-end">Actions</th>
                 </tr>
 
             </thead>
@@ -73,98 +50,69 @@
                 <tr>
 
                     <td>
-
-                        <strong>
-
-                            {{ project.title }}
-
-                        </strong>
-
+                        <strong>{{ project.title }}</strong>
                     </td>
 
                     <td>
-
                         {% if project.team %}
-
                             {{ project.team.name }}
-
                         {% else %}
-
                             -
-
                         {% endif %}
-
                     </td>
 
                     <td>
-
                         {% if project.creator %}
-
                             {{ project.creator.username }}
-
                         {% else %}
-
                             Admin
-
                         {% endif %}
-
                     </td>
 
                     <td>
-
-                        <span class="badge bg-primary">
-
-                            {{ project.status }}
-
-                        </span>
-
-                    </td>
-
-                    <td>
-
-                        <span class="badge bg-warning text-dark">
-
-                            {{ project.priority }}
-
-                        </span>
-
-                    </td>
-
-                    <td>
-
-                        {% if project.deadline %}
-
-                            {{ project.deadline }}
-
+                        {% if project.status %}
+                            <span class="badge bg-primary">
+                                {{ project.status }}
+                            </span>
                         {% else %}
-
-                            -
-
+                            <span class="text-muted">-</span>
                         {% endif %}
+                    </td>
 
+                    <td>
+                        {% if project.priority %}
+                            <span class="badge bg-warning text-dark">
+                                {{ project.priority }}
+                            </span>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if project.deadline %}
+                            {{ project.deadline }}
+                        {% else %}
+                            -
+                        {% endif %}
                     </td>
 
                     <td>
 
                         {% if project.github_url %}
 
-                        <a
-                            href="{{ project.github_url }}"
-                            target="_blank"
-                            class="btn btn-sm btn-outline-success"
-                        >
+                            <a href="{{ project.github_url }}"
+                               target="_blank"
+                               class="btn btn-sm btn-outline-success">
 
-                            GitHub
+                                <i class="fa-brands fa-github"></i>
+                                GitHub
 
-                        </a>
+                            </a>
 
                         {% else %}
 
-                        <span class="text-muted">
-
-                            -
-
-                        </span>
+                            <span class="text-muted">-</span>
 
                         {% endif %}
 
@@ -172,21 +120,24 @@
 
                     <td class="text-end">
 
-                        <a
-                            href="{{ url_for('admin.edit_project', project_id=project.id) }}"
-                            class="btn btn-sm btn-outline-info"
-                        >
+                        {% if project.project_file %}
 
-                            Edit
+                            <a href="{{ project.project_file }}"
+                               target="_blank"
+                               class="btn btn-sm btn-success">
 
-                        </a>
+                                <i class="fa-solid fa-download"></i>
+                                Download
 
-                        <a
-                            href="{{ url_for('admin.delete_project', project_id=project.id) }}"
-                            class="btn btn-sm btn-outline-danger"
-                            onclick="return confirm('Delete this project permanently?');"
-                        >
+                            </a>
 
+                        {% endif %}
+
+                        <a href="{{ url_for('admin.delete_project', project_id=project.id) }}"
+                           class="btn btn-sm btn-outline-danger"
+                           onclick="return confirm('Delete this project permanently?');">
+
+                            <i class="fa-solid fa-trash"></i>
                             Delete
 
                         </a>
@@ -199,10 +150,8 @@
 
                 <tr>
 
-                    <td
-                        colspan="8"
-                        class="text-center text-muted py-5"
-                    >
+                    <td colspan="8"
+                        class="text-center text-muted py-5">
 
                         No projects have been created yet.
 
