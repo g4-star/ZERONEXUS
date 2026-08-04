@@ -17,9 +17,7 @@
     <div class="card-head">
 
         <div class="head-icon c-green">
-
             <i class="fa-solid fa-diagram-project"></i>
-
         </div>
 
         <h3>Team Projects Overview</h3>
@@ -27,81 +25,68 @@
         <a href="{{ url_for('team.create_project') }}"
            class="btn-primary"
            style="background:rgba(255,255,255,.06);box-shadow:none;">
-
-            <i class="fa-solid fa-plus me-1"></i>
-
-            Add Project
-
+            <i class="fa-solid fa-plus"></i>
+            <span>Add Project</span>
         </a>
 
     </div>
 
     <div class="card-body">
 
-        {% if projects is defined and projects %}
+        {% if projects|default([])|length > 0 %}
 
             {% for project in projects[:4] %}
 
-            <div class="project-row">
+                {% set progress = project.progress|default(0)|int %}
 
-                <div class="project-top">
+                <div class="project-row">
 
-                    <span class="p-name">
+                    <div class="project-top">
 
-                        {{ project.title|default("Untitled Project") }}
+                        <span class="p-name">
+                            {{ project.title|default('Untitled Project') }}
 
-                        <span class="p-cat">
-
-                            · {{ project.status|default("In Progress") }}
-
+                            <span class="p-cat">
+                                · {{ project.status|default('In Progress') }}
+                            </span>
                         </span>
 
-                    </span>
+                        <span class="p-pct"
+                              style="color:{{ pct_colors[loop.index0 % pct_colors|length] }}">
+                            {{ progress }}%
+                        </span>
 
-                    <span class="p-pct"
-                          style="color:{{ pct_colors[loop.index0 % pct_colors|length] }};">
+                    </div>
 
-                        {{ project.progress|default(0) }}%
+                    <div class="bar">
 
-                    </span>
-
-                </div>
-
-                <div class="bar">
-
-                    <div class="bar-fill"
-                         style="width:{{ project.progress|default(0) }}%;
-                                background:{{ bar_colors[loop.index0 % bar_colors|length] }};">
+                        <div class="bar-fill"
+                             data-w="{{ progress }}"
+                             style="width:{{ progress }}%; background:{{ bar_colors[loop.index0 % bar_colors|length] }};">
+                        </div>
 
                     </div>
 
                 </div>
 
-            </div>
-
             {% endfor %}
 
         {% else %}
 
-            <div class="text-center py-4">
+            <div class="text-center py-5">
 
-                <i class="fa-solid fa-folder-open fa-2x text-muted mb-3"></i>
+                <i class="fa-solid fa-folder-open fa-3x text-muted"></i>
 
-                <h5>No Projects</h5>
+                <h4 style="margin-top:15px;">No Projects Yet</h4>
 
                 <p class="text-muted">
-
-                    No projects have been created yet.
-
+                    Your team hasn't created any projects yet.
                 </p>
 
                 <a href="{{ url_for('team.create_project') }}"
                    class="btn-primary">
-
-                    <i class="fa-solid fa-plus me-1"></i>
-
+                    <i class="fa-solid fa-plus"></i>
                     Create First Project
-
                 </a>
 
             </div>

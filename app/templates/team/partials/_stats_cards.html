@@ -1,118 +1,155 @@
 <section class="stats-grid">
-  {% set tasks_list = tasks|default([]) %}
-  {% set done_count = tasks_list|selectattr('status', 'equalto', 'completed')|list|length %}
-  {% set total_tasks = tasks_list|length %}
-  {% set task_pct = ((done_count / total_tasks) * 100)|round|int if total_tasks else 75 %}
 
-  <!-- Tasks Completed -->
-  <div class="stat-card">
-    <div class="stat-top">
-      <span class="stat-title">Tasks Completed</span>
-      <span class="stat-icon c-purple"><i class="fa-solid fa-check-double"></i></span>
-    </div>
-    <div class="ring-wrap">
-      <svg viewBox="0 0 80 80">
-        <defs>
-          <linearGradient id="gPurple" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#6d28d9"/>
-          </linearGradient>
-          <linearGradient id="sPurple" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#a855f7" stop-opacity=".35"/><stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
-          </linearGradient>
-        </defs>
-        <circle class="ring-bg" cx="40" cy="40" r="34"/>
-        <circle class="ring-fg" cx="40" cy="40" r="34" stroke="url(#gPurple)" data-pct="{{ task_pct }}"/>
-      </svg>
-      <div class="ring-value">{{ task_pct }}%</div>
-    </div>
-    <div class="stat-sub">{{ done_count }} of {{ total_tasks }} tasks completed</div>
-    <svg class="spark" viewBox="0 0 100 30" preserveAspectRatio="none">
-      <polygon points="0,26 14,22 28,24 42,16 56,18 70,10 84,12 100,4 100,30 0,30" fill="url(#sPurple)"/>
-      <polyline points="0,26 14,22 28,24 42,16 56,18 70,10 84,12 100,4" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round"/>
-    </svg>
-  </div>
+{% set tasks_list = tasks|default([], true) %}
+{% set done_count = tasks_list|selectattr('status','equalto','completed')|list|length %}
+{% set total_tasks = tasks_list|length %}
+{% set task_pct = ((done_count * 100 / total_tasks)|round|int) if total_tasks > 0 else 0 %}
 
-  <!-- Active Projects -->
-  <div class="stat-card">
-    <div class="stat-top">
-      <span class="stat-title">Active Projects</span>
-      <span class="stat-icon c-green"><i class="fa-solid fa-diagram-project"></i></span>
-    </div>
-    <div class="ring-wrap">
-      <svg viewBox="0 0 80 80">
-        <defs>
-          <linearGradient id="gGreen" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#34d399"/><stop offset="100%" stop-color="#16a34a"/>
-          </linearGradient>
-          <linearGradient id="sGreen" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#34d399" stop-opacity=".35"/><stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
-          </linearGradient>
-        </defs>
-        <circle class="ring-bg" cx="40" cy="40" r="34"/>
-        <circle class="ring-fg" cx="40" cy="40" r="34" stroke="url(#gGreen)" data-pct="100"/>
-      </svg>
-      <div class="ring-value">{{ project_count }}</div>
-    </div>
-    <div class="stat-sub">{{ project_count }} project(s) in progress</div>
-    <svg class="spark" viewBox="0 0 100 30" preserveAspectRatio="none">
-      <polygon points="0,24 14,26 28,20 42,22 56,14 70,16 84,8 100,10 100,30 0,30" fill="url(#sGreen)"/>
-      <polyline points="0,24 14,26 28,20 42,22 56,14 70,16 84,8 100,10" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round"/>
-    </svg>
-  </div>
+{% set project_total = project_count|default(0, true) %}
+{% set member_total = member_count|default(0, true) %}
+{% set meeting_total = meetings|default([], true)|length %}
 
-  <!-- Team Members -->
-  <div class="stat-card">
+<!-- Tasks -->
+<div class="stat-card">
     <div class="stat-top">
-      <span class="stat-title">Team Members</span>
-      <span class="stat-icon c-orange"><i class="fa-solid fa-users"></i></span>
+        <span class="stat-title">Tasks Completed</span>
+        <span class="stat-icon c-purple">
+            <i class="fa-solid fa-check-double"></i>
+        </span>
     </div>
-    <div class="ring-wrap">
-      <svg viewBox="0 0 80 80">
-        <defs>
-          <linearGradient id="gOrange" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#ea580c"/>
-          </linearGradient>
-          <linearGradient id="sOrange" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#fbbf24" stop-opacity=".35"/><stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
-          </linearGradient>
-        </defs>
-        <circle class="ring-bg" cx="40" cy="40" r="34"/>
-        <circle class="ring-fg" cx="40" cy="40" r="34" stroke="url(#gOrange)" data-pct="100"/>
-      </svg>
-      <div class="ring-value">{{ member_count }}</div>
-    </div>
-    <div class="stat-sub">{{ member_count }} active team member(s)</div>
-    <svg class="spark" viewBox="0 0 100 30" preserveAspectRatio="none">
-      <polygon points="0,28 14,24 28,26 42,20 56,22 70,16 84,14 100,6 100,30 0,30" fill="url(#sOrange)"/>
-      <polyline points="0,28 14,24 28,26 42,20 56,22 70,16 84,14 100,6" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"/>
-    </svg>
-  </div>
 
-  <!-- Meetings This Week -->
-  <div class="stat-card">
-    <div class="stat-top">
-      <span class="stat-title">Meetings This Week</span>
-      <span class="stat-icon c-blue"><i class="fa-solid fa-video"></i></span>
-    </div>
     <div class="ring-wrap">
-      <svg viewBox="0 0 80 80">
-        <defs>
-          <linearGradient id="gBlue" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#60a5fa"/><stop offset="100%" stop-color="#2563eb"/>
-          </linearGradient>
-          <linearGradient id="sBlue" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#60a5fa" stop-opacity=".35"/><stop offset="100%" stop-color="#60a5fa" stop-opacity="0"/>
-          </linearGradient>
-        </defs>
-        <circle class="ring-bg" cx="40" cy="40" r="34"/>
-        <circle class="ring-fg" cx="40" cy="40" r="34" stroke="url(#gBlue)" data-pct="100"/>
-      </svg>
-      <div class="ring-value">{{ meetings|length }}</div>
+        <svg viewBox="0 0 80 80">
+            <circle class="ring-bg" cx="40" cy="40" r="34"></circle>
+            <circle
+                class="ring-fg"
+                cx="40"
+                cy="40"
+                r="34"
+                data-pct="{{ task_pct }}">
+            </circle>
+        </svg>
+
+        <div class="ring-value">{{ task_pct }}%</div>
     </div>
-    <div class="stat-sub">{{ meetings|length }} scheduled meeting(s)</div>
-    <svg class="spark" viewBox="0 0 100 30" preserveAspectRatio="none">
-      <polygon points="0,26 14,28 28,22 42,24 56,18 70,12 84,16 100,8 100,30 0,30" fill="url(#sBlue)"/>
-      <polyline points="0,26 14,28 28,22 42,24 56,18 70,12 84,16 100,8" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/>
-    </svg>
-  </div>
+
+    <div class="stat-sub">
+        {{ done_count }} of {{ total_tasks }} completed
+    </div>
+</div>
+
+<!-- Projects -->
+<div class="stat-card">
+
+    <div class="stat-top">
+        <span class="stat-title">Projects</span>
+
+        <span class="stat-icon c-green">
+            <i class="fa-solid fa-diagram-project"></i>
+        </span>
+    </div>
+
+    <div class="ring-wrap">
+        <svg viewBox="0 0 80 80">
+            <circle class="ring-bg" cx="40" cy="40" r="34"></circle>
+            <circle
+                class="ring-fg"
+                cx="40"
+                cy="40"
+                r="34"
+                data-pct="100">
+            </circle>
+        </svg>
+
+        <div class="ring-value">
+            {{ project_total }}
+        </div>
+    </div>
+
+    <div class="stat-sub">
+        {{ project_total }} project(s)
+    </div>
+
+</div>
+
+<!-- Members -->
+<div class="stat-card">
+
+    <div class="stat-top">
+
+        <span class="stat-title">
+            Members
+        </span>
+
+        <span class="stat-icon c-orange">
+            <i class="fa-solid fa-users"></i>
+        </span>
+
+    </div>
+
+    <div class="ring-wrap">
+
+        <svg viewBox="0 0 80 80">
+            <circle class="ring-bg" cx="40" cy="40" r="34"></circle>
+            <circle
+                class="ring-fg"
+                cx="40"
+                cy="40"
+                r="34"
+                data-pct="100">
+            </circle>
+        </svg>
+
+        <div class="ring-value">
+            {{ member_total }}
+        </div>
+
+    </div>
+
+    <div class="stat-sub">
+        {{ member_total }} member(s)
+    </div>
+
+</div>
+
+<!-- Meetings -->
+<div class="stat-card">
+
+    <div class="stat-top">
+
+        <span class="stat-title">
+            Meetings
+        </span>
+
+        <span class="stat-icon c-blue">
+            <i class="fa-solid fa-video"></i>
+        </span>
+
+    </div>
+
+    <div class="ring-wrap">
+
+        <svg viewBox="0 0 80 80">
+            <circle class="ring-bg" cx="40" cy="40" r="34"></circle>
+            <circle
+                class="ring-fg"
+                cx="40"
+                cy="40"
+                r="34"
+                data-pct="100">
+            </circle>
+        </svg>
+
+        <div class="ring-value">
+            {{ meeting_total }}
+        </div>
+
+    </div>
+
+    <div class="stat-sub">
+        {{ meeting_total }} scheduled
+    </div>
+
+</div>
+
 </section>

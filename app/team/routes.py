@@ -77,36 +77,68 @@ def require_active_team():
 @login_required
 @member_required
 def dashboard():
+    """Team Dashboard"""
 
     user = current_user
-
     team = require_active_team()
 
-    members = User.query.filter_by(
-        team_id=team.id
-    ).order_by(
-        User.created_at.desc()
-    ).all()
+    if not team:
+        flash("You are not assigned to a team.", "warning")
+        return redirect(url_for("main.index"))
+
+    # -------------------------------------------------
+    # Team Members
+    # -------------------------------------------------
+
+    members = (
+        User.query
+        .filter_by(team_id=team.id)
+        .order_by(User.created_at.desc())
+        .all()
+    )
 
     recent_members = members[:5]
 
-    projects = Project.query.filter_by(
-        team_id=team.id
-    ).order_by(
-        Project.created_at.desc()
-    ).all()
+    # -------------------------------------------------
+    # Projects
+    # -------------------------------------------------
 
-    meetings = Meeting.query.filter_by(
-        team_id=team.id
-    ).all()
+    projects = (
+        Project.query
+        .filter_by(team_id=team.id)
+        .order_by(Project.created_at.desc())
+        .all()
+    )
 
-    announcements = Announcement.query.filter_by(
-        team_id=team.id
-    ).order_by(
-        Announcement.pinned.desc(),
-        Announcement.created_at.desc()
-    ).all()
-    
+    # -------------------------------------------------
+    # Meetings
+    # -------------------------------------------------
+
+    meetings = (
+        Meeting.query
+        .filter_by(team_id=team.id)
+        .order_by(Meeting.created_at.desc())
+        .all()
+    )
+
+    # -------------------------------------------------
+    # Announcements
+    # -------------------------------------------------
+
+    announcements = (
+        Announcement.query
+        .filter_by(team_id=team.id)
+        .order_by(
+            Announcement.pinned.desc(),
+            Announcement.created_at.desc()
+        )
+        .all()
+    )
+
+    # -------------------------------------------------
+    # Chat Messages
+    # -------------------------------------------------
+
     messages = (
         TeamMessage.query
         .filter_by(team_id=team.id)
@@ -115,32 +147,65 @@ def dashboard():
         .all()
     )
 
-    return render_template(
-        "team/dashboard.html",
+    # -------------------------------------------------
+    # Optional Data
+    # -------------------------------------------------
 
-        user=user,
+    tasks = []
 
-        team=team,
+    recent_activity = []
 
-        members=members,
-        recent_members=recent_members,
+    notifications = []
 
-        projects=projects,
+    # -------------------------------------------------
+    # Statistics
+    # -------------------------------------------------
 
-        meetings=meetings,
+    member_count = len(members)
+    project_count = len(projects)
+    meeting_count = len(meetings)
+    announcement_count = len(announcements)
 
-        announcements=announcements,
-        messages=messages,
-
-        member_count=len(members),
-
-        project_count=len(projects),
-
-        meeting_count=len(meetings),
-
-        announcement_count=len(announcements)
+    # Count completed tasks if they exist
+    completed_tasks = sum(
+        1 for t in tasks
+        if getattr(t, "status", "") == "completed"
     )
 
+    # -------------------------------------------------
+    # Context
+    # -------------------------------------------------
+
+    context = {
+        "user": user,
+        "team": team,
+
+        "members": members,
+        "recent_members": recent_members,
+
+        "projects": projects,
+
+        "meetings": meetings,
+
+        "announcements": announcements,
+
+        "messages": messages,
+
+        "tasks": tasks,
+        "recent_activity": recent_activity,
+        "notifications": notifications,
+
+        "member_count": member_count,
+        "project_count": project_count,
+        "meeting_count": meeting_count,
+        "announcement_count": announcement_count,
+        "completed_tasks": completed_tasks,
+    }
+
+    return render_template(
+        "team/dashboard.html",
+        **context
+    )
 
 # =====================================================
 # TEAM PROJECTS

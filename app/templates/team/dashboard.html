@@ -1,124 +1,138 @@
-{# ============================================================
-   ZeroNexus — Team Lead Dashboard (shell only)
-   Standalone shell: the shared base.html is the public
-   marketing layout; extending it would inject the public nav.
-   All sections are pulled in as partials.
-   ============================================================ #}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="csrf-token" content="{{ csrf_token() }}">
-<title>ZeroNexus — Team Lead Dashboard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/cards.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/popup.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>ZeroNexus - Team Dashboard</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/sidebar.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/cards.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/profile.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/chat.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/popup.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/animations.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/responsive.css') }}">
+
 </head>
+
 <body>
 
-<div class="app">
+    <div class="app">
 
-  {% include "team/partials/_sidebar.html" %}
-  {% include "team/partials/_header.html" %}
+        <!-- Sidebar -->
+        {% include "team/partials/_sidebar.html" %}
 
-  <main class="main">
-    <div class="content">
+        <!-- Page -->
+        <div class="page">
 
-      {% include "team/partials/_stats_cards.html" %}
+            <!-- Header -->
+            {% include "team/partials/_header.html" %}
 
-      <section class="lower">
-        <div class="col-stack">
-          {% include "team/partials/_recent_announcements.html" %}
-          {% include "team/partials/_recent_projects.html" %}
-          {% include "team/partials/_recent_activity.html" %}
+            <!-- Main Content -->
+            <main class="main">
+
+                <!-- Statistics -->
+                {% include "team/partials/_stats_cards.html" %}
+
+                <!-- Dashboard Grid -->
+                <section class="dashboard-grid">
+
+                    <!-- Left Column -->
+                    <div class="left-column">
+
+                        {% include "team/partials/_recent_announcements.html" %}
+
+                        {% include "team/partials/_recent_projects.html" %}
+
+                        {% include "team/partials/_recent_activity.html" %}
+
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="right-column">
+
+                        {% include "team/partials/_recent_members.html" %}
+
+                        {% include "team/partials/_profile_card.html" %}
+
+                    </div>
+
+                </section>
+
+            </main>
+
         </div>
-
-        <!-- My Tasks -->
-        <div class="card" style="align-self:start">
-          <div class="card-head">
-            <div class="head-icon c-orange"><i class="fa-solid fa-list-check"></i></div>
-            <h3>My Tasks</h3>
-          </div>
-          <div class="card-body">
-            <div class="task-item" onclick="toggleTask(this)">
-              <div class="task-check"><i class="fa-solid fa-check"></i></div>
-              <div class="task-main">
-                <div class="task-name">Review login page code</div>
-                <div class="task-tags"><span class="task-tag web">WEB DEV</span></div>
-              </div>
-              <span class="task-date"><i class="fa-regular fa-calendar"></i>Aug 5</span>
-            </div>
-            <div class="task-item" onclick="toggleTask(this)">
-              <div class="task-check"><i class="fa-solid fa-check"></i></div>
-              <div class="task-main">
-                <div class="task-name">Fix authentication bug</div>
-                <div class="task-tags"><span class="task-tag sec">SECURITY</span></div>
-              </div>
-              <span class="task-date"><i class="fa-regular fa-calendar"></i>Aug 4</span>
-            </div>
-            <div class="task-item" onclick="toggleTask(this)">
-              <div class="task-check"><i class="fa-solid fa-check"></i></div>
-              <div class="task-main">
-                <div class="task-name">Update security report</div>
-                <div class="task-tags"><span class="task-tag rep">REPORTING</span></div>
-              </div>
-              <span class="task-date"><i class="fa-regular fa-calendar"></i>Aug 6</span>
-            </div>
-            <div class="task-item" onclick="toggleTask(this)">
-              <div class="task-check"><i class="fa-solid fa-check"></i></div>
-              <div class="task-main">
-                <div class="task-name">Design dashboard UI</div>
-                <div class="task-tags"><span class="task-tag ui">UI/UX</span></div>
-              </div>
-              <span class="task-date"><i class="fa-regular fa-calendar"></i>Aug 7</span>
-            </div>
-            <div class="task-item" onclick="toggleTask(this)">
-              <div class="task-check"><i class="fa-solid fa-check"></i></div>
-              <div class="task-main">
-                <div class="task-name">Team meeting preparation</div>
-                <div class="task-tags"><span class="task-tag gen">GENERAL</span></div>
-              </div>
-              <span class="task-date"><i class="fa-regular fa-calendar"></i>Aug 3</span>
-            </div>
-          </div>
-        </div>
-
-        {% include "team/partials/_recent_members.html" %}
-      </section>
 
     </div>
-  </main>
 
-  {% include "team/partials/_profile_card.html" %}
-</div>
+    <!-- Floating Modals -->
+    {% include "team/partials/_modals.html" %}
 
-{% include "team/partials/_modals.html" %}
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
 
-<div class="toast" id="toast" hidden>Message sent to team 💬</div>
+    <!-- Global Configuration -->
+    <script>
 
-<script>
-/* Flask endpoints injected into plain JS files (url_for is not available in static files) */
-window.ZN_CONFIG = {
-  sendChatUrl:   "{{ url_for('team.send_chat') }}",
-  messagesApiUrl:"{{ url_for('team.messages_api') }}",
-  csrf:          "{{ csrf_token() }}",
-  username:      "{{ current_user.username }}"
-};
-</script>
-<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-<script src="{{ url_for('static', filename='js/popup.js') }}"></script>
-<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
-<script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
-<script src="{{ url_for('static', filename='js/calendar.js') }}"></script>
-<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+        window.ZeroNexus = window.ZeroNexus || {};
+
+        window.ZN_CONFIG = {
+            csrf: "{{ csrf_token() }}",
+            username: "{{ current_user.username }}",
+            sendChatUrl: "{{ url_for('team.send_chat') }}",
+            messagesApiUrl: "{{ url_for('team.messages_api') }}"
+        };
+
+    </script>
+
+    <!-- JavaScript -->
+    <script defer src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+    <script defer src="{{ url_for('static', filename='js/popup.js') }}"></script>
+
+    <script defer src="{{ url_for('static', filename='js/chat.js') }}"></script>
+
+    <script defer src="{{ url_for('static', filename='js/calendar.js') }}"></script>
+
+    <script defer src="{{ url_for('static', filename='js/profile.js') }}"></script>
+
+    <script defer src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+
 </body>
+
 </html>
