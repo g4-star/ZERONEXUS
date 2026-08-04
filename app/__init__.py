@@ -71,6 +71,14 @@ def create_app(config_name=None):
     mail.init_app(app)
     limiter.init_app(app)
     socketio.init_app(app)
+    print("================ MAIL DEBUG ================")
+    print("SERVER:", app.config.get("MAIL_SERVER"))
+    print("PORT:", app.config.get("MAIL_PORT"))
+    print("TLS:", app.config.get("MAIL_USE_TLS"))
+    print("USERNAME:", app.config.get("MAIL_USERNAME"))
+    print("PASSWORD SET:", bool(app.config.get("MAIL_PASSWORD")))
+    print("SENDER:", app.config.get("MAIL_DEFAULT_SENDER"))
+    print("============================================")
 
     # ----------------------------------
     # Blueprints
