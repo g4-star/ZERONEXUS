@@ -5,16 +5,18 @@ from app.extensions import mail
 
 def send_member_welcome(member):
     """
-    Sends a professional welcome email with a private profile edit link.
+    Sends a professional welcome email with a private
+    profile edit link.
     """
 
     site_url = current_app.config.get(
-        'SITE_URL',
-        'https://zeronexus.vercel.app'
+        "SITE_URL",
+        "https://zeronexus.onrender.com"
     )
 
-    # Private edit link for this member
-    edit_link = f"{site_url}/member/edit/{member.profile_token}"
+    edit_link = (
+        f"{site_url}/member/edit/{member.profile_token}"
+    )
 
     msg = Message(
         subject="🎉 Welcome to ZeroNexus",
@@ -24,12 +26,17 @@ def send_member_welcome(member):
     msg.html = f"""
     <!DOCTYPE html>
     <html>
-    <body style="font-family:Arial,sans-serif;background:#f4f6f9;padding:30px;">
+
+    <body style="
+        font-family:Arial,sans-serif;
+        background:#f4f6f9;
+        padding:30px;
+    ">
 
         <div style="
             max-width:700px;
             margin:auto;
-            background:white;
+            background:#ffffff;
             border-radius:10px;
             overflow:hidden;
             box-shadow:0 5px 20px rgba(0,0,0,.15);
@@ -41,8 +48,10 @@ def send_member_welcome(member):
                 text-align:center;
                 padding:35px;
             ">
+
                 <h1>Welcome to ZeroNexus</h1>
                 <p>Cybersecurity Collaboration Platform</p>
+
             </div>
 
             <div style="padding:35px;">
@@ -50,14 +59,14 @@ def send_member_welcome(member):
                 <h2>Hello {member.full_name},</h2>
 
                 <p>
-                    Congratulations! You have successfully been added to
+                    Congratulations! You have successfully joined
                     <strong>ZeroNexus</strong>.
                 </p>
 
                 <p>
                     ZeroNexus is a collaborative cybersecurity platform where
-                    students showcase projects, join teams, build portfolios,
-                    and work together on innovative solutions.
+                    students showcase projects, build portfolios, join teams,
+                    and work together on innovative security solutions.
                 </p>
 
                 <h3>Your Details</h3>
@@ -81,7 +90,7 @@ def send_member_welcome(member):
 
                     <tr>
                         <td><strong>Team</strong></td>
-                        <td>{member.team.name if member.team else 'Not Assigned'}</td>
+                        <td>{member.team.name if member.team else "Not Assigned"}</td>
                     </tr>
 
                 </table>
@@ -89,33 +98,42 @@ def send_member_welcome(member):
                 <br>
 
                 <p>
-                    Complete your ZeroNexus profile by adding your photo,
-                    LinkedIn, GitHub, portfolio, skills, and contact details.
+                    Complete your profile by adding your photo,
+                    LinkedIn, GitHub, portfolio, skills and
+                    contact information.
                 </p>
 
-                <a href="{edit_link}"
-                   style="
-                        display:inline-block;
-                        padding:14px 30px;
-                        background:#0dcaf0;
-                        color:#000;
-                        text-decoration:none;
-                        border-radius:6px;
-                        font-weight:bold;
-                   ">
-                    Update My Profile
-                </a>
+                <p style="text-align:center;margin:30px 0;">
 
-                <p style="margin-top:20px;font-size:13px;color:#666;">
-                    This private link allows you to update your own profile.
-                    Please do not share it with others.
+                    <a href="{edit_link}"
+                       style="
+                            display:inline-block;
+                            padding:14px 30px;
+                            background:#0dcaf0;
+                            color:#000;
+                            text-decoration:none;
+                            border-radius:6px;
+                            font-weight:bold;
+                       ">
+                        Update My Profile
+                    </a>
+
+                </p>
+
+                <p style="
+                    margin-top:20px;
+                    font-size:13px;
+                    color:#666;
+                ">
+                    This private link allows you to update your own
+                    profile. Please do not share it with anyone.
                 </p>
 
                 <hr>
 
                 <p>
-                    We look forward to your contributions to the ZeroNexus
-                    community.
+                    We look forward to your contributions to the
+                    ZeroNexus community.
                 </p>
 
                 <p>
@@ -138,139 +156,166 @@ def send_member_welcome(member):
         </div>
 
     </body>
+
     </html>
     """
 
     try:
-        mail.send(msg)
-        print("✅ Email sent successfully")
+        print("=" * 60)
+        print("Attempting to send welcome email...")
+        print("SERVER :", current_app.config.get("MAIL_SERVER"))
+        print("PORT   :", current_app.config.get("MAIL_PORT"))
+        print("TLS    :", current_app.config.get("MAIL_USE_TLS"))
+        print("SSL    :", current_app.config.get("MAIL_USE_SSL"))
+        print("USER   :", current_app.config.get("MAIL_USERNAME"))
+        print("SENDER :", current_app.config.get("MAIL_DEFAULT_SENDER"))
+        print("=" * 60)
+
+        with mail.connect() as conn:
+            conn.send(msg)
+
+        print("✅ Welcome email sent successfully!")
+
     except Exception as e:
         import traceback
-        print("========== SMTP ERROR ==========")
+
+        print("=" * 60)
+        print("❌ WELCOME EMAIL ERROR")
+        print("TYPE :", type(e).__name__)
+        print("ERROR:", str(e))
         traceback.print_exc()
-        print("================================")
+        print("=" * 60)
+
         raise
     
 def send_member_invitation(user, password):
-    
+    """
+    Sends a ZeroNexus invitation email containing the
+    activation link and temporary password.
+    """
+
     site_url = current_app.config.get(
         "SITE_URL",
-        "https://zeronexus.vercel.app"
+        "https://zeronexus.onrender.com"
     )
-    
+
     activation_link = (
         f"{site_url}/auth/activate/{user.activation_token}"
     )
-
 
     msg = Message(
         subject="🎉 Welcome to ZeroNexus Team",
         recipients=[user.email]
     )
 
-
     msg.html = f"""
-
     <!DOCTYPE html>
 
     <html>
 
     <body style="
-        font-family:Arial;
+        font-family: Arial, sans-serif;
         background:#f4f6f9;
         padding:30px;
     ">
 
+        <div style="
+            max-width:650px;
+            margin:auto;
+            background:white;
+            padding:35px;
+            border-radius:12px;
+            box-shadow:0 5px 20px rgba(0,0,0,.15);
+        ">
 
-    <div style="
-        max-width:650px;
-        margin:auto;
-        background:white;
-        padding:35px;
-        border-radius:12px;
-    ">
+            <h1 style="color:#0d6efd;">
+                Welcome to ZeroNexus 🎉
+            </h1>
 
+            <p>
+                You have been invited to join a ZeroNexus team.
+            </p>
 
-    <h1 style="color:#0d6efd;">
-        Welcome to ZeroNexus 🎉
-    </h1>
+            <h3>Your Account Details</h3>
 
+            <p>
+                <strong>Username:</strong>
+                {user.username}
+            </p>
 
-    <p>
-        You have been invited to join a ZeroNexus team.
-    </p>
+            <p>
+                <strong>Temporary Password:</strong>
+                {password}
+            </p>
 
+            <p>
+                For security reasons, you must activate your account
+                and change your password before accessing your dashboard.
+            </p>
 
-    <h3>Your Account Details</h3>
+            <p style="text-align:center; margin:35px 0;">
 
+                <a href="{activation_link}"
+                   style="
+                        display:inline-block;
+                        background:#0dcaf0;
+                        color:#000;
+                        padding:14px 28px;
+                        text-decoration:none;
+                        border-radius:6px;
+                        font-weight:bold;
+                   ">
+                    Activate My Account
+                </a>
 
-    <p>
-        <b>Username:</b>
-        {user.username}
-    </p>
+            </p>
 
+            <p>
+                After activation you will be redirected to your
+                assigned ZeroNexus dashboard.
+            </p>
 
-    <p>
-        <b>Temporary Password:</b>
-        {password}
-    </p>
+            <hr>
 
+            <p>
+                <strong>ZeroNexus Administration</strong>
+            </p>
 
-    <p>
-        For security reasons, you must change your
-        password before accessing your team dashboard.
-    </p>
-
-
-
-    <a href="{activation_link}"
-
-    style="
-    display:inline-block;
-    background:#0dcaf0;
-    color:#000;
-    padding:14px 25px;
-    text-decoration:none;
-    border-radius:6px;
-    font-weight:bold;
-    ">
-
-    Activate My Account
-
-    </a>
-
-
-
-    <br><br>
-
-
-    <p>
-    After activation you will be redirected to your
-    assigned ZeroNexus team dashboard.
-    </p>
-
-
-
-    <hr>
-
-
-    <strong>
-    ZeroNexus Administration
-    </strong>
-
-
-    </div>
-
+        </div>
 
     </body>
 
     </html>
-
     """
 
+    try:
+        print("=" * 60)
+        print("Attempting to send invitation email...")
+        print("SERVER :", current_app.config.get("MAIL_SERVER"))
+        print("PORT   :", current_app.config.get("MAIL_PORT"))
+        print("TLS    :", current_app.config.get("MAIL_USE_TLS"))
+        print("SSL    :", current_app.config.get("MAIL_USE_SSL"))
+        print("USER   :", current_app.config.get("MAIL_USERNAME"))
+        print("SENDER :", current_app.config.get("MAIL_DEFAULT_SENDER"))
+        print("=" * 60)
 
-    mail.send(msg)
+        with mail.connect() as conn:
+            conn.send(msg)
 
+        print("✅ Invitation email sent successfully!")
+
+    except Exception as e:
+        import traceback
+
+        print("=" * 60)
+        print("❌ INVITATION EMAIL ERROR")
+        print("TYPE :", type(e).__name__)
+        print("ERROR:", str(e))
+        traceback.print_exc()
+        print("=" * 60)
+
+        raise
+    
 def send_contact_confirmation(contact_message):
     """
     Sends an automatic confirmation email after someone
@@ -284,8 +329,14 @@ def send_contact_confirmation(contact_message):
 
     msg.html = f"""
     <!DOCTYPE html>
+
     <html>
-    <body style="font-family:Arial,sans-serif;background:#f4f6f9;padding:30px;">
+
+    <body style="
+        font-family:Arial,sans-serif;
+        background:#f4f6f9;
+        padding:30px;
+    ">
 
         <div style="
             max-width:700px;
@@ -351,9 +402,7 @@ def send_contact_confirmation(contact_message):
                     border-left:5px solid #0dcaf0;
                     padding:20px;
                 ">
-
                     {contact_message.message}
-
                 </div>
 
                 <br>
@@ -386,15 +435,40 @@ def send_contact_confirmation(contact_message):
                 color:#666;
                 font-size:13px;
             ">
-
                 © ZeroNexus • Thank you for connecting with us.
-
             </div>
 
         </div>
 
     </body>
+
     </html>
     """
 
-    mail.send(msg)
+    try:
+        print("=" * 60)
+        print("Attempting to send contact confirmation email...")
+        print("SERVER :", current_app.config.get("MAIL_SERVER"))
+        print("PORT   :", current_app.config.get("MAIL_PORT"))
+        print("TLS    :", current_app.config.get("MAIL_USE_TLS"))
+        print("SSL    :", current_app.config.get("MAIL_USE_SSL"))
+        print("USER   :", current_app.config.get("MAIL_USERNAME"))
+        print("SENDER :", current_app.config.get("MAIL_DEFAULT_SENDER"))
+        print("=" * 60)
+
+        with mail.connect() as conn:
+            conn.send(msg)
+
+        print("✅ Contact confirmation email sent successfully!")
+
+    except Exception as e:
+        import traceback
+
+        print("=" * 60)
+        print("❌ CONTACT EMAIL ERROR")
+        print("TYPE :", type(e).__name__)
+        print("ERROR:", str(e))
+        traceback.print_exc()
+        print("=" * 60)
+
+        raise
