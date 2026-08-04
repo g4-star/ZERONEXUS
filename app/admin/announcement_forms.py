@@ -49,21 +49,33 @@ class CreateAnnouncementForm(FlaskForm):
         ]
     )
 
-    pinned = BooleanField("Pin this announcement")
+    pinned = BooleanField(
+        "Pin this announcement"
+    )
 
-    submit = SubmitField("Post Announcement")
+    submit = SubmitField(
+        "Post Announcement"
+    )
 
-    def __init__(self, *args, teams=None, **kwargs):
+    def __init__(self, *args, **kwargs):
+
+        # Remove the custom argument before calling FlaskForm
+        teams = kwargs.pop("teams", None)
+
         super().__init__(*args, **kwargs)
 
+        # Load every team if none was supplied
         if teams is None:
-            teams = Team.query.order_by(Team.name.asc()).all()
+            teams = Team.query.order_by(
+                Team.name.asc()
+            ).all()
 
+        # Build dropdown
         self.team_id.choices = [
             (-1, "🌍 All Teams")
         ]
 
-        self.team_id.choices.extend(
-            (team.id, team.name)
-            for team in teams
-        )
+        for team in teams:
+            self.team_id.choices.append(
+                (team.id, team.name)
+            )

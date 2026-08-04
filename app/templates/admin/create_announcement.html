@@ -6,8 +6,10 @@
 
     <h2>New Announcement</h2>
 
-    <a href="{{ url_for('admin.manage_announcements') }}"
-       class="btn btn-outline-secondary">
+    <a
+        href="{{ url_for('admin.manage_announcements') }}"
+        class="btn btn-outline-secondary"
+    >
         ← Back
     </a>
 
@@ -35,9 +37,11 @@
                 ) }}
 
                 {% for error in form.title.errors %}
+
                     <div class="invalid-feedback">
                         {{ error }}
                     </div>
+
                 {% endfor %}
 
             </div>
@@ -57,9 +61,11 @@
                 ) }}
 
                 {% for error in form.content.errors %}
+
                     <div class="invalid-feedback">
                         {{ error }}
                     </div>
+
                 {% endfor %}
 
             </div>
@@ -79,9 +85,11 @@
                     ) }}
 
                     {% for error in form.category.errors %}
+
                         <div class="invalid-feedback">
                             {{ error }}
                         </div>
+
                     {% endfor %}
 
                 </div>
@@ -92,43 +100,26 @@
 
                 <div class="col-md-6 mb-3">
 
-                    <label for="team_id" class="form-label">
+                    {{ form.team_id.label(class="form-label") }}
 
-                        Target Team
+                    {{ form.team_id(
+                        class="form-select" + (" is-invalid" if form.team_id.errors else "")
+                    ) }}
 
-                    </label>
+                    {% for error in form.team_id.errors %}
 
-                    <select
-                        name="team_id"
-                        id="team_id"
-                        class="form-select">
+                        <div class="invalid-feedback">
+                            {{ error }}
+                        </div>
 
-                        <option value="all">
-
-                            🌍 All Teams
-
-                        </option>
-
-                        {% for team in teams %}
-
-                        <option
-                            value="{{ team.id }}"
-                            {% if form.team_id.data == team.id %}selected{% endif %}>
-
-                            {{ team.name }}
-
-                        </option>
-
-                        {% endfor %}
-
-                    </select>
+                    {% endfor %}
 
                 </div>
 
             </div>
 
             <!-- ========================= -->
-            <!-- Pin -->
+            <!-- Pin Announcement -->
             <!-- ========================= -->
 
             <div class="form-check mb-4">
@@ -143,7 +134,11 @@
             <!-- Submit -->
             <!-- ========================= -->
 
-            {{ form.submit(class="btn btn-primary") }}
+            <div class="d-flex justify-content-end">
+
+                {{ form.submit(class="btn btn-primary") }}
+
+            </div>
 
         </form>
 
