@@ -12,7 +12,23 @@
 
             <h1>ZeroNexus</h1>
 
-            <span>TEAM LEAD</span>
+            <span>
+
+                {% if current_user.team %}
+
+                    {{ current_user.team.name }}
+
+                {% elif current_user.team_id %}
+
+                    Team {{ current_user.team_id }}
+
+                {% else %}
+
+                    No Team
+
+                {% endif %}
+
+            </span>
 
         </div>
 
