@@ -1,65 +1,407 @@
-/* ============ RIGHT PROFILE PANEL ============ */
+/* =====================================================
+   ZERONEXUS PROFILE PANEL
+===================================================== */
+
 .profile-panel{
-  grid-column:3;grid-row:1;
-  position:sticky;top:0;height:100vh;
-  padding:20px 16px;overflow-y:auto;
-  background:var(--bg-2);border-left:1px solid var(--border);
-  display:flex;flex-direction:column;gap:18px;
+
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+
+    width:100%;
+
 }
+
+/* =====================================================
+   PROFILE CARD
+===================================================== */
+
 .profile-card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:var(--radius);overflow:hidden;
-  display:flex;flex-direction:column;align-items:center;
-  padding-bottom:18px;text-align:center;
+
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+
+    overflow:hidden;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+    text-align:center;
+
+    transition:.25s;
+
 }
-.profile-hero{height:64px;width:100%;background:linear-gradient(120deg,#1e1b4b,#172554,#0f172a)}
+
+.profile-card:hover{
+
+    border-color:var(--border-strong);
+
+    box-shadow:var(--shadow);
+
+}
+
+.profile-hero{
+
+    width:100%;
+    height:72px;
+
+    background:linear-gradient(
+        135deg,
+        #1e1b4b,
+        #312e81,
+        #0f172a
+    );
+
+}
+
 .profile-avatar{
-  width:62px;height:62px;border-radius:50%;margin-top:-31px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:21px;font-weight:800;color:#fff;
-  background:linear-gradient(135deg,var(--purple),var(--blue));
-  border:3px solid #0a0f1a;box-shadow:var(--glow);
+
+    width:72px;
+    height:72px;
+
+    margin-top:-36px;
+
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:22px;
+    font-weight:800;
+
+    color:#fff;
+
+    background:linear-gradient(
+        135deg,
+        var(--purple),
+        var(--blue)
+    );
+
+    border:4px solid var(--bg-2);
+
+    box-shadow:var(--glow);
+
 }
-.profile-name{margin-top:10px}
-.profile-name h3{font-size:15.5px;font-weight:800}
+
+.profile-name{
+
+    margin-top:12px;
+
+}
+
+.profile-name h3{
+
+    font-size:17px;
+    font-weight:800;
+
+}
+
 .role{
-  display:inline-block;margin-top:4px;
-  font-size:10px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;
-  color:var(--purple-light);background:rgba(139,92,246,.14);
-  padding:4px 11px;border-radius:99px;
+
+    display:inline-block;
+
+    margin-top:6px;
+
+    padding:5px 12px;
+
+    border-radius:999px;
+
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:1px;
+    text-transform:uppercase;
+
+    color:var(--purple-light);
+
+    background:rgba(139,92,246,.15);
+
 }
-.completion{width:100%;padding:14px 18px 0}
-.comp-top{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px}
-.comp-top b{color:var(--purple-light)}
-.comp-bar{height:6px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}
-.comp-fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--purple),var(--blue));transition:width 1.2s ease}
-.profile-info{width:100%;padding:14px 18px 0;display:flex;flex-direction:column;gap:11px;text-align:left}
-.info-row{display:flex;align-items:center;gap:11px}
-.info-row>i{width:30px;height:30px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--purple-light);background:rgba(139,92,246,.12)}
-.info-row div{display:flex;flex-direction:column}
-.info-row b{font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--muted-2);text-transform:uppercase}
-.info-row span{font-size:12.5px;font-weight:600;word-break:break-all}
+
+/* =====================================================
+   COMPLETION
+===================================================== */
+
+.completion{
+
+    width:100%;
+
+    padding:18px;
+
+}
+
+.comp-top{
+
+    display:flex;
+    justify-content:space-between;
+
+    margin-bottom:8px;
+
+    font-size:12px;
+
+    color:var(--muted);
+
+}
+
+.comp-top b{
+
+    color:var(--purple-light);
+
+}
+
+.comp-bar{
+
+    height:7px;
+
+    border-radius:999px;
+
+    overflow:hidden;
+
+    background:rgba(255,255,255,.08);
+
+}
+
+.comp-fill{
+
+    height:100%;
+
+    border-radius:999px;
+
+    background:linear-gradient(
+        90deg,
+        var(--purple),
+        var(--blue)
+    );
+
+    transition:width 1s ease;
+
+}
+
+/* =====================================================
+   PROFILE INFO
+===================================================== */
+
+.profile-info{
+
+    width:100%;
+
+    padding:0 18px 18px;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:14px;
+
+}
+
+.info-row{
+
+    display:flex;
+
+    gap:12px;
+
+    align-items:center;
+
+}
+
+.info-row i{
+
+    width:34px;
+    height:34px;
+
+    border-radius:10px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    flex-shrink:0;
+
+    color:var(--purple-light);
+
+    background:rgba(139,92,246,.12);
+
+}
+
+.info-row div{
+
+    display:flex;
+    flex-direction:column;
+
+}
+
+.info-row b{
+
+    font-size:10px;
+
+    text-transform:uppercase;
+
+    color:var(--muted-2);
+
+}
+
+.info-row span{
+
+    font-size:13px;
+
+    font-weight:600;
+
+    word-break:break-word;
+
+}
+
+/* =====================================================
+   EDIT BUTTON
+===================================================== */
+
 .edit-btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  margin-top:16px;padding:10px 26px;border-radius:12px;
-  font-size:13px;font-weight:700;color:#fff;
-  background:linear-gradient(135deg,var(--purple),var(--blue));
-  box-shadow:var(--glow);transition:.2s;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    gap:8px;
+
+    margin:18px;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    color:#fff;
+
+    font-weight:700;
+
+    background:linear-gradient(
+        135deg,
+        var(--purple),
+        var(--blue)
+    );
+
+    transition:.25s;
+
+    box-shadow:var(--glow);
+
 }
-.edit-btn:hover{transform:translateY(-2px);filter:brightness(1.15)}
-.quick-actions{display:flex;flex-direction:column;gap:8px}
+
+.edit-btn:hover{
+
+    transform:translateY(-2px);
+
+    filter:brightness(1.1);
+
+}
+
+/* =====================================================
+   QUICK ACTIONS
+===================================================== */
+
+.quick-actions{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+}
+
 .qa-item{
-  display:flex;align-items:center;gap:11px;
-  padding:11px 13px;border-radius:12px;
-  background:var(--card);border:1px solid var(--border);
-  cursor:pointer;transition:.2s;text-align:left;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    width:100%;
+
+    padding:14px;
+
+    border-radius:14px;
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    transition:.25s;
+
+    cursor:pointer;
+
 }
-.qa-item:hover{border-color:var(--border-strong);transform:translateX(3px)}
+
+.qa-item:hover{
+
+    transform:translateX(4px);
+
+    border-color:var(--border-strong);
+
+    box-shadow:var(--shadow);
+
+}
+
 .qa-icon{
-  width:34px;height:34px;border-radius:10px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;font-size:13px;
+
+    width:38px;
+    height:38px;
+
+    border-radius:12px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    flex-shrink:0;
+
 }
-.qa-item>div:nth-child(2){flex:1;display:flex;flex-direction:column}
-.qa-item b{font-size:12.5px}
-.qa-item small{font-size:10.5px;color:var(--muted)}
-.qa-arrow{color:var(--muted-2);font-size:11px}
+
+.qa-item > div:nth-child(2){
+
+    flex:1;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.qa-item b{
+
+    font-size:13px;
+
+}
+
+.qa-item small{
+
+    margin-top:2px;
+
+    color:var(--muted);
+
+    font-size:11px;
+
+}
+
+.qa-arrow{
+
+    color:var(--muted-2);
+
+    font-size:12px;
+
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width:1200px){
+
+    .profile-panel{
+
+        position:static;
+
+    }
+
+}
