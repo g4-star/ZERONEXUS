@@ -108,13 +108,14 @@ def dashboard():
     # Projects
     # -------------------------------------------------
 
-    projects = Project.query.filter(
-        (Project.team_id == team.id)
-        |
-        (Project.visibility == "all_teams")
-    ).order_by(
-        Project.created_at.desc()
-    ).all()
+    projects = (
+        Project.query.filter(
+            (Project.team_id == team.id) |
+            (Project.visibility == "all_teams")
+        )
+        .order_by(Project.created_at.desc())
+        .all()
+    )
     
     # -------------------------------------------------
     # Meetings

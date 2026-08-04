@@ -809,7 +809,7 @@ def edit_project(project_id):
 
 
 
-        if project.visibility == "all":
+        if project.visibility == "all_teams":
 
             project.team_id = None
 

@@ -13,30 +13,22 @@
         <div>
 
             <h1 class="fw-bold text-info">
-
                 <i class="bi bi-kanban-fill me-2"></i>
-
                 Team Projects
-
             </h1>
 
-            <p class="text-secondary">
-
+            <p class="text-secondary mb-0">
                 {{ team.name }}
-
             </p>
 
         </div>
 
         {% if user.role == "team_lead" %}
 
-        <a
-            href="{{ url_for('team.create_project') }}"
-            class="btn btn-info btn-lg"
-        >
+        <a href="{{ url_for('team.create_project') }}"
+           class="btn btn-info btn-lg">
 
             <i class="bi bi-plus-circle-fill me-2"></i>
-
             New Project
 
         </a>
@@ -44,7 +36,6 @@
         {% endif %}
 
     </div>
-
 
     {% if projects %}
 
@@ -58,18 +49,28 @@
 
                 <div class="card-body">
 
-                    <div class="d-flex justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start">
 
-                        <h4>
+                        <div>
 
-                            {{ project.title }}
+                            <h4 class="mb-1">
+                                {{ project.title }}
+                            </h4>
 
-                        </h4>
+                            <small class="text-muted">
+
+                                {% if project.creator %}
+                                    Uploaded by {{ project.creator.username }}
+                                {% else %}
+                                    Uploaded by Admin
+                                {% endif %}
+
+                            </small>
+
+                        </div>
 
                         <span class="badge bg-primary">
-
                             {{ project.status }}
-
                         </span>
 
                     </div>
@@ -80,19 +81,43 @@
 
                     </p>
 
+                    <hr>
 
-                    <div class="mb-3">
+                    <div class="row">
 
-                        <strong>Priority</strong>
+                        <div class="col-6 mb-3">
 
-                        <span class="badge bg-danger">
+                            <strong>Priority</strong><br>
 
-                            {{ project.priority }}
+                            <span class="badge bg-danger">
 
-                        </span>
+                                {{ project.priority }}
+
+                            </span>
+
+                        </div>
+
+                        <div class="col-6 mb-3">
+
+                            <strong>Visibility</strong><br>
+
+                            {% if project.visibility == "all_teams" %}
+
+                                <span class="badge bg-success">
+                                    All Teams
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-info">
+                                    Team Only
+                                </span>
+
+                            {% endif %}
+
+                        </div>
 
                     </div>
-
 
                     <div class="mb-3">
 
@@ -100,10 +125,8 @@
 
                         <div class="progress mt-2">
 
-                            <div
-                                class="progress-bar"
-                                style="width: {{ project.progress }}%;"
-                            >
+                            <div class="progress-bar"
+                                 style="width: {{ project.progress }}%;">
 
                                 {{ project.progress }}%
 
@@ -113,46 +136,59 @@
 
                     </div>
 
-
                     {% if project.deadline %}
 
                     <p>
 
                         <strong>Deadline:</strong>
-
                         {{ project.deadline }}
 
                     </p>
 
                     {% endif %}
 
+                    {% if project.file_name %}
+
+                    <p class="mb-1">
+
+                        <strong>File:</strong>
+                        {{ project.file_name }}
+
+                    </p>
+
+                    {% endif %}
+
+                    {% if project.file_size %}
+
+                    <p>
+
+                        <strong>Size:</strong>
+                        {{ project.file_size }}
+
+                    </p>
+
+                    {% endif %}
 
                     <div class="d-flex flex-wrap gap-2 mt-4">
 
                         {% if project.github_url %}
 
-                        <a
-                            href="{{ project.github_url }}"
-                            target="_blank"
-                            class="btn btn-dark btn-sm"
-                        >
+                        <a href="{{ project.github_url }}"
+                           target="_blank"
+                           class="btn btn-dark btn-sm">
 
                             <i class="bi bi-github"></i>
-
                             GitHub
 
                         </a>
 
                         {% endif %}
 
-
                         {% if project.demo_url %}
 
-                        <a
-                            href="{{ project.demo_url }}"
-                            target="_blank"
-                            class="btn btn-success btn-sm"
-                        >
+                        <a href="{{ project.demo_url }}"
+                           target="_blank"
+                           class="btn btn-success btn-sm">
 
                             Live Demo
 
@@ -160,24 +196,31 @@
 
                         {% endif %}
 
+                        {% if project.project_file %}
+
+                        <a href="{{ project.project_file }}"
+                           target="_blank"
+                           class="btn btn-primary btn-sm">
+
+                            <i class="bi bi-download"></i>
+                            Download ZIP
+
+                        </a>
+
+                        {% endif %}
 
                         {% if user.role == "team_lead" %}
 
-                        <a
-                            href="{{ url_for('team.edit_project', project_id=project.id) }}"
-                            class="btn btn-warning btn-sm"
-                        >
+                        <a href="{{ url_for('team.edit_project', project_id=project.id) }}"
+                           class="btn btn-warning btn-sm">
 
                             Edit
 
                         </a>
 
-
-                        <a
-                            href="{{ url_for('team.delete_project', project_id=project.id) }}"
-                            class="btn btn-danger btn-sm"
-                            onclick="return confirm('Delete this project?');"
-                        >
+                        <a href="{{ url_for('team.delete_project', project_id=project.id) }}"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Delete this project?');">
 
                             Delete
 
@@ -201,29 +244,21 @@
 
     <div class="text-center py-5">
 
-        <i
-            class="bi bi-folder2-open text-secondary"
-            style="font-size:80px;"
-        ></i>
+        <i class="bi bi-folder2-open text-secondary"
+           style="font-size:80px;"></i>
 
         <h3 class="mt-4">
-
             No Projects Yet
-
         </h3>
 
         <p class="text-secondary">
-
             Your team hasn't created any projects.
-
         </p>
 
         {% if user.role == "team_lead" %}
 
-        <a
-            href="{{ url_for('team.create_project') }}"
-            class="btn btn-info"
-        >
+        <a href="{{ url_for('team.create_project') }}"
+           class="btn btn-info">
 
             Create First Project
 

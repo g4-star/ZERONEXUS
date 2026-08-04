@@ -177,15 +177,12 @@ class Project(db.Model):
     # =====================================================
 
     def is_global(self):
-
-        return self.visibility == "all"
+        return self.visibility == "all_teams"
 
 
     def is_team_project(self):
-
         return self.visibility == "team"
 
 
     def __repr__(self):
-
         return f"<Project {self.title}>"
