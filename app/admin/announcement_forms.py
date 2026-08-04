@@ -1,5 +1,11 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SelectField, BooleanField, SubmitField
+from wtforms import (
+    StringField,
+    TextAreaField,
+    SelectField,
+    BooleanField,
+    SubmitField
+)
 from wtforms.validators import DataRequired, Length
 
 from app.models import Team
@@ -38,7 +44,9 @@ class CreateAnnouncementForm(FlaskForm):
     team_id = SelectField(
         "Target Team",
         coerce=int,
-        validators=[DataRequired(message="Please select a team.")]
+        validators=[
+            DataRequired(message="Please select a team.")
+        ]
     )
 
     pinned = BooleanField("Pin this announcement")
@@ -47,8 +55,15 @@ class CreateAnnouncementForm(FlaskForm):
 
     def __init__(self, *args, teams=None, **kwargs):
         super().__init__(*args, **kwargs)
+
         if teams is None:
             teams = Team.query.order_by(Team.name.asc()).all()
+
         self.team_id.choices = [
-            (team.id, team.name) for team in teams
+            (-1, "🌍 All Teams")
         ]
+
+        self.team_id.choices.extend(
+            (team.id, team.name)
+            for team in teams
+        )

@@ -986,10 +986,10 @@ def create_announcement():
     form = CreateAnnouncementForm()
 
     # Add "All Teams" option
-    teams = Team.query.order_by(Team.name).all()
-    form.team_id.choices = [(-1, "🌍 All Teams")] + [
-        (team.id, team.name) for team in teams
-    ]
+    teams = Team.query.order_by(Team.name.asc()).all()
+    
+    form = CreateAnnouncementForm(teams=teams)
+    
 
     if form.validate_on_submit():
 
