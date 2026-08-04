@@ -41,31 +41,6 @@ def upload_image(file):
     return result["secure_url"]
 
 
-
-# ==========================================
-# Upload Project ZIP Files
-# ==========================================
-
-def upload_project_file(file):
-
-    configure_cloudinary()
-
-    result = cloudinary.uploader.upload(
-        file,
-        folder="zeronexus/projects",
-        resource_type="raw"
-    )
-
-    return {
-        "url": result["secure_url"],
-        "public_id": result["public_id"],
-        "filename": result.get(
-            "original_filename"
-        )
-    }
-
-
-
 # ==========================================
 # Delete Cloud File
 # ==========================================

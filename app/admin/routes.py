@@ -44,7 +44,7 @@ import os
 from werkzeug.utils import secure_filename
 
 from app.models import Project, Team
-from app.cloudinary_config import upload_project_file
+from app.services.project_upload_service import upload_project_file
 
 from flask import current_app
 import secrets
@@ -648,16 +648,15 @@ def add_project():
 
 
                 # Calculate size
+                uploaded_file.seek(0, os.SEEK_END)
+
+                size = uploaded_file.tell()
+
                 uploaded_file.seek(0)
-
-                size = uploaded_file.content_length
-
-
-                if size:
-
-                    file_size = (
-                        f"{round(size / 1024, 2)} KB"
-                    )
+                
+                file_size = f"{round(size / 1024, 2)} KB"
+                                    
+                    
 
 
 
