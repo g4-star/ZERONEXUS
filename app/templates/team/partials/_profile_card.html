@@ -5,16 +5,19 @@
         <div class="profile-hero"></div>
 
         <div class="profile-avatar">
+
             {% if current_user.is_authenticated and current_user.username %}
                 {{ current_user.username[:2]|upper }}
             {% else %}
                 ZN
             {% endif %}
+
         </div>
 
         <div class="profile-name">
 
             <h3>
+
                 {% if user is defined and user.full_name %}
                     {{ user.full_name }}
                 {% elif current_user.is_authenticated %}
@@ -22,10 +25,13 @@
                 {% else %}
                     Guest
                 {% endif %}
+
             </h3>
 
             <span class="role">
-                {{ (current_user.role|default("member")).replace("_", " ").title() }}
+
+                {{ (current_user.role|default("member")).replace("_"," ").title() }}
+
             </span>
 
         </div>
@@ -33,12 +39,17 @@
         <div class="completion">
 
             <div class="comp-top">
+
                 <span>Profile Completion</span>
+
                 <b>85%</b>
+
             </div>
 
             <div class="comp-bar">
+
                 <div class="comp-fill" style="width:85%;"></div>
+
             </div>
 
         </div>
@@ -50,14 +61,17 @@
                 <i class="fa-solid fa-users"></i>
 
                 <div>
+
                     <b>Team</b>
 
                     <span>
+
                         {% if team is defined %}
                             {{ team.name }}
                         {% else %}
                             No Team
                         {% endif %}
+
                     </span>
 
                 </div>
@@ -73,7 +87,9 @@
                     <b>Email</b>
 
                     <span>
+
                         {{ current_user.email|default("Not Available") }}
+
                     </span>
 
                 </div>
@@ -89,11 +105,13 @@
                     <b>Phone</b>
 
                     <span>
+
                         {% if user is defined and user.phone %}
                             {{ user.phone }}
                         {% else %}
                             Not Available
                         {% endif %}
+
                     </span>
 
                 </div>
@@ -102,88 +120,96 @@
 
         </div>
 
-    </div>
+        <a href="{{ url_for('team.profile') }}" class="edit-btn">
 
-    <!-- Quick Actions -->
-    <div class="quick-actions">
+            <i class="fa-solid fa-pen me-2"></i>
 
-        <!-- Edit Profile -->
-        <a href="{{ url_for('team.profile') }}" class="qa-item">
-
-            <div class="qa-icon c-blue">
-                <i class="fa-solid fa-user-pen"></i>
-            </div>
-
-            <div>
-                <b>Edit Profile</b>
-                <small>Update your personal information</small>
-            </div>
-
-            <i class="fa-solid fa-chevron-right qa-arrow"></i>
+            Edit Profile
 
         </a>
 
-        <!-- Report User -->
+    </div>
+
+    <div class="quick-actions">
+
         <div class="qa-item">
 
             <div class="qa-icon c-red">
+
                 <i class="fa-solid fa-flag"></i>
+
             </div>
 
             <div>
+
                 <b>Report User</b>
+
                 <small>Flag suspicious activity</small>
+
             </div>
 
             <i class="fa-solid fa-chevron-right qa-arrow"></i>
 
         </div>
 
-        <!-- Assign Task -->
         <div class="qa-item">
 
             <div class="qa-icon c-purple">
+
                 <i class="fa-solid fa-list-check"></i>
+
             </div>
 
             <div>
+
                 <b>Assign Task</b>
+
                 <small>Delegate work to a teammate</small>
+
             </div>
 
             <i class="fa-solid fa-chevron-right qa-arrow"></i>
 
         </div>
 
-        <!-- Create Meeting -->
         <div class="qa-item"
              data-modal="calendar"
              role="button"
              tabindex="0">
 
             <div class="qa-icon c-blue">
+
                 <i class="fa-solid fa-calendar-days"></i>
+
             </div>
 
             <div>
+
                 <b>Create Meeting</b>
+
                 <small>Schedule a meeting</small>
+
             </div>
 
             <i class="fa-solid fa-chevron-right qa-arrow"></i>
 
         </div>
 
-        <!-- New Announcement -->
-        <a href="{{ url_for('team.create_announcement') }}" class="qa-item">
+        <a href="{{ url_for('team.create_announcement') }}"
+           class="qa-item">
 
             <div class="qa-icon c-green">
+
                 <i class="fa-solid fa-bullhorn"></i>
+
             </div>
 
             <div>
+
                 <b>New Announcement</b>
+
                 <small>Notify the entire team</small>
+
             </div>
 
             <i class="fa-solid fa-chevron-right qa-arrow"></i>
