@@ -669,20 +669,17 @@ def add_project():
                 team_id = None
 
 
-            else:
+            elif visibility == "team" and not team_id:
+               
+                flash(
+                    "Please select a team.",
+                    "danger"
+                )
 
-                if not team_id:
-
-                    flash(
-                        "Please select a team.",
-                        "danger"
-                    )
-
-                    return redirect(
-                        url_for(
-                            "admin.add_project"
-                        )
-                    )
+                return redirect(
+                    url_for("admin.add_project")
+                )
+                    
 
 
 
