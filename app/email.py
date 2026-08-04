@@ -141,7 +141,15 @@ def send_member_welcome(member):
     </html>
     """
 
-    mail.send(msg)
+    try:
+        mail.send(msg)
+        print("✅ Email sent successfully")
+    except Exception as e:
+        import traceback
+        print("========== SMTP ERROR ==========")
+        traceback.print_exc()
+        print("================================")
+        raise
     
 def send_member_invitation(user, password):
     
