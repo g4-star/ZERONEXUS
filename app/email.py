@@ -190,9 +190,11 @@ def send_member_welcome(member):
     
 def send_member_invitation(user, password):
     """
-    Sends a ZeroNexus invitation email containing the
-    activation link and temporary password.
+    Sends a ZeroNexus invitation email using Brevo API.
+    Contains activation link and temporary password.
     """
+
+    from app.brevo import send_email
 
     site_url = current_app.config.get(
         "SITE_URL",
@@ -203,113 +205,130 @@ def send_member_invitation(user, password):
         f"{site_url}/auth/activate/{user.activation_token}"
     )
 
-    msg = Message(
-        subject="🎉 Welcome to ZeroNexus Team",
-        recipients=[user.email]
-    )
-
-    msg.html = f"""
+    html_content = f"""
     <!DOCTYPE html>
 
     <html>
 
     <body style="
-        font-family: Arial, sans-serif;
+        font-family:Arial,sans-serif;
         background:#f4f6f9;
         padding:30px;
     ">
 
-        <div style="
-            max-width:650px;
-            margin:auto;
-            background:white;
-            padding:35px;
-            border-radius:12px;
-            box-shadow:0 5px 20px rgba(0,0,0,.15);
-        ">
+    <div style="
+        max-width:650px;
+        margin:auto;
+        background:white;
+        padding:35px;
+        border-radius:12px;
+        box-shadow:0 5px 20px rgba(0,0,0,.15);
+    ">
 
-            <h1 style="color:#0d6efd;">
-                Welcome to ZeroNexus 🎉
-            </h1>
+        <h1 style="color:#0d6efd;">
+            Welcome to ZeroNexus 🎉
+        </h1>
 
-            <p>
-                You have been invited to join a ZeroNexus team.
-            </p>
 
-            <h3>Your Account Details</h3>
+        <p>
+            You have been invited to join a ZeroNexus team.
+        </p>
 
-            <p>
-                <strong>Username:</strong>
-                {user.username}
-            </p>
 
-            <p>
-                <strong>Temporary Password:</strong>
-                {password}
-            </p>
+        <h3>
+            Your Account Details
+        </h3>
 
-            <p>
-                For security reasons, you must activate your account
-                and change your password before accessing your dashboard.
-            </p>
 
-            <p style="text-align:center; margin:35px 0;">
+        <p>
+            <strong>Username:</strong>
+            {user.username}
+        </p>
 
-                <a href="{activation_link}"
-                   style="
-                        display:inline-block;
-                        background:#0dcaf0;
-                        color:#000;
-                        padding:14px 28px;
-                        text-decoration:none;
-                        border-radius:6px;
-                        font-weight:bold;
-                   ">
-                    Activate My Account
-                </a>
 
-            </p>
+        <p>
+            <strong>Temporary Password:</strong>
+            {password}
+        </p>
 
-            <p>
-                After activation you will be redirected to your
-                assigned ZeroNexus dashboard.
-            </p>
 
-            <hr>
+        <p>
+            For security reasons, activate your account
+            and change your password before accessing
+            your dashboard.
+        </p>
 
-            <p>
-                <strong>ZeroNexus Administration</strong>
-            </p>
+
+        <div style="text-align:center;margin:35px 0;">
+
+            <a href="{activation_link}"
+            style="
+                display:inline-block;
+                background:#0dcaf0;
+                color:#000;
+                padding:14px 28px;
+                text-decoration:none;
+                border-radius:6px;
+                font-weight:bold;
+            ">
+
+                Activate My Account
+
+            </a>
 
         </div>
+
+
+        <p>
+            After activation you will be redirected to
+            your assigned ZeroNexus dashboard.
+        </p>
+
+
+        <hr>
+
+
+        <p>
+            <strong>
+                ZeroNexus Administration
+            </strong>
+        </p>
+
+
+    </div>
+
 
     </body>
 
     </html>
     """
 
+
     try:
+
         print("=" * 60)
-        print("Attempting to send invitation email...")
-        print("SERVER :", current_app.config.get("MAIL_SERVER"))
-        print("PORT   :", current_app.config.get("MAIL_PORT"))
-        print("TLS    :", current_app.config.get("MAIL_USE_TLS"))
-        print("SSL    :", current_app.config.get("MAIL_USE_SSL"))
-        print("USER   :", current_app.config.get("MAIL_USERNAME"))
-        print("SENDER :", current_app.config.get("MAIL_DEFAULT_SENDER"))
+        print("Sending invitation through Brevo API")
+        print("RECIPIENT:", user.email)
         print("=" * 60)
 
-        with mail.connect() as conn:
-            conn.send(msg)
+
+        send_email(
+            to_email=user.email,
+            subject="🎉 Welcome to ZeroNexus Team",
+            html_content=html_content
+        )
+
 
         print("✅ Invitation email sent successfully!")
 
+
     except Exception as e:
+
         import traceback
 
         print("=" * 60)
-        print("❌ INVITATION EMAIL ERROR")
-        print("TYPE :", type(e).__name__)
+        print("❌ BREVO INVITATION ERROR")
+        print("TYPE:", type(e).__name__)
         print("ERROR:", str(e))
         traceback.print_exc()
         print("=" * 60)
