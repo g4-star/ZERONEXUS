@@ -298,3 +298,61 @@ a{
     }
 
 }
+.calendar-grid{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:8px;
+    margin:20px 0;
+}
+
+.cal-dow{
+    text-align:center;
+    font-size:11px;
+    color:var(--muted);
+    font-weight:700;
+    padding:6px 0;
+}
+
+.cal-day{
+    aspect-ratio:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border-radius:10px;
+    background:rgba(255,255,255,.03);
+    cursor:pointer;
+    transition:.25s;
+    font-weight:600;
+}
+
+.cal-day:hover{
+    background:rgba(139,92,246,.15);
+}
+
+.cal-day.other{
+    opacity:.3;
+}
+
+.cal-day.today{
+    background:var(--purple);
+    color:#fff;
+}
+
+.cal-day.selected{
+    border:2px solid var(--blue);
+}
+
+.cal-day.has-event::after{
+    content:"";
+    width:6px;
+    height:6px;
+    background:#22c55e;
+    border-radius:50%;
+    position:absolute;
+    margin-top:24px;
+}
+
+.cal-label{
+    font-size:16px;
+    font-weight:700;
+}

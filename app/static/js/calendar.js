@@ -1,77 +1,254 @@
 /* ============================================================
- * ZeroNexus — Calendar popup (floating)
- * Month grid + upcoming meetings. Meetings come from the
- * already-rendered .cal-event list (no extra fetch).
+ * ZeroNexus Calendar
+ * Professional Calendar Widget
  * ============================================================ */
+
 (function () {
-  'use strict';
 
-  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const DOW = ['S','M','T','W','T','F','S'];
-  const FALLBACK_EVENTS = { 3: 'Team Sync Meeting', 7: 'Project Alpha Review', 12: 'CyberSec Workshop' };
-  let calDate = new Date();
-  let selectedDay = new Date().getDate();
+    "use strict";
 
-  function buildEvents(slot) {
-    const ev = {};
-    slot.querySelectorAll('.cal-event').forEach(el => {
-      const dayEl = el.querySelector('.ev-date b');
-      const titleEl = el.querySelector('.ev-main b');
-      if (dayEl && titleEl) {
-        const day = parseInt(dayEl.textContent.trim(), 10);
-        if (!isNaN(day)) ev[day] = titleEl.textContent.trim();
-      }
-    });
-    return Object.keys(ev).length ? ev : FALLBACK_EVENTS;
-  }
-
-  function renderCalendar(backdrop) {
-    const grid = backdrop.querySelector('#calGrid');
-    const label = backdrop.querySelector('#calLabel');
-    if (!grid || !label) return;
-
-    const y = calDate.getFullYear(), m = calDate.getMonth();
-    label.textContent = MONTHS[m] + ' ' + y;
-
-    const firstDay = new Date(y, m, 1).getDay();
-    const daysInMonth = new Date(y, m + 1, 0).getDate();
-    const prevDays = new Date(y, m, 0).getDate();
-    const today = new Date();
-    const isCurrentMonth = today.getFullYear() === y && today.getMonth() === m;
-    const events = buildEvents(backdrop);
-
-    let html = DOW.map(d => '<div class="cal-dow">' + d + '</div>').join('');
-    for (let i = firstDay - 1; i >= 0; i--) html += '<div class="cal-day other">' + (prevDays - i) + '</div>';
-    for (let d = 1; d <= daysInMonth; d++) {
-      const cls = ['cal-day'];
-      if (isCurrentMonth && d === today.getDate()) cls.push('today');
-      if (d === selectedDay) cls.push('selected');
-      if (events[d]) cls.push('has-event');
-      html += '<div class="' + cls.join(' ') + '" data-day="' + d + '">' + d + '</div>';
+    if (!window.ZeroNexus) {
+        console.warn("ZeroNexus popup system not loaded.");
+        return;
     }
-    grid.innerHTML = html;
 
-    grid.querySelectorAll('.cal-day:not(.other)').forEach(day => {
-      day.addEventListener('click', () => {
-        selectedDay = parseInt(day.dataset.day, 10);
-        renderCalendar(backdrop);
-      });
-    });
-  }
+    const MONTHS = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+    ];
 
-  window.ZN.registerModal('calendar', {
-    onOpen(backdrop) {
-      renderCalendar(backdrop);
-      const prev = backdrop.querySelector('#calPrev');
-      const next = backdrop.querySelector('#calNext');
-      if (prev && !prev.dataset.bound) {
-        prev.dataset.bound = '1';
-        prev.addEventListener('click', () => { calDate.setMonth(calDate.getMonth() - 1); renderCalendar(backdrop); });
-      }
-      if (next && !next.dataset.bound) {
-        next.dataset.bound = '1';
-        next.addEventListener('click', () => { calDate.setMonth(calDate.getMonth() + 1); renderCalendar(backdrop); });
-      }
+    const WEEKDAYS = [
+        "Sun",
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat"
+    ];
+
+    const FALLBACK_EVENTS = {
+        3: "Team Sync Meeting",
+        7: "Project Review",
+        12: "Cybersecurity Workshop",
+        18: "Sprint Planning",
+        25: "Deployment"
+    };
+
+    let currentDate = new Date();
+
+    let selectedDay = new Date().getDate();
+
+    function getEvents(backdrop) {
+
+        const events = {};
+
+        backdrop.querySelectorAll(".cal-event").forEach(event => {
+
+            const day = event.querySelector(".ev-date b");
+            const title = event.querySelector(".ev-main b");
+
+            if (!day || !title) {
+                return;
+            }
+
+            const number = parseInt(day.textContent.trim(), 10);
+
+            if (!isNaN(number)) {
+                events[number] = title.textContent.trim();
+            }
+
+        });
+
+        return Object.keys(events).length
+            ? events
+            : FALLBACK_EVENTS;
+
     }
-  });
+
+    function render(backdrop) {
+
+        const grid = backdrop.querySelector("#calGrid");
+        const label = backdrop.querySelector("#calLabel");
+
+        if (!grid || !label) {
+            return;
+        }
+
+        const year = currentDate.getFullYear();
+
+        const month = currentDate.getMonth();
+
+        label.textContent = MONTHS[month] + " " + year;
+
+        const firstDay = new Date(year, month, 1).getDay();
+
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        const previousMonthDays = new Date(year, month, 0).getDate();
+
+        const today = new Date();
+
+        const events = getEvents(backdrop);
+
+        let html = "";
+
+        WEEKDAYS.forEach(day => {
+
+            html += `
+                <div class="cal-dow">
+                    ${day}
+                </div>
+            `;
+
+        });
+
+        for (let i = firstDay - 1; i >= 0; i--) {
+
+            html += `
+                <div class="cal-day other">
+                    ${previousMonthDays - i}
+                </div>
+            `;
+
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+
+            let classes = ["cal-day"];
+
+            if (
+                today.getFullYear() === year &&
+                today.getMonth() === month &&
+                today.getDate() === day
+            ) {
+                classes.push("today");
+            }
+
+            if (day === selectedDay) {
+                classes.push("selected");
+            }
+
+            if (events[day]) {
+                classes.push("has-event");
+            }
+
+            html += `
+                <div
+                    class="${classes.join(" ")}"
+                    data-day="${day}"
+                    title="${events[day] || ""}">
+                    ${day}
+                </div>
+            `;
+
+        }
+
+        grid.innerHTML = html;
+
+        grid.querySelectorAll(".cal-day:not(.other)").forEach(cell => {
+
+            cell.addEventListener("click", function () {
+
+                selectedDay = Number(this.dataset.day);
+
+                render(backdrop);
+
+                const info = backdrop.querySelector("#selectedEvent");
+
+                if (!info) {
+                    return;
+                }
+
+                if (events[selectedDay]) {
+
+                    info.innerHTML = `
+                        <strong>${MONTHS[month]} ${selectedDay}</strong><br>
+                        ${events[selectedDay]}
+                    `;
+
+                } else {
+
+                    info.innerHTML = `
+                        <strong>${MONTHS[month]} ${selectedDay}</strong><br>
+                        No events scheduled.
+                    `;
+
+                }
+
+            });
+
+        });
+
+    }
+
+    function bindNavigation(backdrop) {
+
+        const prev = backdrop.querySelector("#calPrev");
+
+        const next = backdrop.querySelector("#calNext");
+
+        if (prev && !prev.dataset.bound) {
+
+            prev.dataset.bound = "true";
+
+            prev.addEventListener("click", function () {
+
+                currentDate.setMonth(currentDate.getMonth() - 1);
+
+                render(backdrop);
+
+            });
+
+        }
+
+        if (next && !next.dataset.bound) {
+
+            next.dataset.bound = "true";
+
+            next.addEventListener("click", function () {
+
+                currentDate.setMonth(currentDate.getMonth() + 1);
+
+                render(backdrop);
+
+            });
+
+        }
+
+    }
+
+    window.ZeroNexus.registerModal("calendar", {
+
+        onOpen(backdrop) {
+
+            bindNavigation(backdrop);
+
+            render(backdrop);
+
+            const info = backdrop.querySelector("#selectedEvent");
+
+            if (info) {
+
+                info.innerHTML = `
+                    <strong>Today</strong><br>
+                    Select a date to view events.
+                `;
+
+            }
+
+        }
+
+    });
+
 })();

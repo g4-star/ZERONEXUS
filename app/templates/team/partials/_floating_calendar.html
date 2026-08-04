@@ -2,29 +2,39 @@
 
     <div class="cal-nav">
 
-        <button type="button"
-                class="icon-btn"
-                id="calPrev">
+        <button
+            type="button"
+            class="icon-btn"
+            id="calPrev">
 
             <i class="fa-solid fa-chevron-left"></i>
 
         </button>
 
-        <span class="cal-label">
-
-            Calendar
-
+        <span
+            id="calLabel"
+            class="cal-label">
+            Loading...
         </span>
 
-        <button type="button"
-                class="icon-btn"
-                id="calNext">
+        <button
+            type="button"
+            class="icon-btn"
+            id="calNext">
 
             <i class="fa-solid fa-chevron-right"></i>
 
         </button>
 
     </div>
+
+    <!-- Calendar Grid -->
+    <div
+        id="calGrid"
+        class="calendar-grid">
+    </div>
+
+    <hr class="my-3">
 
     <div class="cal-events">
 
@@ -93,6 +103,17 @@
             </div>
 
         {% endif %}
+
+    </div>
+
+</div>
+<div class="calendar-selected">
+
+    <h4>Selected Day</h4>
+
+    <div id="selectedEvent" class="text-muted">
+
+        Select a date...
 
     </div>
 
