@@ -207,7 +207,7 @@ def activate_account(token):
         # Redirect according to role
         # -----------------------------------------
 
-        if user.role == "admin":
+        if user.role == "super_admin":
 
             return redirect(
                 url_for("admin.dashboard")
