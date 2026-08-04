@@ -39,6 +39,7 @@ from flask import (
 from app.auth.decorators import (
     super_admin_required
 )
+from flask import current_app
 import secrets
 import string
 
@@ -310,11 +311,25 @@ def add_member():
     if form.validate_on_submit():
 
         try:
+            # =====================================
+            # Prevent duplicate email addresses
+            # =====================================
+            existing_user = User.query.filter_by(
+                email=form.email.data
+            ).first()
 
-            # ==============================
+            if existing_user:
+                flash(
+                    "A user with this email already exists.",
+                    "warning"
+                )
+                return redirect(
+                    url_for("admin.add_member")
+                )
+
+            # =====================================
             # Create Public Member Profile
-            # ==============================
-
+            # =====================================
             member = MemberProfile(
                 full_name=form.full_name.data,
                 role=form.role.data,
@@ -330,10 +345,9 @@ def add_member():
 
             db.session.add(member)
 
-            # ==============================
+            # =====================================
             # Create Login Account
-            # ==============================
-
+            # =====================================
             username = generate_username(
                 form.full_name.data
             )
@@ -365,16 +379,14 @@ def add_member():
 
             print("BEFORE COMMIT:", user.activation_token)
 
-            # ==============================
+            # =====================================
             # Link Profile to User
-            # ==============================
-
+            # =====================================
             member.user = user
 
-            # ==============================
+            # =====================================
             # Assign Team Lead
-            # ==============================
-
+            # =====================================
             if user.role == "team_lead":
 
                 team = Team.query.get(user.team_id)
@@ -382,20 +394,17 @@ def add_member():
                 if team:
                     team.team_admin = user
 
-            # ==============================
+            # =====================================
             # Save Records
-            # ==============================
-
+            # =====================================
             db.session.commit()
 
             print("AFTER COMMIT:", user.activation_token)
 
-            # ==============================
+            # =====================================
             # Send Invitation Email
-            # ==============================
-
+            # =====================================
             try:
-
                 send_member_invitation(
                     user,
                     temporary_password
@@ -406,12 +415,16 @@ def add_member():
                     "success"
                 )
 
-            except Exception as e:
+            except Exception as email_error:
 
-                print(f"Invitation Email Error: {e}")
+                current_app.logger.exception(
+                    "Invitation email failed"
+                )
+
+                print(email_error)
 
                 flash(
-                    "Account created but invitation email failed.",
+                    "Member account was created successfully, but the invitation email could not be sent. The user can be activated later once the email service is working.",
                     "warning"
                 )
 
@@ -423,10 +436,9 @@ def add_member():
 
             db.session.rollback()
 
-            print(f"Member Creation Error: {e}")
-
-            import traceback
-            traceback.print_exc()
+            current_app.logger.exception(
+                "Member creation failed"
+            )
 
             flash(
                 f"Error creating member: {e}",
