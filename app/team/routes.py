@@ -43,28 +43,53 @@ from app.models import (
 )
 
 from app.forms.meeting import MeetingForm
+from flask import redirect
+from sqlalchemy import or_
+from app.models import MeetingParticipant, MeetingTeam
 
 
 def require_active_team():
-
+    
+    # ---------------------------------------
     # Team Lead / Member
-    if current_user.role != "super_admin":
+    # ---------------------------------------
+
+    if not current_user.is_super_admin:
 
         if current_user.team is None:
             abort(404)
 
         return current_user.team
 
+    # ---------------------------------------
     # Super Admin
+    # ---------------------------------------
+
     team_id = session.get("active_team_id")
 
-    if not team_id:
-        abort(404)
+    # No active team? Use the first available team.
+    if team_id is None:
+
+        team = Team.query.order_by(Team.name.asc()).first()
+
+        if team is None:
+            abort(404)
+
+        session["active_team_id"] = team.id
+
+        return team
 
     team = Team.query.get(team_id)
 
+    # Stored team deleted? Pick another one.
     if team is None:
-        abort(404)
+
+        team = Team.query.order_by(Team.name.asc()).first()
+
+        if team is None:
+            abort(404)
+
+        session["active_team_id"] = team.id
 
     return team
 
@@ -493,15 +518,44 @@ def meetings():
 
     team = require_active_team()
 
-    meetings = (
-        Meeting.query
-        .filter_by(team_id=team.id)
-        .order_by(
-            Meeting.meeting_date.asc(),
-            Meeting.meeting_time.asc()
+    if current_user.role == "super_admin":
+
+        meetings = (
+            Meeting.query
+            .order_by(
+                Meeting.meeting_date.asc(),
+                Meeting.meeting_time.asc()
+            )
+            .all()
         )
-        .all()
-    )
+
+    else:
+
+        shared_ids = db.session.query(
+            MeetingTeam.meeting_id
+        ).filter(
+            MeetingTeam.team_id == team.id
+        )
+
+        meetings = (
+            Meeting.query
+            .filter(
+                or_(
+
+                    Meeting.meeting_scope == "global",
+
+                    Meeting.team_id == team.id,
+
+                    Meeting.id.in_(shared_ids)
+
+                )
+            )
+            .order_by(
+                Meeting.meeting_date.asc(),
+                Meeting.meeting_time.asc()
+            )
+            .all()
+        )
 
     return render_template(
         "team/meetings.html",
@@ -509,7 +563,6 @@ def meetings():
         team=team,
         meetings=meetings
     )
-
 
 @team_bp.route(
     "/meetings/create",
@@ -520,17 +573,82 @@ def meetings():
 @limiter.limit("5 per minute")
 def create_meeting():
 
-    team = require_active_team()
+    active_team = require_active_team()
 
     form = MeetingForm()
+
+    # =====================================================
+    # LOAD TEAM CHOICES
+    # =====================================================
+
+    teams = Team.query.order_by(Team.name.asc()).all()
+
+    # 0 = All Teams (used only for Global meetings)
+    form.team_id.choices = [
+        (0, "🌍 All Teams")
+    ] + [
+        (team.id, team.name)
+        for team in teams
+    ]
+
+    form.shared_team_ids.choices = [
+        (team.id, team.name)
+        for team in teams
+    ]
+
+    # =====================================================
+    # TEAM LEADS CAN ONLY CREATE TEAM MEETINGS
+    # =====================================================
+
+    if current_user.is_team_lead:
+
+        form.meeting_scope.data = "team"
+        form.team_id.data = active_team.id
+
+    # =====================================================
+    # CREATE
+    # =====================================================
 
     if form.validate_on_submit():
 
         try:
 
-            # =====================================
-            # Create Meeting
-            # =====================================
+            scope = form.meeting_scope.data
+
+            # ------------------------------------------
+            # TEAM LEAD
+            # ------------------------------------------
+
+            if current_user.is_team_lead:
+
+                scope = "team"
+                host_team = active_team.id
+
+            # ------------------------------------------
+            # SUPER ADMIN
+            # ------------------------------------------
+
+            else:
+
+                if scope == "team":
+
+                    host_team = (
+                        None
+                        if form.team_id.data == 0
+                        else form.team_id.data
+                    )
+
+                elif scope == "shared":
+
+                    host_team = None
+
+                else:
+
+                    host_team = None
+
+            # =====================================================
+            # CREATE MEETING
+            # =====================================================
 
             meeting = Meeting(
 
@@ -546,54 +664,112 @@ def create_meeting():
 
                 meet_link=form.meet_link.data,
 
-                status="Scheduled",
+                status=form.status.data,
 
-                team_id=team.id,
+                meeting_scope=scope,
+
+                team_id=host_team,
 
                 created_by=current_user.id
 
             )
 
             db.session.add(meeting)
-
-            # Flush so meeting gets an ID before notifications
             db.session.flush()
 
-            # =====================================
-            # Notify Team Members
-            # =====================================
+            # =====================================================
+            # SHARED TEAMS
+            # =====================================================
 
-            members = User.query.filter_by(
-                team_id=team.id
-            ).all()
+            shared_ids = set()
 
-            for member in members:
+            if scope == "shared":
 
-                notification = Notification(
+                shared_ids = set(form.shared_team_ids.data)
 
-                    user_id=member.id,
+                for team_id in shared_ids:
 
-                    title="📅 New Team Meeting",
+                    db.session.add(
 
-                    message=(
-                        f"{current_user.full_name} has scheduled "
-                        f"'{meeting.title}' on "
-                        f"{meeting.meeting_date.strftime('%d %b %Y')} "
-                        f"at "
-                        f"{meeting.meeting_time.strftime('%I:%M %p')}."
-                    ),
+                        MeetingTeam(
+                            meeting_id=meeting.id,
+                            team_id=team_id
+                        )
 
-                    type="meeting",
+                    )
 
-                    link=url_for("team.meetings")
+            # =====================================================
+            # RECIPIENTS
+            # =====================================================
+
+            recipients = {}
+
+            if scope == "team":
+
+                members = User.query.filter_by(
+                    team_id=host_team
+                ).all()
+
+                for member in members:
+                    recipients[member.id] = member
+
+            elif scope == "shared":
+
+                for team_id in shared_ids:
+
+                    members = User.query.filter_by(
+                        team_id=team_id
+                    ).all()
+
+                    for member in members:
+                        recipients[member.id] = member
+
+            else:
+                # GLOBAL
+
+                members = User.query.all()
+
+                for member in members:
+                    recipients[member.id] = member
+
+            # =====================================================
+            # PARTICIPANTS + NOTIFICATIONS
+            # =====================================================
+
+            for member in recipients.values():
+
+                db.session.add(
+
+                    MeetingParticipant(
+                        meeting_id=meeting.id,
+                        user_id=member.id
+                    )
 
                 )
 
-                db.session.add(notification)
+                db.session.add(
 
-            # =====================================
-            # Save Everything
-            # =====================================
+                    Notification(
+
+                        user_id=member.id,
+
+                        title="📅 New Meeting",
+
+                        message=(
+                            f"{current_user.display_name} scheduled "
+                            f"'{meeting.title}' on "
+                            f"{meeting.meeting_date.strftime('%d %b %Y')} "
+                            f"at "
+                            f"{meeting.meeting_time.strftime('%I:%M %p')}."
+                        ),
+
+                        type="meeting",
+
+                        link=url_for("team.meetings")
+
+                    )
+
+                )
 
             db.session.commit()
 
@@ -613,16 +789,15 @@ def create_meeting():
             current_app.logger.exception(e)
 
             flash(
-                "An error occurred while creating the meeting.",
+                "Failed to create meeting.",
                 "danger"
             )
 
     return render_template(
         "team/create_meeting.html",
         form=form,
-        team=team
+        team=active_team
     )
-
 
 @team_bp.route(
     "/meetings/<int:meeting_id>/edit",
@@ -634,34 +809,147 @@ def edit_meeting(meeting_id):
 
     team = require_active_team()
 
-    meeting = Meeting.query.filter_by(
-        id=meeting_id,
-        team_id=team.id
-    ).first_or_404()
+    # ----------------------------------------
+    # Load Meeting
+    # ----------------------------------------
+
+    if current_user.role == "super_admin":
+
+        meeting = Meeting.query.get_or_404(meeting_id)
+
+    else:
+
+        meeting = Meeting.query.filter_by(
+            id=meeting_id,
+            team_id=team.id,
+            meeting_scope="team"
+        ).first_or_404()
 
     form = MeetingForm(obj=meeting)
 
+    # ----------------------------------------
+    # Load Teams
+    # ----------------------------------------
+
+    teams = Team.query.order_by(Team.name.asc()).all()
+
+    form.team_id.choices = [
+        (t.id, t.name)
+        for t in teams
+    ]
+
+    form.shared_team_ids.choices = [
+        (t.id, t.name)
+        for t in teams
+    ]
+
+    # ----------------------------------------
+    # Team Lead Restrictions
+    # ----------------------------------------
+
+    if current_user.role == "team_lead":
+
+        form.meeting_scope.data = "team"
+        form.team_id.data = team.id
+
+    # ----------------------------------------
+    # Load Existing Shared Teams
+    # ----------------------------------------
+
+    if request.method == "GET":
+
+        if meeting.team_id:
+
+            form.team_id.data = meeting.team_id
+
+        if meeting.meeting_scope == "shared":
+
+            form.shared_team_ids.data = [
+                item.team_id
+                for item in meeting.shared_teams
+            ]
+
+    # ----------------------------------------
+    # Save Changes
+    # ----------------------------------------
+
     if form.validate_on_submit():
 
-        form.populate_obj(meeting)
+        try:
 
-        db.session.commit()
+            meeting.title = form.title.data
+            meeting.description = form.description.data
+            meeting.meeting_date = form.meeting_date.data
+            meeting.meeting_time = form.meeting_time.data
+            meeting.duration = form.duration.data
+            meeting.meet_link = form.meet_link.data
+            meeting.status = form.status.data
 
-        flash(
-            "Meeting updated.",
-            "success"
-        )
+            if current_user.role == "super_admin":
 
-        return redirect(
-            url_for("team.meetings")
-        )
+                meeting.meeting_scope = form.meeting_scope.data
+
+                if meeting.meeting_scope == "global":
+
+                    meeting.team_id = None
+
+                elif meeting.meeting_scope == "team":
+
+                    meeting.team_id = form.team_id.data
+
+                else:
+
+                    meeting.team_id = None
+
+                # Remove old shared teams
+
+                MeetingTeam.query.filter_by(
+                    meeting_id=meeting.id
+                ).delete()
+
+                # Add new shared teams
+
+                if meeting.meeting_scope == "shared":
+
+                    for team_id in form.shared_team_ids.data:
+
+                        db.session.add(
+
+                            MeetingTeam(
+                                meeting_id=meeting.id,
+                                team_id=team_id
+                            )
+
+                        )
+
+            db.session.commit()
+
+            flash(
+                "Meeting updated successfully.",
+                "success"
+            )
+
+            return redirect(
+                url_for("team.meetings")
+            )
+
+        except Exception as e:
+
+            db.session.rollback()
+
+            current_app.logger.exception(e)
+
+            flash(
+                "Unable to update meeting.",
+                "danger"
+            )
 
     return render_template(
         "team/edit_meeting.html",
         form=form,
-        meeting=meeting
+        meeting=meeting,
+        team=team
     )
-
 
 @team_bp.route(
     "/meetings/<int:meeting_id>/delete",
@@ -673,23 +961,110 @@ def delete_meeting(meeting_id):
 
     team = require_active_team()
 
-    meeting = Meeting.query.filter_by(
-        id=meeting_id,
-        team_id=team.id
-    ).first_or_404()
+    if current_user.role == "super_admin":
+
+        meeting = Meeting.query.get_or_404(meeting_id)
+
+    else:
+
+        meeting = Meeting.query.filter_by(
+            id=meeting_id,
+            team_id=team.id,
+            meeting_scope="team"
+        ).first_or_404()
 
     db.session.delete(meeting)
 
     db.session.commit()
 
     flash(
-        "Meeting deleted.",
+        "Meeting deleted successfully.",
         "success"
     )
 
     return redirect(
         url_for("team.meetings")
     )
+    
+# =====================================================
+# JOIN MEETING
+# =====================================================
+
+@team_bp.route("/meetings/<int:meeting_id>/join")
+@login_required
+@member_required
+def join_meeting(meeting_id):
+
+    team = require_active_team()
+
+    meeting = Meeting.query.get_or_404(meeting_id)
+
+    # ---------------------------------------
+    # Permission Check
+    # ---------------------------------------
+
+    allowed = False
+
+    if current_user.role == "super_admin":
+
+        allowed = True
+
+    elif meeting.meeting_scope == "global":
+
+        allowed = True
+
+    elif meeting.meeting_scope == "team":
+
+        allowed = (
+            meeting.team_id == team.id
+        )
+
+    elif meeting.meeting_scope == "shared":
+
+        allowed = MeetingTeam.query.filter_by(
+            meeting_id=meeting.id,
+            team_id=team.id
+        ).first() is not None
+
+    if not allowed:
+
+        flash(
+            "You are not allowed to join this meeting.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("team.meetings")
+        )
+
+    # ---------------------------------------
+    # Record Attendance
+    # ---------------------------------------
+
+    participant = MeetingParticipant.query.filter_by(
+        meeting_id=meeting.id,
+        user_id=current_user.id
+    ).first()
+
+    if participant is None:
+
+        participant = MeetingParticipant(
+            meeting_id=meeting.id,
+            user_id=current_user.id
+        )
+
+        db.session.add(participant)
+
+        db.session.commit()
+
+    # ---------------------------------------
+    # Redirect to Meeting
+    # ---------------------------------------
+
+    return redirect(
+        meeting.meet_link
+    )
+
 
 
 # =====================================================

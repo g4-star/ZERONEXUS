@@ -1,17 +1,19 @@
 from datetime import datetime
 
 from flask_login import UserMixin
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import (
+    generate_password_hash,
+    check_password_hash
+)
 
 from app.extensions import db, login_manager
 
 
 class User(UserMixin, db.Model):
-    
     __tablename__ = "users"
 
     # =====================================================
-    # Primary Key
+    # PRIMARY KEY
     # =====================================================
 
     id = db.Column(
@@ -20,7 +22,7 @@ class User(UserMixin, db.Model):
     )
 
     # =====================================================
-    # Login Information
+    # LOGIN
     # =====================================================
 
     username = db.Column(
@@ -41,7 +43,7 @@ class User(UserMixin, db.Model):
     )
 
     # =====================================================
-    # User Roles
+    # ROLE
     # =====================================================
 
     role = db.Column(
@@ -51,7 +53,7 @@ class User(UserMixin, db.Model):
     )
 
     # =====================================================
-    # Team Assignment
+    # TEAM
     # =====================================================
 
     team_id = db.Column(
@@ -61,7 +63,7 @@ class User(UserMixin, db.Model):
     )
 
     # =====================================================
-    # Account Status
+    # ACCOUNT
     # =====================================================
 
     must_change_password = db.Column(
@@ -86,113 +88,95 @@ class User(UserMixin, db.Model):
     )
 
     # =====================================================
-    # Profile Information
+    # PROFILE
     # =====================================================
 
     profile_image = db.Column(
-        db.String(255),
-        nullable=True
+        db.String(255)
     )
 
     full_name = db.Column(
-        db.String(120),
-        nullable=True
+        db.String(120)
     )
 
     bio = db.Column(
-        db.Text,
-        nullable=True
+        db.Text
     )
 
     phone = db.Column(
-        db.String(30),
-        nullable=True
+        db.String(30)
     )
 
     whatsapp = db.Column(
-        db.String(30),
-        nullable=True
+        db.String(30)
     )
 
     location = db.Column(
-        db.String(120),
-        nullable=True
+        db.String(120)
     )
 
     # =====================================================
-    # Professional Information
+    # PROFESSIONAL
     # =====================================================
 
     job_title = db.Column(
-        db.String(120),
-        nullable=True
+        db.String(120)
     )
 
     company = db.Column(
-        db.String(120),
-        nullable=True
+        db.String(120)
     )
 
     experience_level = db.Column(
-        db.String(80),
-        nullable=True
+        db.String(80)
     )
 
     favorite_language = db.Column(
-        db.String(80),
-        nullable=True
+        db.String(80)
     )
 
     skills = db.Column(
-        db.Text,
-        nullable=True
+        db.Text
     )
 
     # =====================================================
-    # Social Links
+    # SOCIAL
     # =====================================================
 
     portfolio = db.Column(
-        db.String(255),
-        nullable=True
+        db.String(255)
     )
 
     github = db.Column(
-        db.String(255),
-        nullable=True
+        db.String(255)
     )
 
     linkedin = db.Column(
-        db.String(255),
-        nullable=True
+        db.String(255)
     )
 
     twitter = db.Column(
-        db.String(255),
-        nullable=True
+        db.String(255)
     )
 
     # =====================================================
-    # Cybersecurity Profiles
+    # CYBERSECURITY
     # =====================================================
 
     tryhackme = db.Column(
-        db.String(255),
-        nullable=True
+        db.String(255)
     )
 
     hackthebox = db.Column(
-        db.String(255),
-        nullable=True
+        db.String(255)
     )
 
     ctftime = db.Column(
-        db.String(255),
-        nullable=True
+        db.String(255)
     )
 
     # =====================================================
-    # Relationships
+    # RELATIONSHIPS
     # =====================================================
 
     team = db.relationship(
@@ -220,9 +204,18 @@ class User(UserMixin, db.Model):
         lazy=True
     )
 
-    # =====================================================
-    # Team Chat
-    # =====================================================
+    meetings_created = db.relationship(
+        "Meeting",
+        back_populates="creator",
+        lazy=True
+    )
+
+    notifications = db.relationship(
+        "Notification",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy=True
+    )
 
     sent_messages = db.relationship(
         "ChatMessage",
@@ -239,32 +232,72 @@ class User(UserMixin, db.Model):
     )
 
     # =====================================================
-    # Notifications
-    # =====================================================
-
-    notifications = db.relationship(
-        "Notification",
-        back_populates="user",
-        cascade="all, delete-orphan",
-        lazy=True
-    )
-
-    # =====================================================
-    # Password Helpers
+    # PASSWORD
     # =====================================================
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+        return check_password_hash(
+            self.password_hash,
+            password
+        )
 
     # =====================================================
-    # String Representation
+    # ROLE HELPERS
+    # =====================================================
+
+    @property
+    def is_super_admin(self):
+        return self.role == "super_admin"
+
+    @property
+    def is_team_lead(self):
+        return self.role in (
+            "super_admin",
+            "team_lead",
+            "Team Lead"
+        )
+
+    @property
+    def is_member(self):
+        return self.role in (
+            "member",
+            "Member"
+        )
+
+    @property
+    def is_admin(self):
+        return self.is_super_admin
+
+    @property
+    def display_name(self):
+        return self.full_name or self.username
+
+    # =====================================================
+    # FLASK-LOGIN HELPERS
+    # =====================================================
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    # =====================================================
+    # REPRESENTATION
     # =====================================================
 
     def __repr__(self):
-        return f"<User {self.username}>"
+        return (
+            f"<User id={self.id} "
+            f"username='{self.username}' "
+            f"role='{self.role}'>"
+        )
+
 
 @login_manager.user_loader
 def load_user(user_id):

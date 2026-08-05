@@ -1,55 +1,141 @@
-<a href="{{ url_for('admin.add_blog_post') }}"
-   class="btn btn-info">
-    ➕ New Post
-</a>
-<div class="table-responsive">
+{% extends "base.html" %}
 
-    <table class="table table-dark table-hover align-middle mb-0" data-searchable>
+{% block title %}
+Manage Blog
+{% endblock %}
 
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Status</th>
-                <th>Created</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
+{% block content %}
 
-        <tbody>
+<div class="container-fluid py-4">
 
-            {% for post in posts %}
-            <tr>
-                <td>{{ post.title }}</td>
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-                <td>
-                    {% if post.is_published %}
-                    <span class="badge bg-success">Published</span>
-                    {% else %}
-                    <span class="badge bg-secondary">Draft</span>
-                    {% endif %}
-                </td>
+        <div>
 
-                <td>{{ post.created_at.strftime('%Y-%m-%d') }}</td>
+            <h2 class="fw-bold">
+                <i class="bi bi-journal-richtext"></i>
+                Blog Posts
+            </h2>
 
-                <td>
-                    <a href="{{ url_for('admin.edit_blog_post', post_id=post.id) }}"
-                       class="btn btn-sm btn-outline-info">Edit</a>
+            <p class="text-muted mb-0">
+                Create, edit and publish blog posts.
+            </p>
 
-                    <a href="{{ url_for('admin.delete_blog_post', post_id=post.id) }}"
-                       class="btn btn-sm btn-outline-danger"
-                       data-confirm="Delete this post?">Delete</a>
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="4" class="text-center text-muted py-4">
-                    No blog posts yet.
-                </td>
-            </tr>
-            {% endfor %}
+        </div>
 
-        </tbody>
+        <a href="{{ url_for('admin.add_blog_post') }}"
+           class="btn btn-primary">
 
-    </table>
+            <i class="bi bi-plus-circle"></i>
+
+            New Post
+
+        </a>
+
+    </div>
+
+    <div class="card shadow border-0">
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th class="text-end">Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for post in posts %}
+
+                        <tr>
+
+                            <td>
+
+                                <strong>{{ post.title }}</strong>
+
+                            </td>
+
+                            <td>
+
+                                {% if post.is_published %}
+
+                                <span class="badge bg-success">
+                                    Published
+                                </span>
+
+                                {% else %}
+
+                                <span class="badge bg-secondary">
+                                    Draft
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {{ post.created_at.strftime('%d %b %Y') }}
+
+                            </td>
+
+                            <td class="text-end">
+
+                                <a href="{{ url_for('admin.edit_blog_post', post_id=post.id) }}"
+                                   class="btn btn-sm btn-warning">
+
+                                    Edit
+
+                                </a>
+
+                                <a href="{{ url_for('admin.delete_blog_post', post_id=post.id) }}"
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('Delete this post?');">
+
+                                    Delete
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+
+                            <td colspan="4" class="text-center py-5 text-muted">
+
+                                No blog posts have been created yet.
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
+
+{% endblock %}

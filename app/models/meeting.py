@@ -6,10 +6,18 @@ from app.extensions import db
 class Meeting(db.Model):
     __tablename__ = "meetings"
 
+    # =====================================================
+    # PRIMARY KEY
+    # =====================================================
+
     id = db.Column(
         db.Integer,
         primary_key=True
     )
+
+    # =====================================================
+    # DETAILS
+    # =====================================================
 
     title = db.Column(
         db.String(150),
@@ -58,29 +66,30 @@ class Meeting(db.Model):
         default=datetime.utcnow
     )
 
+    # =====================================================
+    # FOREIGN KEYS
+    # =====================================================
+
     created_by = db.Column(
         db.Integer,
         db.ForeignKey("users.id"),
         nullable=False
     )
 
-    # NULL only for global meetings
+    # Nullable for Global meetings
     team_id = db.Column(
         db.Integer,
         db.ForeignKey("teams.id"),
         nullable=True
     )
 
-    # -----------------------------
-    # Relationships
-    # -----------------------------
+    # =====================================================
+    # RELATIONSHIPS
+    # =====================================================
 
     creator = db.relationship(
         "User",
-        backref=db.backref(
-            "meetings_created",
-            lazy=True
-        )
+        back_populates="meetings_created"
     )
 
     team = db.relationship(
@@ -102,9 +111,19 @@ class Meeting(db.Model):
         lazy=True
     )
 
-    def __repr__(self):
-        return f"<Meeting {self.title}>"
+    # =====================================================
+    # REPRESENTATION
+    # =====================================================
 
+    def __repr__(self):
+        return (
+            f"<Meeting {self.title}>"
+        )
+
+
+# =====================================================
+# SHARED TEAMS
+# =====================================================
 
 class MeetingTeam(db.Model):
     __tablename__ = "meeting_teams"
@@ -143,6 +162,10 @@ class MeetingTeam(db.Model):
         ),
     )
 
+
+# =====================================================
+# PARTICIPANTS
+# =====================================================
 
 class MeetingParticipant(db.Model):
     __tablename__ = "meeting_participants"

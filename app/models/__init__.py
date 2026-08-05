@@ -9,7 +9,13 @@ from .quiz import Quiz
 from .progress import UserProgress
 from .contact_message import ContactMessage
 from .user import User
-from .meeting import Meeting
+
+from .meeting import (
+    Meeting,
+    MeetingTeam,
+    MeetingParticipant,
+)
+
 from .announcement import Announcement
 from .notification import Notification
 from .chat import ChatMessage

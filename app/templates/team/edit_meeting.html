@@ -17,26 +17,75 @@ Edit Meeting
                 <div class="card-header bg-warning text-dark">
 
                     <h3 class="mb-0">
-
                         Edit Meeting
-
                     </h3>
 
                 </div>
 
                 <div class="card-body">
 
-                    <form method="POST">
+                    <form method="POST" novalidate>
 
                         {{ form.hidden_tag() }}
 
-                        <!-- Meeting Title -->
+                        {% if current_user.role == "super_admin" %}
+
+                        <!-- Meeting Type -->
+
+                        <div class="mb-3">
+
+                            {{ form.meeting_scope.label(class="form-label") }}
+
+                            {{ form.meeting_scope(
+                                class="form-select",
+                                id="meeting_scope"
+                            ) }}
+
+                        </div>
+
+                        <!-- Team -->
+
+                        <div class="mb-3" id="team-box">
+
+                            {{ form.team_id.label(class="form-label") }}
+
+                            {{ form.team_id(
+                                class="form-select"
+                            ) }}
+
+                        </div>
+
+                        <!-- Shared Teams -->
+
+                        <div class="mb-3 d-none" id="shared-box">
+
+                            {{ form.shared_team_ids.label(class="form-label") }}
+
+                            {{ form.shared_team_ids(
+                                class="form-select",
+                                size="8"
+                            ) }}
+
+                            <small class="text-muted">
+
+                                Hold Ctrl (Windows/Linux) or Cmd (Mac)
+                                to select multiple teams.
+
+                            </small>
+
+                        </div>
+
+                        {% endif %}
+
+                        <!-- Title -->
 
                         <div class="mb-3">
 
                             {{ form.title.label(class="form-label") }}
 
-                            {{ form.title(class="form-control") }}
+                            {{ form.title(
+                                class="form-control"
+                            ) }}
 
                         </div>
 
@@ -46,9 +95,14 @@ Edit Meeting
 
                             {{ form.description.label(class="form-label") }}
 
-                            {{ form.description(class="form-control", rows="5") }}
+                            {{ form.description(
+                                class="form-control",
+                                rows="5"
+                            ) }}
 
                         </div>
+
+                        <!-- Date / Time -->
 
                         <div class="row">
 
@@ -56,7 +110,9 @@ Edit Meeting
 
                                 {{ form.meeting_date.label(class="form-label") }}
 
-                                {{ form.meeting_date(class="form-control") }}
+                                {{ form.meeting_date(
+                                    class="form-control"
+                                ) }}
 
                             </div>
 
@@ -64,34 +120,61 @@ Edit Meeting
 
                                 {{ form.meeting_time.label(class="form-label") }}
 
-                                {{ form.meeting_time(class="form-control") }}
+                                {{ form.meeting_time(
+                                    class="form-control"
+                                ) }}
 
                             </div>
 
                         </div>
 
-                        <div class="mb-3">
+                        <!-- Duration / Status -->
 
-                            {{ form.duration.label(class="form-label") }}
+                        <div class="row">
 
-                            {{ form.duration(class="form-control") }}
+                            <div class="col-md-6 mb-3">
+
+                                {{ form.duration.label(class="form-label") }}
+
+                                {{ form.duration(
+                                    class="form-control"
+                                ) }}
+
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+
+                                {{ form.status.label(class="form-label") }}
+
+                                {{ form.status(
+                                    class="form-select"
+                                ) }}
+
+                            </div>
 
                         </div>
 
-                        <div class="mb-3">
+                        <!-- Meeting Link -->
+
+                        <div class="mb-4">
 
                             {{ form.meet_link.label(class="form-label") }}
 
-                            {{ form.meet_link(class="form-control") }}
+                            {{ form.meet_link(
+                                class="form-control"
+                            ) }}
 
                         </div>
 
                         <div class="d-flex gap-2">
 
-                            {{ form.submit(class="btn btn-success") }}
+                            {{ form.submit(
+                                class="btn btn-success"
+                            ) }}
 
-                            <a href="{{ url_for('meetings.meetings') }}"
-                               class="btn btn-secondary">
+                            <a
+                                href="{{ url_for('team.meetings') }}"
+                                class="btn btn-secondary">
 
                                 Cancel
 
@@ -110,5 +193,54 @@ Edit Meeting
     </div>
 
 </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+{{ super() }}
+
+{% if current_user.role == "super_admin" %}
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const scope = document.getElementById("meeting_scope");
+
+    if (!scope) return;
+
+    const teamBox = document.getElementById("team-box");
+    const sharedBox = document.getElementById("shared-box");
+
+    function updateMeetingForm() {
+
+        teamBox.classList.add("d-none");
+        sharedBox.classList.add("d-none");
+
+        if (scope.value === "team") {
+
+            teamBox.classList.remove("d-none");
+
+        }
+
+        else if (scope.value === "shared") {
+
+            sharedBox.classList.remove("d-none");
+
+        }
+
+    }
+
+    scope.addEventListener("change", updateMeetingForm);
+
+    updateMeetingForm();
+
+});
+
+</script>
+
+{% endif %}
 
 {% endblock %}
