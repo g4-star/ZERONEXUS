@@ -45,6 +45,7 @@ from werkzeug.utils import secure_filename
 
 from app.models import Project, Team
 from app.services.project_upload_service import upload_project_file
+from app.extensions import limiter
 
 from flask import current_app
 import secrets
@@ -107,6 +108,7 @@ from sqlalchemy import or_
 
 
 @admin_bp.route("/login", methods=["GET", "POST"])
+@limiter.limit("5 per minute")
 def login():
 
     if current_user.is_authenticated:
@@ -161,6 +163,7 @@ def login():
 @admin_bp.route("/dashboard")
 @login_required
 @super_admin_required
+@limiter.limit("5 per minute")
 def dashboard():
 
     return render_template(
@@ -177,6 +180,7 @@ def dashboard():
 @admin_bp.route("/teams/create", methods=["GET", "POST"])
 @login_required
 @super_admin_required
+@limiter.limit("5 per minute")
 def create_team():
 
     return render_template(
@@ -302,6 +306,7 @@ def manage_members():
 
 @admin_bp.route("/members/add", methods=["GET", "POST"])
 @login_required
+@limiter.limit("5 per minute")
 def add_member():
 
     form = AddMemberForm()

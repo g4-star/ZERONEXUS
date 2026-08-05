@@ -22,6 +22,7 @@ from .forms import (
     LoginForm,
     ActivateAccountForm
 )
+from app.extensions import limiter
 
 
 # =====================================================
@@ -29,6 +30,7 @@ from .forms import (
 # =====================================================
 
 @auth_bp.route("/login", methods=["GET", "POST"])
+@limiter.limit("5 per minute")
 def login():
 
     # -----------------------------------------

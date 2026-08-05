@@ -166,6 +166,12 @@ def create_app(config_name=None):
     def server_error(error):
         db.session.rollback()
         return render_template("errors/500.html"), 500
+    
+    @app.errorhandler(429)
+    def ratelimit_handler(e):
+        return render_template(
+            "errors/429.html"
+        ), 429
 
     # ----------------------------------
     # Flask Shell

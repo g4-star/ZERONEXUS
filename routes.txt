@@ -1,0 +1,81 @@
+================ MAIL DEBUG ================
+SERVER: smtp-relay.brevo.com
+PORT: 587
+TLS: True
+USERNAME: b45599001@smtp-brevo.com
+PASSWORD SET: True
+SENDER: ZeroNexus <zeronexus.admin001@gmail.com>
+============================================
+Endpoint                       Methods    Rule                                             
+-----------------------------  ---------  -------------------------------------------------
+academy.complete_lesson        POST       /academy/lesson/<int:lesson_id>/complete         
+academy.course                 GET        /academy/<course_slug>                           
+academy.home                   GET        /academy/                                        
+academy.lesson                 GET        /academy/<course_slug>/module/<int:lesson_number>
+academy.tutor                  GET, POST  /academy/tutor                                   
+admin.add_blog_post            GET, POST  /admin/blog/add                                  
+admin.add_member               GET, POST  /admin/members/add                               
+admin.add_project              GET, POST  /admin/projects/add                              
+admin.add_user                 GET, POST  /admin/users/add                                 
+admin.create_announcement      GET, POST  /admin/announcements/create                      
+admin.create_team              GET, POST  /admin/teams/create                              
+admin.dashboard                GET        /admin/dashboard                                 
+admin.delete_announcement      POST       /admin/announcements/<int:announcement_id>/delete
+admin.delete_blog_post         GET        /admin/blog/<int:post_id>/delete                 
+admin.delete_member            POST       /admin/members/<int:member_id>/delete            
+admin.delete_message           POST       /admin/messages/<int:message_id>/delete          
+admin.delete_project           GET        /admin/projects/<int:project_id>/delete          
+admin.edit_blog_post           GET, POST  /admin/blog/<int:post_id>/edit                   
+admin.edit_member              GET, POST  /admin/members/<int:member_id>/edit              
+admin.edit_team                GET, POST  /admin/teams/<int:team_id>/edit                  
+admin.login                    GET, POST  /admin/login                                     
+admin.logout                   GET        /admin/logout                                    
+admin.manage_announcements     GET        /admin/announcements                             
+admin.manage_blog              GET        /admin/blog                                      
+admin.manage_members           GET        /admin/members                                   
+admin.manage_messages          GET        /admin/messages                                  
+admin.manage_projects          GET        /admin/projects                                  
+admin.manage_teams             GET        /admin/teams                                     
+admin.manage_users             GET        /admin/users                                     
+admin.mark_message_read        GET        /admin/messages/<int:message_id>/read            
+admin.open_team                GET        /admin/teams/<int:team_id>/open                  
+admin.reply_message            GET        /admin/messages/<int:message_id>/reply           
+admin.settings                 GET, POST  /admin/settings                                  
+admin.toggle_pin_announcement  POST       /admin/announcements/<int:announcement_id>/pin   
+admin.view_message             GET        /admin/messages/<int:message_id>                 
+auth.activate_account          GET, POST  /auth/activate/<token>                           
+auth.dashboard                 GET        /auth/dashboard                                  
+auth.login                     GET, POST  /auth/login                                      
+auth.logout                    GET        /auth/logout                                     
+chat_api.channels              GET        /api/chat/channels                               
+chat_api.messages              GET        /api/chat/messages/<int:channel_id>              
+chat_api.send                  POST       /api/chat/send                                   
+dashboard_api.activity         GET        /api/dashboard/activity                          
+dashboard_api.notifications    GET        /api/dashboard/notifications                     
+dashboard_api.online           GET        /api/dashboard/online                            
+dashboard_api.recent           GET        /api/dashboard/recent                            
+dashboard_api.stats            GET        /api/dashboard/stats                             
+main.edit_member               GET, POST  /member/edit/<token>                             
+main.index                     GET, POST  /                                                
+main.member_profile            GET        /members/<int:member_id>                         
+main.team_detail               GET        /teams/<slug>                                    
+main.teams                     GET        /teams                                           
+static                         GET        /static/<path:filename>                          
+team.announcements             GET        /team/announcements                              
+team.create_announcement       GET, POST  /team/announcements/create                       
+team.create_project            GET, POST  /team/projects/create                            
+team.dashboard                 GET        /team/dashboard                                  
+team.delete_project            GET        /team/projects/<int:project_id>/delete           
+team.edit_project              GET, POST  /team/projects/<int:project_id>/edit             
+team.meetings                  GET        /team/meetings                                   
+team.members                   GET        /team/members                                    
+team.messages                  GET, POST  /team/messages                                   
+team.messages_api              GET        /team/messages/api                               
+team.profile                   GET        /team/profile                                    
+team.projects                  GET        /team/projects                                   
+team.reports                   GET        /team/reports                                    
+team.send_chat                 POST       /team/chat/send                                  
+team.settings                  GET        /team/settings                                   
+team.tasks                     GET        /team/tasks                                      
+user.edit_profile              GET, POST  /profile/edit                                    
+user.profile                   GET        /profile                                         

@@ -137,6 +137,7 @@ def complete_lesson(lesson_id):
 
 
 @academy.route("/tutor", methods=["GET", "POST"])
+@limiter.limit("20 per minute")
 def tutor():
     course_title = request.form.get("course") or request.args.get("course")
     lesson_title = request.form.get("lesson") or request.args.get("lesson")

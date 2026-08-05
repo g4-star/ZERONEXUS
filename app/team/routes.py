@@ -49,6 +49,7 @@ from app.models import TeamMessage
 from flask import jsonify
 from app.services.project_upload_service import upload_project_file
 from app.auth.decorators import super_admin_required
+from app.extensions import limiter
 
 def require_active_team():
 
@@ -253,6 +254,7 @@ def projects():
 )
 @login_required
 @member_required
+@limiter.limit("10 per minute")
 def create_project():
 
     if current_user.team is None:
@@ -622,6 +624,7 @@ def messages():
 @team_bp.route("/chat/send", methods=["POST"])
 @login_required
 @member_required
+@limiter.limit("30 per minute")
 def send_chat():
 
     team = require_active_team()
