@@ -8,23 +8,207 @@ Team Meetings
 
 <div class="container py-4">
 
-    <h2>Meetings</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-    <p class="text-muted">
-        Upcoming team meetings and schedules.
-    </p>
+        <div>
 
-    {% if user.role == "team_lead" %}
+            <h2 class="fw-bold">
 
-    <a href="#" class="btn btn-success mb-3">
-        Schedule Meeting
-    </a>
+                <i class="bi bi-camera-video-fill"></i>
+
+                Team Meetings
+
+            </h2>
+
+            <p class="text-muted">
+
+                Schedule, manage and join your team meetings.
+
+            </p>
+
+        </div>
+
+        {% if current_user.is_team_lead or current_user.is_super_admin %}
+
+        <a
+            href="{{ url_for('team.create_meeting') }}"
+            class="btn btn-primary">
+
+            <i class="bi bi-plus-circle"></i>
+
+            Schedule Meeting
+
+        </a>
+
+        {% endif %}
+
+    </div>
+
+
+    {% if meetings %}
+
+    <div class="row">
+
+        {% for meeting in meetings %}
+
+        <div class="col-lg-6 mb-4">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <h4>
+
+                            {{ meeting.title }}
+
+                        </h4>
+
+                        <span class="badge bg-success">
+
+                            {{ meeting.status }}
+
+                        </span>
+
+                    </div>
+
+                    <hr>
+
+                    <p>
+
+                        {{ meeting.description }}
+
+                    </p>
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            <strong>Date</strong>
+
+                            <br>
+
+                            {{ meeting.meeting_date }}
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <strong>Time</strong>
+
+                            <br>
+
+                            {{ meeting.meeting_time }}
+
+                        </div>
+
+                    </div>
+
+                    <br>
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            <strong>Duration</strong>
+
+                            <br>
+
+                            {{ meeting.duration }} Minutes
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <strong>Organizer</strong>
+
+                            <br>
+
+                            {{ meeting.creator.full_name }}
+
+                        </div>
+
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+
+                        <a
+                            href="{{ meeting.meet_link }}"
+                            target="_blank"
+                            class="btn btn-success">
+
+                            🎥 Join Meeting
+
+                        </a>
+
+                        {% if current_user.id==meeting.created_by or current_user.is_super_admin %}
+
+                        <div>
+
+                            <a
+                                href="{{ url_for('team.edit_meeting',meeting_id=meeting.id) }}"
+                                class="btn btn-warning">
+
+                                Edit
+
+                            </a>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('team.delete_meeting',meeting_id=meeting.id) }}"
+                                class="d-inline">
+
+                                <button
+                                    class="btn btn-danger">
+
+                                    Delete
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="card shadow-sm">
+
+        <div class="card-body text-center py-5">
+
+            <h3>
+
+                No Meetings Scheduled
+
+            </h3>
+
+            <p>
+
+                Team Leads can schedule meetings here.
+
+            </p>
+
+        </div>
+
+    </div>
 
     {% endif %}
-
-    <div class="alert alert-info">
-        No meetings scheduled.
-    </div>
 
 </div>
 

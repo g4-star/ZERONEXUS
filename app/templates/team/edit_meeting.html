@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-Create Meeting
+Edit Meeting
 {% endblock %}
 
 {% block content %}
@@ -14,11 +14,11 @@ Create Meeting
 
             <div class="card shadow border-0">
 
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-warning text-dark">
 
                     <h3 class="mb-0">
 
-                        Schedule New Meeting
+                        Edit Meeting
 
                     </h3>
 
@@ -30,6 +30,8 @@ Create Meeting
 
                         {{ form.hidden_tag() }}
 
+                        <!-- Meeting Title -->
+
                         <div class="mb-3">
 
                             {{ form.title.label(class="form-label") }}
@@ -37,6 +39,8 @@ Create Meeting
                             {{ form.title(class="form-control") }}
 
                         </div>
+
+                        <!-- Description -->
 
                         <div class="mb-3">
 
@@ -78,21 +82,18 @@ Create Meeting
 
                             {{ form.meet_link.label(class="form-label") }}
 
-                            {{ form.meet_link(
-                                class="form-control",
-                                placeholder="https://meet.google.com/..."
-                            ) }}
+                            {{ form.meet_link(class="form-control") }}
 
                         </div>
 
                         <div class="d-flex gap-2">
 
-                            {{ form.submit(class="btn btn-primary") }}
+                            {{ form.submit(class="btn btn-success") }}
 
                             <a href="{{ url_for('meetings.meetings') }}"
                                class="btn btn-secondary">
 
-                                Back
+                                Cancel
 
                             </a>
 

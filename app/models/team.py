@@ -110,7 +110,6 @@ class Team(db.Model):
         "Meeting",
         back_populates="team",
         cascade="all, delete-orphan",
-        lazy=True
     )
 
     # =====================================================

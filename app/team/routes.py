@@ -50,6 +50,9 @@ from flask import jsonify
 from app.services.project_upload_service import upload_project_file
 from app.auth.decorators import super_admin_required
 from app.extensions import limiter
+from app.forms.meeting import MeetingForm
+from app.models.meeting import Meeting
+from app.models.notification import Notification
 
 def require_active_team():
 
@@ -83,18 +86,24 @@ def require_active_team():
 @login_required
 @member_required
 def dashboard():
-    """Team Dashboard"""
+    """Render the Team Dashboard."""
 
-    user = current_user
     team = require_active_team()
 
-    if not team:
-        flash("You are not assigned to a team.", "warning")
-        return redirect(url_for("main.index"))
+    if team is None:
 
-    # -------------------------------------------------
-    # Team Members
-    # -------------------------------------------------
+        flash(
+            "You are not assigned to a team.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("main.index")
+        )
+
+    # =====================================================
+    # MEMBERS
+    # =====================================================
 
     members = (
         User.query
@@ -105,33 +114,51 @@ def dashboard():
 
     recent_members = members[:5]
 
-    # -------------------------------------------------
-    # Projects
-    # -------------------------------------------------
+    member_count = (
+        User.query
+        .filter_by(team_id=team.id)
+        .count()
+    )
+
+    # =====================================================
+    # PROJECTS
+    # =====================================================
 
     projects = (
-        Project.query.filter(
-            (Project.team_id == team.id) |
-            (Project.visibility == "all_teams")
+        Project.query
+        .filter(
+            db.or_(
+                Project.team_id == team.id,
+                Project.visibility == "all_teams"
+            )
         )
         .order_by(Project.created_at.desc())
         .all()
     )
-    
-    # -------------------------------------------------
-    # Meetings
-    # -------------------------------------------------
+
+    recent_projects = projects[:5]
+
+    project_count = len(projects)
+
+    # =====================================================
+    # MEETINGS
+    # =====================================================
 
     meetings = (
         Meeting.query
         .filter_by(team_id=team.id)
-        .order_by(Meeting.created_at.desc())
+        .order_by(
+            Meeting.meeting_date.asc(),
+            Meeting.meeting_time.asc()
+        )
         .all()
     )
 
-    # -------------------------------------------------
-    # Announcements
-    # -------------------------------------------------
+    meeting_count = len(meetings)
+
+    # =====================================================
+    # ANNOUNCEMENTS
+    # =====================================================
 
     announcements = (
         Announcement.query
@@ -143,78 +170,95 @@ def dashboard():
         .all()
     )
 
-    # -------------------------------------------------
-    # Chat Messages
-    # -------------------------------------------------
+    recent_announcements = announcements[:5]
+
+    announcement_count = len(announcements)
+
+    # =====================================================
+    # TEAM CHAT
+    # =====================================================
 
     messages = (
         TeamMessage.query
         .filter_by(team_id=team.id)
         .order_by(TeamMessage.created_at.desc())
-        .limit(5)
+        .limit(10)
         .all()
     )
 
-    # -------------------------------------------------
-    # Optional Data
-    # -------------------------------------------------
+    # =====================================================
+    # USER NOTIFICATIONS
+    # =====================================================
+
+    notifications = (
+        Notification.query
+        .filter_by(
+            user_id=current_user.id,
+            is_read=False
+        )
+        .order_by(Notification.created_at.desc())
+        .all()
+    )
+
+    notification_count = len(notifications)
+
+    # =====================================================
+    # PLACEHOLDERS
+    # =====================================================
 
     tasks = []
 
     recent_activity = []
 
-    notifications = []
+    completed_tasks = 0
 
-    # -------------------------------------------------
-    # Statistics
-    # -------------------------------------------------
-
-    member_count = len(members)
-    project_count = len(projects)
-    meeting_count = len(meetings)
-    announcement_count = len(announcements)
-
-    # Count completed tasks if they exist
-    completed_tasks = sum(
-        1 for t in tasks
-        if getattr(t, "status", "") == "completed"
-    )
-
-    # -------------------------------------------------
-    # Context
-    # -------------------------------------------------
+    # =====================================================
+    # CONTEXT
+    # =====================================================
 
     context = {
-        "user": user,
+
+        "user": current_user,
+
         "team": team,
 
+        # Members
         "members": members,
         "recent_members": recent_members,
+        "member_count": member_count,
 
+        # Projects
         "projects": projects,
+        "recent_projects": recent_projects,
+        "project_count": project_count,
 
+        # Meetings
         "meetings": meetings,
+        "meeting_count": meeting_count,
 
+        # Announcements
         "announcements": announcements,
+        "recent_announcements": recent_announcements,
+        "announcement_count": announcement_count,
 
+        # Chat
         "messages": messages,
 
-        "tasks": tasks,
-        "recent_activity": recent_activity,
+        # Notifications
         "notifications": notifications,
+        "notification_count": notification_count,
 
-        "member_count": member_count,
-        "project_count": project_count,
-        "meeting_count": meeting_count,
-        "announcement_count": announcement_count,
+        # Other
+        "tasks": tasks,
         "completed_tasks": completed_tasks,
+        "recent_activity": recent_activity
+
     }
 
     return render_template(
         "team/dashboard.html",
         **context
     )
-
 # =====================================================
 # TEAM PROJECTS
 # =====================================================
@@ -473,10 +517,202 @@ def delete_project(project_id):
 @member_required
 def meetings():
 
+    team = require_active_team()
+
+    meetings = (
+        Meeting.query
+        .filter_by(team_id=team.id)
+        .order_by(
+            Meeting.meeting_date.asc(),
+            Meeting.meeting_time.asc()
+        )
+        .all()
+    )
+
     return render_template(
         "team/meetings.html",
         user=current_user,
-        team=current_user.team
+        team=team,
+        meetings=meetings
+    )
+
+
+@team_bp.route(
+    "/meetings/create",
+    methods=["GET", "POST"]
+)
+@login_required
+@team_lead_required
+@limiter.limit("5 per minute")
+def create_meeting():
+
+    team = require_active_team()
+
+    form = MeetingForm()
+
+    if form.validate_on_submit():
+
+        try:
+
+            # =====================================
+            # Create Meeting
+            # =====================================
+
+            meeting = Meeting(
+
+                title=form.title.data,
+
+                description=form.description.data,
+
+                meeting_date=form.meeting_date.data,
+
+                meeting_time=form.meeting_time.data,
+
+                duration=form.duration.data,
+
+                meet_link=form.meet_link.data,
+
+                status="Scheduled",
+
+                team_id=team.id,
+
+                created_by=current_user.id
+
+            )
+
+            db.session.add(meeting)
+
+            # Flush so meeting gets an ID before notifications
+            db.session.flush()
+
+            # =====================================
+            # Notify Team Members
+            # =====================================
+
+            members = User.query.filter_by(
+                team_id=team.id
+            ).all()
+
+            for member in members:
+
+                notification = Notification(
+
+                    user_id=member.id,
+
+                    title="📅 New Team Meeting",
+
+                    message=(
+                        f"{current_user.full_name} has scheduled "
+                        f"'{meeting.title}' on "
+                        f"{meeting.meeting_date.strftime('%d %b %Y')} "
+                        f"at "
+                        f"{meeting.meeting_time.strftime('%I:%M %p')}."
+                    ),
+
+                    type="meeting",
+
+                    link=url_for("team.meetings")
+
+                )
+
+                db.session.add(notification)
+
+            # =====================================
+            # Save Everything
+            # =====================================
+
+            db.session.commit()
+
+            flash(
+                "Meeting created successfully.",
+                "success"
+            )
+
+            return redirect(
+                url_for("team.meetings")
+            )
+
+        except Exception as e:
+
+            db.session.rollback()
+
+            current_app.logger.exception(e)
+
+            flash(
+                "An error occurred while creating the meeting.",
+                "danger"
+            )
+
+    return render_template(
+        "team/create_meeting.html",
+        form=form,
+        team=team
+    )
+    
+@team_bp.route(
+    "/meetings/<int:meeting_id>/edit",
+    methods=["GET", "POST"]
+)
+@login_required
+@team_lead_required
+def edit_meeting(meeting_id):
+
+    team = require_active_team()
+
+    meeting = Meeting.query.filter_by(
+        id=meeting_id,
+        team_id=team.id
+    ).first_or_404()
+
+    form = MeetingForm(obj=meeting)
+
+    if form.validate_on_submit():
+
+        form.populate_obj(meeting)
+
+        db.session.commit()
+
+        flash(
+            "Meeting updated.",
+            "success"
+        )
+
+        return redirect(
+            url_for("team.meetings")
+        )
+
+    return render_template(
+        "team/edit_meeting.html",
+        form=form,
+        meeting=meeting
+    )
+
+@team_bp.route(
+    "/meetings/<int:meeting_id>/delete",
+    methods=["POST"]
+)
+@login_required
+@team_lead_required
+def delete_meeting(meeting_id):
+
+    team = require_active_team()
+
+    meeting = Meeting.query.filter_by(
+        id=meeting_id,
+        team_id=team.id
+    ).first_or_404()
+
+    db.session.delete(meeting)
+
+    db.session.commit()
+
+    flash(
+        "Meeting deleted.",
+        "success"
+    )
+
+    return redirect(
+        url_for("team.meetings")
     )
 
 
