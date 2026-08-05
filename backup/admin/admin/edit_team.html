@@ -1,0 +1,49 @@
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+
+<h1 class='page-title mb-4'>Edit Team</h1>
+
+<div class='panel-card'>
+
+    <form method='POST'>
+
+        {{ form.hidden_tag() }}
+
+        <div class='mb-3'>
+            {{ form.name.label(class='form-label') }}
+            {{ form.name(class='form-control') }}
+        </div>
+
+        <div class='mb-3'>
+            {{ form.slug.label(class='form-label') }}
+            {{ form.slug(class='form-control') }}
+        </div>
+
+        <div class='mb-3'>
+            {{ form.lead_name.label(class='form-label') }}
+            {{ form.lead_name(class='form-control') }}
+        </div>
+
+        <div class='mb-3'>
+            {{ form.lead_role.label(class='form-label') }}
+            {{ form.lead_role(class='form-control') }}
+        </div>
+
+        <div class='mb-3'>
+            {{ form.short_description.label(class='form-label') }}
+            {{ form.short_description(class='form-control', rows='2') }}
+        </div>
+
+        <div class='mb-3'>
+            {{ form.description.label(class='form-label') }}
+            {{ form.description(class='form-control', rows='6') }}
+        </div>
+
+        {{ form.submit(class='btn btn-info') }}
+
+    </form>
+
+</div>
+
+{% endblock %}

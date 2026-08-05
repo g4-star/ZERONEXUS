@@ -1,0 +1,92 @@
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+
+<div class='d-flex justify-content-between align-items-center mb-4'>
+    <div>
+        <h1 class='page-title'>Admin Dashboard</h1>
+        <p class='text-secondary mb-0'>Manage teams, members, projects, and public content.</p>
+    </div>
+    <a href='{{ url_for("main.index") }}' class='btn btn-outline-info' target='_blank'>
+        🌐 View Public Site
+    </a>
+</div>
+
+<div class='row g-4 mb-5'>
+
+    <div class='col-md-6 col-xl-3'>
+        <div class='stat-card'>
+            <div class='stat-icon'>📁</div>
+            <div class='stat-number'>{{ project_count }}</div>
+            <div class='stat-label'>Projects</div>
+        </div>
+    </div>
+
+    <div class='col-md-6 col-xl-3'>
+        <div class='stat-card'>
+            <div class='stat-icon'>🛡</div>
+            <div class='stat-number'>{{ team_count }}</div>
+            <div class='stat-label'>Teams</div>
+        </div>
+    </div>
+
+    <div class='col-md-6 col-xl-3'>
+        <div class='stat-card'>
+            <div class='stat-icon'>👥</div>
+            <div class='stat-number'>{{ member_count }}</div>
+            <div class='stat-label'>Members</div>
+        </div>
+    </div>
+
+    <div class='col-md-6 col-xl-3'>
+        <div class='stat-card'>
+            <div class='stat-icon'>📝</div>
+            <div class='stat-number'>0</div>
+            <div class='stat-label'>Blog Posts</div>
+        </div>
+    </div>
+
+</div>
+
+<div class='row g-4'>
+
+    <div class='col-lg-6'>
+        <div class='panel-card'>
+            <div class='panel-header'>
+                <h5 class='mb-0'>Quick Actions</h5>
+            </div>
+
+            <div class='d-grid gap-3 mt-3'>
+                <a href='{{ url_for("admin.manage_teams") }}' class='btn btn-info'>
+                    ➕ Manage Teams
+                </a>
+                <a href='{{ url_for("admin.manage_members") }}' class='btn btn-outline-info'>
+                    ➕ Manage Members
+                </a>
+                <a href='#' class='btn btn-outline-info'>
+                    ➕ Add Project
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class='col-lg-6'>
+        <div class='panel-card'>
+            <div class='panel-header'>
+                <h5 class='mb-0'>Public Website</h5>
+            </div>
+
+            <p class='text-light mt-3'>
+                The public website displays all 6 cybersecurity groups, projects, and member portfolios.
+                Any changes you make here will appear publicly after saving.
+            </p>
+
+            <a href='{{ url_for("main.index") }}' target='_blank' class='btn btn-info'>
+                Open Public Site
+            </a>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

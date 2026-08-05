@@ -1,0 +1,28 @@
+app/templates/admin
+├── add_blog_post.html
+├── add_member.html
+├── add_project.html
+├── add_user.html
+├── announcements.html
+├── blog.html
+├── create_announcement.html
+├── create_meeting.html
+├── create_team.html
+├── dashboard.html
+├── edit_blog_post.html
+├── edit_meeting.html
+├── edit_member.html
+├── edit_project.html
+├── edit_team.html
+├── layout.html
+├── login.html
+├── meetings.html
+├── members.html
+├── message_detail.html
+├── messages.html
+├── projects.html
+├── settings.html
+├── teams.html
+└── users.html
+
+1 directory, 25 files

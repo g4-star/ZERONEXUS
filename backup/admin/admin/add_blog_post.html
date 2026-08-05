@@ -1,0 +1,51 @@
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+
+<h1 class='page-title mb-4'>Blog Post</h1>
+
+<div class='panel-card'>
+
+    <form method='POST'>
+
+        {{ csrf_token() }}
+
+        <div class='mb-3'>
+            <label class='form-label'>Title</label>
+            <input type='text' name='title'
+                   value='{{ post.title if post else "" }}'
+                   class='form-control' required>
+        </div>
+
+        <div class='mb-3'>
+            <label class='form-label'>Slug</label>
+            <input type='text' name='slug'
+                   value='{{ post.slug if post else "" }}'
+                   class='form-control' required>
+        </div>
+
+        <div class='mb-3'>
+            <label class='form-label'>Content</label>
+            <textarea name='content' rows='12'
+                      class='form-control' required>{{ post.content if post else "" }}</textarea>
+        </div>
+
+        <div class='form-check mb-3'>
+            <input type='checkbox' name='is_published'
+                   class='form-check-input'
+                   {% if not post or post.is_published %}checked{% endif %}>
+
+            <label class='form-check-label'>
+                Published
+            </label>
+        </div>
+
+        <button type='submit' class='btn btn-info'>
+            Save Post
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

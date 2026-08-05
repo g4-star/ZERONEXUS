@@ -1,0 +1,2676 @@
+=======================================================
+FILE: app/templates/admin/add_blog_post.html
+=======================================================
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+
+<h1 class='page-title mb-4'>Blog Post</h1>
+
+<div class='panel-card'>
+
+    <form method='POST'>
+
+        {{ csrf_token() }}
+
+        <div class='mb-3'>
+            <label class='form-label'>Title</label>
+            <input type='text' name='title'
+                   value='{{ post.title if post else "" }}'
+                   class='form-control' required>
+        </div>
+
+        <div class='mb-3'>
+            <label class='form-label'>Slug</label>
+            <input type='text' name='slug'
+                   value='{{ post.slug if post else "" }}'
+                   class='form-control' required>
+        </div>
+
+        <div class='mb-3'>
+            <label class='form-label'>Content</label>
+            <textarea name='content' rows='12'
+                      class='form-control' required>{{ post.content if post else "" }}</textarea>
+        </div>
+
+        <div class='form-check mb-3'>
+            <input type='checkbox' name='is_published'
+                   class='form-check-input'
+                   {% if not post or post.is_published %}checked{% endif %}>
+
+            <label class='form-check-label'>
+                Published
+            </label>
+        </div>
+
+        <button type='submit' class='btn btn-info'>
+            Save Post
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/add_member.html
+=======================================================
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+
+<h1 class='page-title mb-4'>Add Member</h1>
+
+<div class='panel-card'>
+
+    <form method='POST'>
+
+        {{ form.hidden_tag() }}
+
+        <div class='row g-3'>
+
+            <div class='col-md-6'>
+                {{ form.full_name.label(class='form-label') }}
+                {{ form.full_name(class='form-control') }}
+            </div>
+
+            <div class='col-md-6'>
+                {{ form.role.label(class='form-label') }}
+                {{ form.role(class='form-control') }}
+            </div>
+
+            <div class='col-md-6'>
+                {{ form.team_id.label(class='form-label') }}
+                {{ form.team_id(class='form-select') }}
+            </div>
+
+            <div class='col-md-6'>
+                {{ form.email.label(class='form-label') }}
+                {{ form.email(class='form-control') }}
+            </div>
+
+            <div class='col-md-6'>
+                {{ form.whatsapp_number.label(class='form-label') }}
+                {{ form.whatsapp_number(class='form-control') }}
+            </div>
+
+            <div class='col-md-6'>
+                {{ form.linkedin_url.label(class='form-label') }}
+                {{ form.linkedin_url(class='form-control') }}
+            </div>
+
+            <div class='col-md-6'>
+                {{ form.github_url.label(class='form-label') }}
+                {{ form.github_url(class='form-control') }}
+            </div>
+
+            <div class='col-md-6'>
+                {{ form.portfolio_url.label(class='form-label') }}
+                {{ form.portfolio_url(class='form-control') }}
+            </div>
+
+            <div class='col-12'>
+                {{ form.skills.label(class='form-label') }}
+                {{ form.skills(class='form-control', rows='3') }}
+            </div>
+
+            <div class='col-12'>
+                {{ form.bio.label(class='form-label') }}
+                {{ form.bio(class='form-control', rows='5') }}
+            </div>
+
+        </div>
+
+        <div class='mt-4 d-flex gap-2'>
+            {{ form.submit(class='btn btn-info') }}
+
+            <a href='{{ url_for("admin.manage_members") }}'
+               class='btn btn-outline-light'>
+                Cancel
+            </a>
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/add_project.html
+=======================================================
+{% extends "admin/layout.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">
+        <i class="fa-solid fa-upload"></i>
+        Upload Project
+    </h2>
+
+
+    <form method="POST"
+          enctype="multipart/form-data">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+
+        <!-- Project Title -->
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Project Title
+            </label>
+
+            <input type="text"
+                   name="title"
+                   class="form-control"
+                   required>
+
+        </div>
+
+
+
+        <!-- Description -->
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Description
+            </label>
+
+            <textarea
+                name="description"
+                class="form-control"
+                rows="5"
+                required></textarea>
+
+        </div>
+
+
+
+        <!-- Github -->
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Github Repository
+            </label>
+
+            <input type="url"
+                   name="github_url"
+                   class="form-control">
+
+        </div>
+
+
+
+        <!-- Demo -->
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Live Demo
+            </label>
+
+            <input type="url"
+                   name="demo_url"
+                   class="form-control">
+
+        </div>
+
+
+
+        <!-- ZIP Upload -->
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Upload Project ZIP
+            </label>
+
+            <input type="file"
+                   name="project_file"
+                   class="form-control"
+                   accept=".zip">
+
+            <small class="text-muted">
+                Only ZIP files allowed
+            </small>
+
+        </div>
+
+
+
+
+        <!-- Visibility -->
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Project Access
+            </label>
+
+
+            <select name="visibility"
+                    class="form-select">
+
+
+                <option value="all_teams">
+                    All Teams
+                </option>
+
+
+                <option value="team">
+                    Specific Team
+                </option>
+
+
+            </select>
+
+        </div>
+
+
+
+
+        <!-- Team -->
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Select Team
+            </label>
+
+
+            <select name="team_id"
+                    class="form-select">
+
+
+                <option value="">
+                    No Team (All Teams)
+                </option>
+
+
+                {% for team in teams %}
+
+                <option value="{{ team.id }}">
+
+                    {{ team.name }}
+
+                </option>
+
+
+                {% endfor %}
+
+
+            </select>
+
+
+        </div>
+
+
+
+
+        <!-- Submit -->
+
+
+        <button type="submit"
+                class="btn btn-primary">
+
+
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+
+            Upload Project
+
+
+        </button>
+
+
+    </form>
+
+
+</div>
+
+
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/add_user.html
+=======================================================
+{% extends "admin/layout.html" %}
+
+
+{% block content %}
+
+
+<div class="container mt-4">
+
+
+<h2>
+Create Team User
+</h2>
+
+
+
+<form method="POST">
+
+
+    {{ form.hidden_tag() }}
+
+
+
+    <div class="mb-3">
+
+        {{ form.full_name.label }}
+
+        {{ form.full_name(
+            class="form-control"
+        ) }}
+
+    </div>
+
+
+
+
+    <div class="mb-3">
+
+        {{ form.email.label }}
+
+        {{ form.email(
+            class="form-control"
+        ) }}
+
+    </div>
+
+
+
+
+    <div class="mb-3">
+
+        {{ form.role.label }}
+
+        {{ form.role(
+            class="form-select"
+        ) }}
+
+    </div>
+
+
+
+
+    <div class="mb-3">
+
+        {{ form.team_id.label }}
+
+        {{ form.team_id(
+            class="form-select"
+        ) }}
+
+    </div>
+
+
+
+
+    {{ form.submit(
+        class="btn btn-success"
+    ) }}
+
+
+
+</form>
+
+
+</div>
+
+
+{% endblock %}
+
+=======================================================
+FILE: app/templates/admin/announcements.html
+=======================================================
+{% extends "admin/layout.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h2>Announcements</h2>
+
+    <a href="{{ url_for('admin.create_announcement') }}"
+       class="btn btn-primary">
+        + New Announcement
+    </a>
+
+</div>
+
+{% if announcements %}
+
+    <div class="table-responsive">
+
+        <table class="table table-hover align-middle">
+
+            <thead>
+
+                <tr>
+                    <th>Title</th>
+                    <th>Team</th>
+                    <th>Category</th>
+                    <th>Author</th>
+                    <th>Pinned</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for a in announcements %}
+
+                    <tr>
+
+                        <td>{{ a.title }}</td>
+
+                        <td>{{ a.team.name if a.team else '—' }}</td>
+
+                        <td>
+                            <span class="badge bg-secondary">
+                                {{ a.category }}
+                            </span>
+                        </td>
+
+                        <td>{{ a.author.username if a.author else '—' }}</td>
+
+                        <td>
+                            {% if a.pinned %}
+                                📌
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {{ a.created_at.strftime('%Y-%m-%d %H:%M') }}
+                        </td>
+
+                        <td>
+
+                            <form method="post"
+                                  action="{{ url_for('admin.toggle_pin_announcement', announcement_id=a.id) }}"
+                                  class="d-inline">
+
+                                <button class="btn btn-sm btn-outline-warning">
+                                    {% if a.pinned %}Unpin{% else %}Pin{% endif %}
+                                </button>
+
+                            </form>
+
+                            <form method="post"
+                                  action="{{ url_for('admin.delete_announcement', announcement_id=a.id) }}"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Delete this announcement?');">
+
+                                <button class="btn btn-sm btn-outline-danger">
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+{% else %}
+
+    <div class="alert alert-info">
+        No announcements yet.
+        <a href="{{ url_for('admin.create_announcement') }}">Create one</a>.
+    </div>
+
+{% endif %}
+
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/blog.html
+=======================================================
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+
+<div class='d-flex justify-content-between align-items-center mb-4'>
+    <h1 class='page-title mb-0'>Manage Blog</h1>
+
+    <a href='{{ url_for("admin.add_blog_post") }}'
+       class='btn btn-info'>
+        ➕ New Post
+    </a>
+</div>
+
+<div class='panel-card'>
+
+    <table class='table table-dark table-hover align-middle mb-0'>
+
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for post in posts %}
+            <tr>
+                <td>{{ post.title }}</td>
+
+                <td>
+                    {% if post.is_published %}
+                    <span class='badge bg-success'>Published</span>
+                    {% else %}
+                    <span class='badge bg-secondary'>Draft</span>
+                    {% endif %}
+                </td>
+
+                <td>{{ post.created_at.strftime('%Y-%m-%d') }}</td>
+
+                <td>
+                    <a href='{{ url_for("admin.edit_blog_post", post_id=post.id) }}'
+                       class='btn btn-sm btn-outline-info'>Edit</a>
+
+                    <a href='{{ url_for("admin.delete_blog_post", post_id=post.id) }}'
+                       class='btn btn-sm btn-outline-danger'
+                       onclick='return confirm("Delete this post?")'>Delete</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan='4' class='text-center text-muted py-4'>
+                    No blog posts yet.
+                </td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/create_announcement.html
+=======================================================
+{% extends "admin/layout.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h2>New Announcement</h2>
+
+    <a
+        href="{{ url_for('admin.manage_announcements') }}"
+        class="btn btn-outline-secondary"
+    >
+        ← Back
+    </a>
+
+</div>
+
+<div class="card">
+
+    <div class="card-body">
+
+        <form method="POST" novalidate>
+
+            {{ form.hidden_tag() }}
+
+            <!-- ========================= -->
+            <!-- Title -->
+            <!-- ========================= -->
+
+            <div class="mb-3">
+
+                {{ form.title.label(class="form-label") }}
+
+                {{ form.title(
+                    class="form-control" + (" is-invalid" if form.title.errors else ""),
+                    placeholder="e.g. Sprint review moved to Friday"
+                ) }}
+
+                {% for error in form.title.errors %}
+
+                    <div class="invalid-feedback">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+            <!-- ========================= -->
+            <!-- Content -->
+            <!-- ========================= -->
+
+            <div class="mb-3">
+
+                {{ form.content.label(class="form-label") }}
+
+                {{ form.content(
+                    class="form-control" + (" is-invalid" if form.content.errors else ""),
+                    rows=6,
+                    placeholder="Write the announcement..."
+                ) }}
+
+                {% for error in form.content.errors %}
+
+                    <div class="invalid-feedback">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+            <div class="row">
+
+                <!-- ========================= -->
+                <!-- Category -->
+                <!-- ========================= -->
+
+                <div class="col-md-6 mb-3">
+
+                    {{ form.category.label(class="form-label") }}
+
+                    {{ form.category(
+                        class="form-select" + (" is-invalid" if form.category.errors else "")
+                    ) }}
+
+                    {% for error in form.category.errors %}
+
+                        <div class="invalid-feedback">
+                            {{ error }}
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+                <!-- ========================= -->
+                <!-- Target Team -->
+                <!-- ========================= -->
+
+                <div class="col-md-6 mb-3">
+
+                    {{ form.team_id.label(class="form-label") }}
+
+                    {{ form.team_id(
+                        class="form-select" + (" is-invalid" if form.team_id.errors else "")
+                    ) }}
+
+                    {% for error in form.team_id.errors %}
+
+                        <div class="invalid-feedback">
+                            {{ error }}
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+            <!-- ========================= -->
+            <!-- Pin Announcement -->
+            <!-- ========================= -->
+
+            <div class="form-check mb-4">
+
+                {{ form.pinned(class="form-check-input") }}
+
+                {{ form.pinned.label(class="form-check-label") }}
+
+            </div>
+
+            <!-- ========================= -->
+            <!-- Submit -->
+            <!-- ========================= -->
+
+            <div class="d-flex justify-content-end">
+
+                {{ form.submit(class="btn btn-primary") }}
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/create_team.html
+=======================================================
+{% extends "admin/layout.html" %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <h2>Create Team</h2>
+
+    <hr>
+
+    <div class="alert alert-info">
+
+        Team creation page coming soon.
+
+    </div>
+
+</div>
+
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/edit_blog_post.html
+=======================================================
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+
+<h1 class='page-title mb-4'>Blog Post</h1>
+
+<div class='panel-card'>
+
+    <form method='POST'>
+
+        {{ csrf_token() }}
+
+        <div class='mb-3'>
+            <label class='form-label'>Title</label>
+            <input type='text' name='title'
+                   value='{{ post.title if post else "" }}'
+                   class='form-control' required>
+        </div>
+
+        <div class='mb-3'>
+            <label class='form-label'>Slug</label>
+            <input type='text' name='slug'
+                   value='{{ post.slug if post else "" }}'
+                   class='form-control' required>
+        </div>
+
+        <div class='mb-3'>
+            <label class='form-label'>Content</label>
+            <textarea name='content' rows='12'
+                      class='form-control' required>{{ post.content if post else "" }}</textarea>
+        </div>
+
+        <div class='form-check mb-3'>
+            <input type='checkbox' name='is_published'
+                   class='form-check-input'
+                   {% if not post or post.is_published %}checked{% endif %}>
+
+            <label class='form-check-label'>
+                Published
+            </label>
+        </div>
+
+        <button type='submit' class='btn btn-info'>
+            Save Post
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/edit_member.html
+=======================================================
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <h1 class="page-title mb-4 text-info">
+        Edit Member
+    </h1>
+
+    <div class="card bg-dark border-info shadow">
+
+        <div class="card-body text-light">
+
+            <form method="POST" enctype="multipart/form-data">
+
+                {{ form.hidden_tag() }}
+
+                <div class="text-center mb-4">
+
+                    {% if member.photo %}
+
+                        {% if member.photo.startswith('http') %}
+
+                            <img src="{{ member.photo }}"
+                                 class="rounded-circle border border-info shadow"
+                                 width="160"
+                                 height="160"
+                                 style="object-fit:cover;">
+
+                        {% else %}
+
+                            <img src="{{ url_for('static', filename=member.photo) }}"
+                                 class="rounded-circle border border-info shadow"
+                                 width="160"
+                                 height="160"
+                                 style="object-fit:cover;">
+
+                        {% endif %}
+
+                    {% else %}
+
+                        <img src="{{ url_for('static', filename='img/placeholders/member_placeholder.jpg') }}"
+                             class="rounded-circle border border-info shadow"
+                             width="160"
+                             height="160"
+                             style="object-fit:cover;">
+
+                    {% endif %}
+
+                </div>
+
+                <div class="mb-3">
+                    {{ form.photo.label(class_='form-label') }}
+                    {{ form.photo(class_='form-control') }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.full_name.label(class_='form-label') }}
+                    {{ form.full_name(class_='form-control') }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.role.label(class_='form-label') }}
+                    {{ form.role(class_='form-control') }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.bio.label(class_='form-label') }}
+                    {{ form.bio(class_='form-control', rows='4') }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.linkedin_url.label(class_='form-label') }}
+                    {{ form.linkedin_url(class_='form-control') }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.github_url.label(class_='form-label') }}
+                    {{ form.github_url(class_='form-control') }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.portfolio_url.label(class_='form-label') }}
+                    {{ form.portfolio_url(class_='form-control') }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.email.label(class_='form-label') }}
+                    {{ form.email(class_='form-control') }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.whatsapp_number.label(class_='form-label') }}
+                    {{ form.whatsapp_number(class_='form-control') }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.skills.label(class_='form-label') }}
+                    {{ form.skills(class_='form-control', rows='3') }}
+                </div>
+
+                <div class="d-flex gap-2">
+
+                    {{ form.submit(class_='btn btn-info') }}
+
+                    <a href="{{ url_for('admin.manage_members') }}"
+                       class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/edit_project.html
+=======================================================
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+
+<h1 class='page-title mb-4'>Project Form</h1>
+
+<div class='panel-card'>
+
+    <form method='POST'>
+
+        <div class='mb-3'>
+            <label class='form-label'>Project Title</label>
+            <input type='text' name='title' class='form-control'
+                   value='{{ project.title if project else "" }}' required>
+        </div>
+
+        <div class='mb-3'>
+            <label class='form-label'>Team</label>
+            <select name='team_id' class='form-select' required>
+                {% for team in teams %}
+                <option value='{{ team.id }}'
+                    {% if project and project.team_id == team.id %}selected{% endif %}>
+                    {{ team.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class='mb-3'>
+            <label class='form-label'>GitHub URL</label>
+            <input type='url' name='github_url' class='form-control'
+                   value='{{ project.github_url if project else "" }}'>
+        </div>
+
+        <div class='mb-3'>
+            <label class='form-label'>Live Demo URL</label>
+            <input type='url' name='live_url' class='form-control'
+                   value='{{ project.live_url if project else "" }}'>
+        </div>
+
+        <div class='mb-3'>
+            <label class='form-label'>Description</label>
+            <textarea name='description' rows='5'
+                      class='form-control'>{{ project.description if project else "" }}</textarea>
+        </div>
+
+        <button type='submit' class='btn btn-info'>Save Project</button>
+
+    </form>
+
+</div>
+
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/edit_team.html
+=======================================================
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+
+<h1 class='page-title mb-4'>Edit Team</h1>
+
+<div class='panel-card'>
+
+    <form method='POST'>
+
+        {{ form.hidden_tag() }}
+
+        <div class='mb-3'>
+            {{ form.name.label(class='form-label') }}
+            {{ form.name(class='form-control') }}
+        </div>
+
+        <div class='mb-3'>
+            {{ form.slug.label(class='form-label') }}
+            {{ form.slug(class='form-control') }}
+        </div>
+
+        <div class='mb-3'>
+            {{ form.lead_name.label(class='form-label') }}
+            {{ form.lead_name(class='form-control') }}
+        </div>
+
+        <div class='mb-3'>
+            {{ form.lead_role.label(class='form-label') }}
+            {{ form.lead_role(class='form-control') }}
+        </div>
+
+        <div class='mb-3'>
+            {{ form.short_description.label(class='form-label') }}
+            {{ form.short_description(class='form-control', rows='2') }}
+        </div>
+
+        <div class='mb-3'>
+            {{ form.description.label(class='form-label') }}
+            {{ form.description(class='form-control', rows='6') }}
+        </div>
+
+        {{ form.submit(class='btn btn-info') }}
+
+    </form>
+
+</div>
+
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/layout.html
+=======================================================
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ZeroNexus Admin</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/admin.css') }}">
+
+</head>
+
+<body class="
+{% if settings and settings.mode == 'light' %}
+theme-light
+{% else %}
+theme-dark
+{% endif %}
+theme-{{ settings.theme_name if settings else 'cyber-blue' }}">
+<div class="admin-wrapper">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <div class="sidebar-brand mb-4">
+
+            <h3>ZeroNexus</h3>
+
+            <small>Admin Panel</small>
+
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <!-- Dashboard -->
+            <a href="{{ url_for('admin.dashboard') }}"
+               class="{% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+                🏠 Dashboard
+            </a>
+
+            <!-- Teams -->
+            <a href="{{ url_for('admin.manage_teams') }}"
+               class="{% if request.endpoint == 'admin.manage_teams' %}active{% endif %}">
+                🛡 Teams
+            </a>
+
+            <!-- Members -->
+            <a href="{{ url_for('admin.manage_members') }}"
+               class="{% if request.endpoint == 'admin.manage_members' %}active{% endif %}">
+                👥 Members
+            </a>
+
+            <!-- Projects -->
+            <a href="{{ url_for('admin.manage_projects') }}"
+               class="{% if request.endpoint == 'admin.manage_projects' %}active{% endif %}">
+                📁 Projects
+            </a>
+
+            <!-- Announcements -->
+            <a href="{{ url_for('admin.manage_announcements') }}"
+                class="{% if request.endpoint in ['admin.manage_announcements', 'admin.create_announcement'] %}active{% endif %}">
+                📢 Announcements
+            </a>
+
+            <!-- Blog -->
+            <a href="{{ url_for('admin.manage_blog') }}"
+               class="{% if request.endpoint == 'admin.manage_blog' %}active{% endif %}">
+                📝 Blog
+            </a>
+
+            <!-- Contact Messages -->
+            <a href="{{ url_for('admin.manage_messages') }}"
+               class="{% if request.endpoint in ['admin.manage_messages', 'admin.view_message'] %}active{% endif %}">
+                📩 Messages
+            </a>
+
+            <!-- Settings -->
+            <a href="{{ url_for('admin.settings') }}"
+               class="{% if request.endpoint == 'admin.settings' %}active{% endif %}">
+                ⚙ Settings
+            </a>
+
+            <!-- Logout -->
+            <a href="{{ url_for('admin.logout') }}">
+                🚪 Logout
+            </a>
+
+        </nav>
+
+    </aside>
+    <!-- Main -->
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+
+                <h4 class="mb-0">
+
+                    Welcome,
+                    {{ current_user.username }}
+
+                </h4>
+
+            </div>
+
+        </header>
+
+        <div class="content-area">
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+
+                {% if messages %}
+
+                    {% for category, message in messages %}
+
+                        <div class="alert alert-{{ category }} alert-dismissible fade show">
+
+                            {{ message }}
+
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="alert">
+                            </button>
+
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            {% endwith %}
+
+            {% block content %}
+            {% endblock %}
+
+        </div>
+
+    </main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
+=======================================================
+FILE: app/templates/admin/login.html
+=======================================================
+{% extends 'base.html' %}
+
+{% block content %}
+<div class='row justify-content-center'>
+    <div class='col-md-5'>
+        <div class='card bg-black text-light border-info shadow-lg'>
+            <div class='card-body p-4'>
+                <h3 class='text-center text-info mb-4'>Admin Login</h3>
+
+                <form method='POST'>
+                    {{ form.hidden_tag() }}
+
+                    <div class='mb-3'>
+                        {{ form.username.label(class='form-label') }}
+                        {{ form.username(class='form-control bg-dark text-light border-secondary') }}
+                    </div>
+
+                    <div class='mb-3'>
+                        {{ form.password.label(class='form-label') }}
+                        {{ form.password(class='form-control bg-dark text-light border-secondary') }}
+                    </div>
+
+                    <div class='d-grid'>
+                        {{ form.submit(class='btn btn-info') }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/members.html
+=======================================================
+{% extends "admin/layout.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="page-title mb-0">
+        Manage Members
+    </h1>
+
+    <a href="{{ url_for('admin.add_member') }}" class="btn btn-info">
+        ➕ Add Member
+    </a>
+</div>
+
+<div class="panel-card">
+    <div class="table-responsive">
+
+        <table class="table table-dark table-hover align-middle">
+
+            <thead>
+                <tr>
+                    <th style="width:90px;">Photo</th>
+                    <th>Name</th>
+                    <th>Team</th>
+                    <th>Role</th>
+                    <th>LinkedIn</th>
+                    <th>GitHub</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for member in members %}
+
+                <tr>
+
+                    <td>
+                        {% if member.photo %}
+                            {% if member.photo.startswith('http') %}
+                                <img
+                                    src="{{ member.photo }}"
+                                    alt="{{ member.full_name }}"
+                                    class="table-avatar rounded-circle">
+                            {% else %}
+                                <img
+                                    src="{{ url_for('static', filename=member.photo) }}"
+                                    alt="{{ member.full_name }}"
+                                    class="table-avatar rounded-circle">
+                            {% endif %}
+                        {% else %}
+                            <img
+                                src="{{ url_for('static', filename='img/placeholders/member_placeholder.jpg') }}"
+                                alt="{{ member.full_name }}"
+                                class="table-avatar rounded-circle">
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <strong>{{ member.full_name }}</strong>
+                    </td>
+
+                    <td>
+                        {% if member.team %}
+                            {{ member.team.name }}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {{ member.role or "—" }}
+                    </td>
+
+                    <td>
+                        {% if member.linkedin_url %}
+                            <a href="{{ member.linkedin_url }}"
+                               target="_blank"
+                               rel="noopener"
+                               class="text-info">
+                                LinkedIn
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if member.github_url %}
+                            <a href="{{ member.github_url }}"
+                               target="_blank"
+                               rel="noopener"
+                               class="text-info">
+                                GitHub
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="text-end">
+
+                        <a href="{{ url_for('admin.edit_member', member_id=member.id) }}"
+                           class="btn btn-sm btn-outline-info me-2">
+                            Edit
+                        </a>
+
+                        <form
+                            method="POST"
+                            action="{{ url_for('admin.delete_member', member_id=member.id) }}"
+                            class="d-inline"
+                            onsubmit="return confirm('Delete {{ member.full_name }}?');">
+
+                            <input
+                                type="hidden"
+                                name="csrf_token"
+                                value="{{ csrf_token() }}">
+
+                            <button
+                                type="submit"
+                                class="btn btn-sm btn-outline-danger">
+                                Delete
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-5">
+
+                        No members found.
+
+                        <br><br>
+
+                        <a href="{{ url_for('admin.add_member') }}"
+                           class="btn btn-info">
+                            Add First Member
+                        </a>
+
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/message_detail.html
+=======================================================
+{% extends "admin/layout.html" %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <a href="{{ url_for('admin.manage_messages') }}"
+       class="btn btn-outline-info mb-4">
+        <i class="bi bi-arrow-left me-2"></i>
+        Back to Messages
+    </a>
+
+    <div class="card bg-dark border-info shadow">
+
+        <div class="card-body">
+
+            <h3 class="text-info mb-3">
+                {{ message.subject }}
+            </h3>
+
+            <hr>
+
+            <div class="row mb-3">
+
+                <div class="col-md-6">
+                    <strong>Name:</strong><br>
+                    {{ message.full_name }}
+                </div>
+
+                <div class="col-md-6">
+                    <strong>Email:</strong><br>
+                    <a href="mailto:{{ message.email }}"
+                       class="text-info text-decoration-none">
+                        {{ message.email }}
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="mb-3">
+                <strong>Received:</strong><br>
+                {{ message.created_at.strftime("%d %B %Y %H:%M") }}
+            </div>
+
+            <hr>
+
+            <div class="mb-4">
+                <strong>Message</strong>
+
+                <div class="mt-2 p-3 bg-black rounded border border-secondary"
+                     style="white-space: pre-wrap;">
+                    {{ message.message }}
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="d-flex gap-2 flex-wrap">
+
+                {% if not message.is_replied %}
+
+                    <a href="{{ url_for('admin.reply_message', message_id=message.id) }}"
+                       class="btn btn-success">
+                        <i class="bi bi-reply-fill me-2"></i>
+                        Mark as Replied
+                    </a>
+
+                {% else %}
+
+                    <button class="btn btn-outline-success" disabled>
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        Replied
+                    </button>
+
+                {% endif %}
+
+                <form method="POST"
+                      action="{{ url_for('admin.delete_message', message_id=message.id) }}"
+                      onsubmit="return confirm('Are you sure you want to permanently delete this message?');">
+
+                    <button type="submit"
+                            class="btn btn-danger">
+                        <i class="bi bi-trash-fill me-2"></i>
+                        Delete Message
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/messages.html
+=======================================================
+{% extends "admin/layout.html" %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <h2 class="text-info mb-4">
+        <i class="bi bi-envelope-fill me-2"></i>
+        Contact Messages
+    </h2>
+
+    {% if messages %}
+
+    <div class="table-responsive">
+
+        <table class="table table-dark table-hover align-middle">
+
+            <thead>
+
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Subject</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th width="340">Actions</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for message in messages %}
+
+                <tr>
+
+                    <td>{{ message.full_name }}</td>
+
+                    <td>{{ message.email }}</td>
+
+                    <td>{{ message.subject }}</td>
+
+                    <td>
+                        {{ message.created_at.strftime("%d %b %Y %H:%M") }}
+                    </td>
+
+                    <td>
+
+                        {% if message.is_replied %}
+
+                            <span class="badge bg-primary">
+                                Replied
+                            </span>
+
+                        {% elif message.is_read %}
+
+                            <span class="badge bg-success">
+                                Read
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge bg-warning text-dark">
+                                New
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        <div class="d-flex flex-wrap gap-2">
+
+                            <!-- View -->
+
+                            <a href="{{ url_for('admin.view_message', message_id=message.id) }}"
+                               class="btn btn-sm btn-info">
+                                View
+                            </a>
+
+                            <!-- Mark Read -->
+
+                            {% if not message.is_read %}
+
+                            <a href="{{ url_for('admin.mark_message_read', message_id=message.id) }}"
+                               class="btn btn-sm btn-success">
+                                Mark Read
+                            </a>
+
+                            {% endif %}
+
+                            <!-- Reply -->
+
+                            <a href="{{ url_for('admin.reply_message', message_id=message.id) }}"
+                               class="btn btn-sm btn-warning">
+                                Reply
+                            </a>
+
+                            <!-- Delete -->
+
+                            <form method="POST"
+                                  action="{{ url_for('admin.delete_message', message_id=message.id) }}"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Delete this message permanently?');">
+
+                                <input type="hidden"
+                                       name="csrf_token"
+                                       value="{{ csrf_token() }}">
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-danger">
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+    <div class="alert alert-info">
+
+        No contact messages yet.
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/projects.html
+=======================================================
+{% extends "admin/layout.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h1 class="page-title mb-1">
+            Manage Projects
+        </h1>
+
+        <p class="text-muted mb-0">
+            View and manage all ZeroNexus projects.
+        </p>
+    </div>
+
+    <a href="{{ url_for('admin.add_project') }}"
+       class="btn btn-info">
+        <i class="fa-solid fa-plus"></i>
+        Add Project
+    </a>
+
+</div>
+
+<div class="panel-card">
+
+    <div class="table-responsive">
+
+        <table class="table table-dark table-hover align-middle mb-0">
+
+            <thead>
+
+                <tr>
+                    <th>Title</th>
+                    <th>Team</th>
+                    <th>Created By</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Deadline</th>
+                    <th>GitHub</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for project in projects %}
+
+                <tr>
+
+                    <td>
+                        <strong>{{ project.title }}</strong>
+                    </td>
+
+                    <td>
+                        {% if project.team %}
+                            {{ project.team.name }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if project.creator %}
+                            {{ project.creator.username }}
+                        {% else %}
+                            Admin
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if project.status %}
+                            <span class="badge bg-primary">
+                                {{ project.status }}
+                            </span>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if project.priority %}
+                            <span class="badge bg-warning text-dark">
+                                {{ project.priority }}
+                            </span>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if project.deadline %}
+                            {{ project.deadline }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td>
+
+                        {% if project.github_url %}
+
+                            <a href="{{ project.github_url }}"
+                               target="_blank"
+                               class="btn btn-sm btn-outline-success">
+
+                                <i class="fa-brands fa-github"></i>
+                                GitHub
+
+                            </a>
+
+                        {% else %}
+
+                            <span class="text-muted">-</span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td class="text-end">
+
+                        {% if project.project_file %}
+
+                            <a href="{{ project.project_file }}"
+                               target="_blank"
+                               class="btn btn-sm btn-success">
+
+                                <i class="fa-solid fa-download"></i>
+                                Download
+
+                            </a>
+
+                        {% endif %}
+
+                        <a href="{{ url_for('admin.delete_project', project_id=project.id) }}"
+                           class="btn btn-sm btn-outline-danger"
+                           onclick="return confirm('Delete this project permanently?');">
+
+                            <i class="fa-solid fa-trash"></i>
+                            Delete
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td colspan="8"
+                        class="text-center text-muted py-5">
+
+                        No projects have been created yet.
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/settings.html
+=======================================================
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+
+<h1 class='page-title mb-4'>Site Settings</h1>
+
+<div class='panel-card p-4'>
+
+    <form method='POST' action='{{ url_for("admin.settings") }}'>
+
+        <!-- CSRF token -->
+        <input type='hidden' name='csrf_token' value='{{ csrf_token() }}'>
+
+        <h5 class='text-info mb-3'>Admin Contact</h5>
+
+        <div class='mb-3'>
+            <label class='form-label'>Admin Email</label>
+            <input type='email'
+                   name='contact_email'
+                   value='{{ settings.contact_email or "" }}'
+                   class='form-control'
+                   required>
+        </div>
+
+        <hr class='border-secondary'>
+
+        <h5 class='text-info mb-3'>Appearance</h5>
+
+        <div class='mb-3'>
+            <label class='form-label'>Mode</label>
+
+            <select name='mode' class='form-select'>
+                <option value='dark'
+                    {% if settings.mode == 'dark' %}selected{% endif %}>
+                    🌙 Dark Mode
+                </option>
+
+                <option value='light'
+                    {% if settings.mode == 'light' %}selected{% endif %}>
+                    ☀️ Light Mode
+                </option>
+            </select>
+        </div>
+
+        <div class='mb-4'>
+            <label class='form-label'>Theme</label>
+
+            <select name='theme_name' class='form-select'>
+
+                {% for theme in themes %}
+                <option value='{{ theme }}'
+                    {% if settings.theme_name == theme %}selected{% endif %}>
+                    {{ theme.replace('-', ' ').title() }}
+                </option>
+                {% endfor %}
+
+            </select>
+        </div>
+
+        <button type='submit' class='btn btn-info'>
+            Save Settings
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/teams.html
+=======================================================
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h1 class="page-title mb-0">
+        Manage Teams
+    </h1>
+
+    <a href="{{ url_for('admin.create_team') }}"
+       class="btn btn-info">
+        ➕ Add Team
+    </a>
+
+</div>
+
+
+<div class="panel-card">
+
+    <div class="table-responsive">
+
+        <table class="table table-dark align-middle">
+
+            <thead>
+
+                <tr>
+
+                    <th>Lead</th>
+
+                    <th>Team</th>
+
+                    <th>Team Lead</th>
+
+                    <th>Members</th>
+
+                    <th class="text-end">
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for team in teams %}
+
+                <tr>
+
+                    <td>
+
+                        <img
+                            src="{{ url_for('static', filename=team.lead_image) }}"
+                            class="table-avatar"
+                            alt="{{ team.name }}"
+                        >
+
+                    </td>
+
+                    <td>
+
+                        <strong>{{ team.name }}</strong>
+
+                    </td>
+
+                    <td>
+
+                        {{ team.lead_name or "Not Assigned" }}
+
+                    </td>
+
+                    <td>
+
+                        {{ team.users|length }}
+
+                    </td>
+
+                    <td class="text-end">
+
+                        <!-- View Workspace -->
+
+                        <a
+                            href="{{ url_for('admin.open_team', team_id=team.id) }}"
+                            class="btn btn-sm btn-success"
+                        >
+                            👁 View
+                        </a>
+
+                        <!-- Edit -->
+
+                        <a
+                            href="{{ url_for('admin.edit_team', team_id=team.id) }}"
+                            class="btn btn-sm btn-outline-info"
+                        >
+                            ✏ Edit
+                        </a>
+
+                        <!-- Delete -->
+
+                        <a
+                            href="#"
+                            class="btn btn-sm btn-outline-danger disabled"
+                        >
+                            🗑 Delete
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td colspan="5" class="text-center text-muted py-4">
+
+                        No teams found.
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/users.html
+=======================================================
+{% extends "admin/layout.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>
+            Manage Users
+        </h2>
+
+
+        <a href="{{ url_for('admin.add_user') }}"
+           class="btn btn-primary">
+
+            Add User
+
+        </a>
+
+    </div>
+
+
+
+    <div class="card shadow">
+
+        <div class="card-body">
+
+
+            <table class="table table-striped">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Username
+                        </th>
+
+                        <th>
+                            Email
+                        </th>
+
+                        <th>
+                            Role
+                        </th>
+
+                        <th>
+                            Team
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+
+                <tbody>
+
+
+                {% for user in users %}
+
+
+                    <tr>
+
+
+                        <td>
+                            {{ user.username }}
+                        </td>
+
+
+                        <td>
+                            {{ user.email }}
+                        </td>
+
+
+                        <td>
+                            {{ user.role }}
+                        </td>
+
+
+                        <td>
+
+                            {% if user.team %}
+
+                                {{ user.team.name }}
+
+                            {% else %}
+
+                                No Team
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if user.is_active %}
+
+                                <span class="badge bg-success">
+                                    Active
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-warning">
+                                    Pending
+                                </span>
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                    </tr>
+
+
+                {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+{% endblock %}
+
+=======================================================
+FILE: app/templates/admin/meetings.html
+=======================================================
+{% extends "admin/layout.html" %}
+
+{% block title %}
+Meetings
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold">
+                Meeting Management
+            </h2>
+
+            <p class="text-muted">
+                Manage meetings across all teams.
+            </p>
+
+        </div>
+
+        <a href="{{ url_for('meetings.create_meeting') }}"
+           class="btn btn-primary">
+
+            <i class="bi bi-plus-circle"></i>
+
+            New Meeting
+
+        </a>
+
+    </div>
+
+    <div class="card shadow border-0">
+
+        <div class="card-body table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Title</th>
+
+                        <th>Team</th>
+
+                        <th>Date</th>
+
+                        <th>Time</th>
+
+                        <th>Status</th>
+
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% if meetings %}
+
+                        {% for meeting in meetings %}
+
+                        <tr>
+
+                            <td>
+
+                                <strong>{{ meeting.title }}</strong>
+
+                            </td>
+
+                            <td>
+
+                                {{ meeting.team.name }}
+
+                            </td>
+
+                            <td>
+
+                                {{ meeting.meeting_date }}
+
+                            </td>
+
+                            <td>
+
+                                {{ meeting.meeting_time }}
+
+                            </td>
+
+                            <td>
+
+                                <span class="badge bg-success">
+
+                                    {{ meeting.status }}
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <a
+                                    href="{{ meeting.meet_link }}"
+                                    target="_blank"
+                                    class="btn btn-success btn-sm">
+
+                                    Join
+
+                                </a>
+
+                                <a
+                                    href="{{ url_for('meetings.edit_meeting', meeting_id=meeting.id) }}"
+                                    class="btn btn-warning btn-sm">
+
+                                    Edit
+
+                                </a>
+
+                                <a
+                                    href="#"
+                                    class="btn btn-danger btn-sm">
+
+                                    Delete
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                    <tr>
+
+                        <td colspan="6" class="text-center">
+
+                            No meetings found.
+
+                        </td>
+
+                    </tr>
+
+                    {% endif %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/create_meeting.html
+=======================================================
+{% extends "admin/layout.html" %}
+
+{% block title %}
+Create Meeting
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<div class="row justify-content-center">
+
+<div class="col-lg-8">
+
+<div class="card shadow border-0">
+
+<div class="card-header bg-primary text-white">
+
+<h3>Create Meeting</h3>
+
+</div>
+
+<div class="card-body">
+
+<form method="POST">
+
+{{ form.hidden_tag() }}
+
+<div class="mb-3">
+
+{{ form.title.label(class="form-label") }}
+
+{{ form.title(class="form-control") }}
+
+</div>
+
+<div class="mb-3">
+
+{{ form.description.label(class="form-label") }}
+
+{{ form.description(class="form-control", rows="5") }}
+
+</div>
+
+<div class="row">
+
+<div class="col-md-6">
+
+{{ form.meeting_date.label(class="form-label") }}
+
+{{ form.meeting_date(class="form-control") }}
+
+</div>
+
+<div class="col-md-6">
+
+{{ form.meeting_time.label(class="form-label") }}
+
+{{ form.meeting_time(class="form-control") }}
+
+</div>
+
+</div>
+
+<div class="mt-3">
+
+{{ form.duration.label(class="form-label") }}
+
+{{ form.duration(class="form-control") }}
+
+</div>
+
+<div class="mt-3">
+
+{{ form.meet_link.label(class="form-label") }}
+
+{{ form.meet_link(class="form-control") }}
+
+</div>
+
+<div class="mt-4">
+
+{{ form.submit(class="btn btn-primary") }}
+
+<a href="{{ url_for('meetings.meetings') }}"
+class="btn btn-secondary">
+
+Cancel
+
+</a>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/edit_meeting.html
+=======================================================
+{% extends "admin/layout.html" %}
+
+{% block title %}
+Edit Meeting
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<div class="row justify-content-center">
+
+<div class="col-lg-8">
+
+<div class="card shadow border-0">
+
+<div class="card-header bg-warning">
+
+<h3>Edit Meeting</h3>
+
+</div>
+
+<div class="card-body">
+
+<form method="POST">
+
+{{ form.hidden_tag() }}
+
+<div class="mb-3">
+
+{{ form.title.label(class="form-label") }}
+
+{{ form.title(class="form-control") }}
+
+</div>
+
+<div class="mb-3">
+
+{{ form.description.label(class="form-label") }}
+
+{{ form.description(class="form-control", rows="5") }}
+
+</div>
+
+<div class="row">
+
+<div class="col-md-6">
+
+{{ form.meeting_date.label(class="form-label") }}
+
+{{ form.meeting_date(class="form-control") }}
+
+</div>
+
+<div class="col-md-6">
+
+{{ form.meeting_time.label(class="form-label") }}
+
+{{ form.meeting_time(class="form-control") }}
+
+</div>
+
+</div>
+
+<div class="mt-3">
+
+{{ form.duration.label(class="form-label") }}
+
+{{ form.duration(class="form-control") }}
+
+</div>
+
+<div class="mt-3">
+
+{{ form.meet_link.label(class="form-label") }}
+
+{{ form.meet_link(class="form-control") }}
+
+</div>
+
+<div class="mt-4">
+
+{{ form.submit(class="btn btn-success") }}
+
+<a href="{{ url_for('meetings.meetings') }}"
+class="btn btn-secondary">
+
+Back
+
+</a>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}
+=======================================================
+FILE: app/templates/admin/dashboard.html
+=======================================================
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+
+<div class='d-flex justify-content-between align-items-center mb-4'>
+    <div>
+        <h1 class='page-title'>Admin Dashboard</h1>
+        <p class='text-secondary mb-0'>Manage teams, members, projects, and public content.</p>
+    </div>
+    <a href='{{ url_for("main.index") }}' class='btn btn-outline-info' target='_blank'>
+        🌐 View Public Site
+    </a>
+</div>
+
+<div class='row g-4 mb-5'>
+
+    <div class='col-md-6 col-xl-3'>
+        <div class='stat-card'>
+            <div class='stat-icon'>📁</div>
+            <div class='stat-number'>{{ project_count }}</div>
+            <div class='stat-label'>Projects</div>
+        </div>
+    </div>
+
+    <div class='col-md-6 col-xl-3'>
+        <div class='stat-card'>
+            <div class='stat-icon'>🛡</div>
+            <div class='stat-number'>{{ team_count }}</div>
+            <div class='stat-label'>Teams</div>
+        </div>
+    </div>
+
+    <div class='col-md-6 col-xl-3'>
+        <div class='stat-card'>
+            <div class='stat-icon'>👥</div>
+            <div class='stat-number'>{{ member_count }}</div>
+            <div class='stat-label'>Members</div>
+        </div>
+    </div>
+
+    <div class='col-md-6 col-xl-3'>
+        <div class='stat-card'>
+            <div class='stat-icon'>📝</div>
+            <div class='stat-number'>0</div>
+            <div class='stat-label'>Blog Posts</div>
+        </div>
+    </div>
+
+</div>
+
+<div class='row g-4'>
+
+    <div class='col-lg-6'>
+        <div class='panel-card'>
+            <div class='panel-header'>
+                <h5 class='mb-0'>Quick Actions</h5>
+            </div>
+
+            <div class='d-grid gap-3 mt-3'>
+                <a href='{{ url_for("admin.manage_teams") }}' class='btn btn-info'>
+                    ➕ Manage Teams
+                </a>
+                <a href='{{ url_for("admin.manage_members") }}' class='btn btn-outline-info'>
+                    ➕ Manage Members
+                </a>
+                <a href='#' class='btn btn-outline-info'>
+                    ➕ Add Project
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class='col-lg-6'>
+        <div class='panel-card'>
+            <div class='panel-header'>
+                <h5 class='mb-0'>Public Website</h5>
+            </div>
+
+            <p class='text-light mt-3'>
+                The public website displays all 6 cybersecurity groups, projects, and member portfolios.
+                Any changes you make here will appear publicly after saving.
+            </p>
+
+            <a href='{{ url_for("main.index") }}' target='_blank' class='btn btn-info'>
+                Open Public Site
+            </a>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

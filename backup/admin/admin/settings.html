@@ -1,0 +1,68 @@
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+
+<h1 class='page-title mb-4'>Site Settings</h1>
+
+<div class='panel-card p-4'>
+
+    <form method='POST' action='{{ url_for("admin.settings") }}'>
+
+        <!-- CSRF token -->
+        <input type='hidden' name='csrf_token' value='{{ csrf_token() }}'>
+
+        <h5 class='text-info mb-3'>Admin Contact</h5>
+
+        <div class='mb-3'>
+            <label class='form-label'>Admin Email</label>
+            <input type='email'
+                   name='contact_email'
+                   value='{{ settings.contact_email or "" }}'
+                   class='form-control'
+                   required>
+        </div>
+
+        <hr class='border-secondary'>
+
+        <h5 class='text-info mb-3'>Appearance</h5>
+
+        <div class='mb-3'>
+            <label class='form-label'>Mode</label>
+
+            <select name='mode' class='form-select'>
+                <option value='dark'
+                    {% if settings.mode == 'dark' %}selected{% endif %}>
+                    🌙 Dark Mode
+                </option>
+
+                <option value='light'
+                    {% if settings.mode == 'light' %}selected{% endif %}>
+                    ☀️ Light Mode
+                </option>
+            </select>
+        </div>
+
+        <div class='mb-4'>
+            <label class='form-label'>Theme</label>
+
+            <select name='theme_name' class='form-select'>
+
+                {% for theme in themes %}
+                <option value='{{ theme }}'
+                    {% if settings.theme_name == theme %}selected{% endif %}>
+                    {{ theme.replace('-', ' ').title() }}
+                </option>
+                {% endfor %}
+
+            </select>
+        </div>
+
+        <button type='submit' class='btn btn-info'>
+            Save Settings
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,157 @@
+{% extends "admin/layout.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="page-title mb-0">
+        Manage Members
+    </h1>
+
+    <a href="{{ url_for('admin.add_member') }}" class="btn btn-info">
+        ➕ Add Member
+    </a>
+</div>
+
+<div class="panel-card">
+    <div class="table-responsive">
+
+        <table class="table table-dark table-hover align-middle">
+
+            <thead>
+                <tr>
+                    <th style="width:90px;">Photo</th>
+                    <th>Name</th>
+                    <th>Team</th>
+                    <th>Role</th>
+                    <th>LinkedIn</th>
+                    <th>GitHub</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for member in members %}
+
+                <tr>
+
+                    <td>
+                        {% if member.photo %}
+                            {% if member.photo.startswith('http') %}
+                                <img
+                                    src="{{ member.photo }}"
+                                    alt="{{ member.full_name }}"
+                                    class="table-avatar rounded-circle">
+                            {% else %}
+                                <img
+                                    src="{{ url_for('static', filename=member.photo) }}"
+                                    alt="{{ member.full_name }}"
+                                    class="table-avatar rounded-circle">
+                            {% endif %}
+                        {% else %}
+                            <img
+                                src="{{ url_for('static', filename='img/placeholders/member_placeholder.jpg') }}"
+                                alt="{{ member.full_name }}"
+                                class="table-avatar rounded-circle">
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <strong>{{ member.full_name }}</strong>
+                    </td>
+
+                    <td>
+                        {% if member.team %}
+                            {{ member.team.name }}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {{ member.role or "—" }}
+                    </td>
+
+                    <td>
+                        {% if member.linkedin_url %}
+                            <a href="{{ member.linkedin_url }}"
+                               target="_blank"
+                               rel="noopener"
+                               class="text-info">
+                                LinkedIn
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if member.github_url %}
+                            <a href="{{ member.github_url }}"
+                               target="_blank"
+                               rel="noopener"
+                               class="text-info">
+                                GitHub
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="text-end">
+
+                        <a href="{{ url_for('admin.edit_member', member_id=member.id) }}"
+                           class="btn btn-sm btn-outline-info me-2">
+                            Edit
+                        </a>
+
+                        <form
+                            method="POST"
+                            action="{{ url_for('admin.delete_member', member_id=member.id) }}"
+                            class="d-inline"
+                            onsubmit="return confirm('Delete {{ member.full_name }}?');">
+
+                            <input
+                                type="hidden"
+                                name="csrf_token"
+                                value="{{ csrf_token() }}">
+
+                            <button
+                                type="submit"
+                                class="btn btn-sm btn-outline-danger">
+                                Delete
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-5">
+
+                        No members found.
+
+                        <br><br>
+
+                        <a href="{{ url_for('admin.add_member') }}"
+                           class="btn btn-info">
+                            Add First Member
+                        </a>
+
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}

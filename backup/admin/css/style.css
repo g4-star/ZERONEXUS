@@ -1,0 +1,405 @@
+body {
+    background: linear-gradient(135deg, #050816 0%, #0a1025 100%);
+    color: #f8f9fa;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+.hero {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.team-card,
+.member-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.team-card:hover,
+.member-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.25);
+}
+
+.team-image,
+.project-image {
+    height: 220px;
+    object-fit: cover;
+}
+
+.lead-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #00d4ff;
+}
+
+.lead-profile-image {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #00d4ff;
+}
+
+.member-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #00d4ff;
+}
+
+.portfolio-photo {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #00d4ff;
+}
+
+.banner-img {
+    max-height: 320px;
+    object-fit: cover;
+}
+
+.btn-info {
+    background: #00d4ff;
+    border: none;
+    color: #000;
+    font-weight: 700;
+}
+
+.btn-info:hover {
+    background: #33ddff;
+}
+/* =========================
+   ZERO NEXUS AI ACADEMY
+========================= */
+
+.academy-container{
+    padding:20px 0 60px;
+}
+
+.academy-hero{
+    margin-bottom:50px;
+}
+
+.academy-hero h1{
+    font-size:2.4rem;
+    font-weight:700;
+    color:#ffffff;
+}
+
+.academy-hero p{
+    max-width:720px;
+    margin:15px auto;
+    color:#bfc7d5;
+    font-size:1rem;
+    line-height:1.7;
+}
+
+.academy-stats{
+    margin-top:20px;
+}
+
+.academy-stats .badge{
+    padding:10px 16px;
+    font-size:.85rem;
+    border-radius:30px;
+}
+
+.course-card{
+
+    background:#111827;
+
+    border:1px solid rgba(0,212,255,.15);
+
+    border-radius:18px;
+
+    padding:24px;
+
+    transition:.35s;
+
+    height:100%;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.course-card:hover{
+
+    transform:translateY(-8px);
+
+    border-color:#00d4ff;
+
+    box-shadow:0 0 30px rgba(0,212,255,.25);
+
+}
+
+.course-icon{
+
+    width:65px;
+
+    height:65px;
+
+    border-radius:16px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:rgba(0,212,255,.12);
+
+    font-size:2rem;
+
+    margin-bottom:18px;
+
+}
+
+.course-card h4{
+
+    font-size:1.2rem;
+
+    font-weight:700;
+
+    color:#fff;
+
+    margin-bottom:12px;
+
+}
+
+.course-card p{
+
+    color:#bfc7d5;
+
+    font-size:.92rem;
+
+    line-height:1.6;
+
+    flex-grow:1;
+
+}
+
+.course-card .small{
+
+    color:#93a4b5!important;
+
+    font-size:.82rem;
+
+    line-height:1.7;
+
+}
+
+.progress{
+
+    height:10px;
+
+    background:#1d2638;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+}
+
+.progress-bar{
+
+    font-size:.7rem;
+
+    font-weight:700;
+
+}
+
+.course-card .btn{
+
+    margin-top:18px;
+
+    border-radius:12px;
+
+    font-weight:600;
+
+}
+
+.course-card .btn-outline-info:hover{
+
+    background:#00d4ff;
+
+    color:#000;
+
+}
+
+.course-header{
+
+    background:#111827;
+
+    border:1px solid rgba(0,212,255,.2);
+
+    border-radius:20px;
+
+    padding:35px;
+
+    margin-bottom:35px;
+
+}
+
+.course-header h1{
+
+    font-size:2rem;
+
+    margin-bottom:10px;
+
+}
+
+.course-header p{
+
+    color:#bfc7d5;
+
+}
+
+.list-group-item{
+
+    background:#0f172a;
+
+    border-color:#243247;
+
+    color:#f1f5f9;
+
+    transition:.25s;
+
+}
+
+.list-group-item:hover{
+
+    background:#172036;
+
+    color:#00d4ff;
+
+    transform:translateX(6px);
+
+}
+
+.chat-box{
+
+    background:#111827;
+
+    border:1px solid rgba(0,212,255,.2);
+
+    border-radius:20px;
+
+    padding:25px;
+
+    max-height:550px;
+
+    overflow-y:auto;
+
+    margin-bottom:20px;
+
+}
+
+.chat-box p{
+
+    font-size:.95rem;
+
+    line-height:1.7;
+
+}
+
+.chat-box pre{
+
+    background:#0b1220;
+
+    color:#00ff9d;
+
+    padding:15px;
+
+    border-radius:12px;
+
+    overflow-x:auto;
+
+}
+
+input{
+
+    background:#111827!important;
+
+    color:white!important;
+
+    border:1px solid #2a3950!important;
+
+    border-radius:12px!important;
+
+    padding:12px 15px!important;
+
+}
+
+input::placeholder{
+
+    color:#94a3b8;
+
+}
+
+@media(max-width:768px){
+
+    .academy-hero h1{
+
+        font-size:2rem;
+
+    }
+
+    .course-card{
+
+        padding:20px;
+
+    }
+
+}
+
+/* ===========================
+   CONTACT SECTION
+=========================== */
+
+#contact .card{
+    background:#111827;
+    border:1px solid rgba(0,212,255,.18);
+    border-radius:18px;
+    transition:.3s;
+}
+
+#contact .card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 0 30px rgba(0,212,255,.18);
+}
+
+#contact .form-control{
+    background:#0f172a;
+    border:1px solid #243244;
+    color:#fff;
+}
+
+#contact .form-control:focus{
+    background:#0f172a;
+    color:#fff;
+    border-color:#00d4ff;
+    box-shadow:0 0 12px rgba(0,212,255,.25);
+}
+
+#contact textarea{
+    resize:none;
+}
+
+#contact a{
+    transition:.25s;
+}
+
+#contact a:hover{
+    color:#00d4ff !important;
+    text-decoration:none;
+}
