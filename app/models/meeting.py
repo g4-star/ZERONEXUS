@@ -46,6 +46,13 @@ class Meeting(db.Model):
         default="Scheduled"
     )
 
+    # team | shared | global
+    meeting_scope = db.Column(
+        db.String(20),
+        nullable=False,
+        default="team"
+    )
+
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow
@@ -57,16 +64,23 @@ class Meeting(db.Model):
         nullable=False
     )
 
+    # NULL only for global meetings
     team_id = db.Column(
         db.Integer,
         db.ForeignKey("teams.id"),
-        nullable=False
+        nullable=True
     )
 
+    # -----------------------------
     # Relationships
+    # -----------------------------
+
     creator = db.relationship(
         "User",
-        backref="meetings_created"
+        backref=db.backref(
+            "meetings_created",
+            lazy=True
+        )
     )
 
     team = db.relationship(
@@ -74,5 +88,105 @@ class Meeting(db.Model):
         back_populates="meetings"
     )
 
+    shared_teams = db.relationship(
+        "MeetingTeam",
+        back_populates="meeting",
+        cascade="all, delete-orphan",
+        lazy=True
+    )
+
+    participants = db.relationship(
+        "MeetingParticipant",
+        back_populates="meeting",
+        cascade="all, delete-orphan",
+        lazy=True
+    )
+
     def __repr__(self):
         return f"<Meeting {self.title}>"
+
+
+class MeetingTeam(db.Model):
+    __tablename__ = "meeting_teams"
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    meeting_id = db.Column(
+        db.Integer,
+        db.ForeignKey("meetings.id"),
+        nullable=False
+    )
+
+    team_id = db.Column(
+        db.Integer,
+        db.ForeignKey("teams.id"),
+        nullable=False
+    )
+
+    meeting = db.relationship(
+        "Meeting",
+        back_populates="shared_teams"
+    )
+
+    team = db.relationship(
+        "Team"
+    )
+
+    __table_args__ = (
+        db.UniqueConstraint(
+            "meeting_id",
+            "team_id",
+            name="uq_meeting_team"
+        ),
+    )
+
+
+class MeetingParticipant(db.Model):
+    __tablename__ = "meeting_participants"
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    meeting_id = db.Column(
+        db.Integer,
+        db.ForeignKey("meetings.id"),
+        nullable=False
+    )
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        nullable=False
+    )
+
+    joined_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+    left_at = db.Column(
+        db.DateTime,
+        nullable=True
+    )
+
+    meeting = db.relationship(
+        "Meeting",
+        back_populates="participants"
+    )
+
+    user = db.relationship(
+        "User"
+    )
+
+    __table_args__ = (
+        db.UniqueConstraint(
+            "meeting_id",
+            "user_id",
+            name="uq_meeting_participant"
+        ),
+    )

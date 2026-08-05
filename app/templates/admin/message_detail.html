@@ -1,97 +1,77 @@
-{% extends "admin/layout.html" %}
+<div class="dash-panel-header">
+    <div class="d-flex align-items-center gap-2">
+        <span class="panel-icon"><i class="fa-solid fa-envelope-open"></i></span>
+        <h3 class="mb-0 fs-4">{{ message.subject }}</h3>
+    </div>
+</div>
 
-{% block content %}
+<div class="row mb-3">
 
-<div class="container py-4">
+    <div class="col-md-6 mb-2">
+        <strong>Name:</strong><br>
+        {{ message.full_name }}
+    </div>
 
-    <a href="{{ url_for('admin.manage_messages') }}"
-       class="btn btn-outline-info mb-4">
-        <i class="bi bi-arrow-left me-2"></i>
-        Back to Messages
-    </a>
-
-    <div class="card bg-dark border-info shadow">
-
-        <div class="card-body">
-
-            <h3 class="text-info mb-3">
-                {{ message.subject }}
-            </h3>
-
-            <hr>
-
-            <div class="row mb-3">
-
-                <div class="col-md-6">
-                    <strong>Name:</strong><br>
-                    {{ message.full_name }}
-                </div>
-
-                <div class="col-md-6">
-                    <strong>Email:</strong><br>
-                    <a href="mailto:{{ message.email }}"
-                       class="text-info text-decoration-none">
-                        {{ message.email }}
-                    </a>
-                </div>
-
-            </div>
-
-            <div class="mb-3">
-                <strong>Received:</strong><br>
-                {{ message.created_at.strftime("%d %B %Y %H:%M") }}
-            </div>
-
-            <hr>
-
-            <div class="mb-4">
-                <strong>Message</strong>
-
-                <div class="mt-2 p-3 bg-black rounded border border-secondary"
-                     style="white-space: pre-wrap;">
-                    {{ message.message }}
-                </div>
-            </div>
-
-            <hr>
-
-            <div class="d-flex gap-2 flex-wrap">
-
-                {% if not message.is_replied %}
-
-                    <a href="{{ url_for('admin.reply_message', message_id=message.id) }}"
-                       class="btn btn-success">
-                        <i class="bi bi-reply-fill me-2"></i>
-                        Mark as Replied
-                    </a>
-
-                {% else %}
-
-                    <button class="btn btn-outline-success" disabled>
-                        <i class="bi bi-check-circle-fill me-2"></i>
-                        Replied
-                    </button>
-
-                {% endif %}
-
-                <form method="POST"
-                      action="{{ url_for('admin.delete_message', message_id=message.id) }}"
-                      onsubmit="return confirm('Are you sure you want to permanently delete this message?');">
-
-                    <button type="submit"
-                            class="btn btn-danger">
-                        <i class="bi bi-trash-fill me-2"></i>
-                        Delete Message
-                    </button>
-
-                </form>
-
-            </div>
-
-        </div>
-
+    <div class="col-md-6 mb-2">
+        <strong>Email:</strong><br>
+        <a href="mailto:{{ message.email }}"
+           class="text-info text-decoration-none">
+            {{ message.email }}
+        </a>
     </div>
 
 </div>
 
-{% endblock %}
+<div class="mb-3">
+    <strong>Received:</strong><br>
+    {{ message.created_at.strftime("%d %B %Y %H:%M") }}
+</div>
+
+<hr>
+
+<div class="mb-4">
+    <strong>Message</strong>
+
+    <div class="message-body mt-2 p-3 rounded border">
+        {{ message.message }}
+    </div>
+</div>
+
+<hr>
+
+<div class="d-flex gap-2 flex-wrap">
+
+    {% if not message.is_replied %}
+
+        <a href="{{ url_for('admin.reply_message', message_id=message.id) }}"
+           class="btn btn-success">
+            <i class="fa-solid fa-reply me-2"></i>
+            Mark as Replied
+        </a>
+
+    {% else %}
+
+        <button class="btn btn-outline-success" disabled>
+            <i class="fa-solid fa-check-circle me-2"></i>
+            Replied
+        </button>
+
+    {% endif %}
+
+    <form method="POST"
+          action="{{ url_for('admin.delete_message', message_id=message.id) }}"
+          data-confirm="Are you sure you want to permanently delete this message?">
+
+        <input type="hidden"
+               name="csrf_token"
+               value="{{ csrf_token() }}">
+
+        <button type="submit"
+                class="btn btn-danger">
+            <i class="fa-solid fa-trash me-2"></i>
+            Delete Message
+        </button>
+
+    </form>
+
+</div>

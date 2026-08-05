@@ -2,168 +2,185 @@
 
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="container-fluid">
 
-    <div>
-        <h1 class="page-title mb-1">
-            Manage Projects
-        </h1>
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <p class="text-muted mb-0">
-            View and manage all ZeroNexus projects.
-        </p>
+        <div>
+            <h1 class="page-title mb-1">
+                <i class="fa-solid fa-folder-open text-info me-2"></i>
+                Manage Projects
+            </h1>
+
+            <p class="text-muted mb-0">
+                View and manage all ZeroNexus projects.
+            </p>
+        </div>
+
+        <a href="{{ url_for('admin.add_project') }}"
+           class="btn btn-info">
+            <i class="fa-solid fa-plus me-2"></i>
+            Add Project
+        </a>
+
     </div>
 
-    <a href="{{ url_for('admin.add_project') }}"
-       class="btn btn-info">
-        <i class="fa-solid fa-plus"></i>
-        Add Project
-    </a>
+    <!-- Projects Card -->
+    <div class="card shadow-sm border-0">
 
-</div>
+        <div class="card-body">
 
-<div class="panel-card">
+            <div class="table-responsive">
 
-    <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0" data-searchable>
 
-        <table class="table table-dark table-hover align-middle mb-0">
+                    <thead>
 
-            <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Team</th>
+                            <th>Created By</th>
+                            <th>Status</th>
+                            <th>Priority</th>
+                            <th>Deadline</th>
+                            <th>GitHub</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
 
-                <tr>
-                    <th>Title</th>
-                    <th>Team</th>
-                    <th>Created By</th>
-                    <th>Status</th>
-                    <th>Priority</th>
-                    <th>Deadline</th>
-                    <th>GitHub</th>
-                    <th class="text-end">Actions</th>
-                </tr>
+                    </thead>
 
-            </thead>
+                    <tbody>
 
-            <tbody>
+                        {% for project in projects %}
 
-                {% for project in projects %}
+                        <tr>
 
-                <tr>
+                            <td>
+                                <strong>{{ project.title }}</strong>
+                            </td>
 
-                    <td>
-                        <strong>{{ project.title }}</strong>
-                    </td>
+                            <td>
+                                {{ project.team.name if project.team else "-" }}
+                            </td>
 
-                    <td>
-                        {% if project.team %}
-                            {{ project.team.name }}
+                            <td>
+                                {{ project.creator.username if project.creator else "Admin" }}
+                            </td>
+
+                            <td>
+
+                                {% if project.status %}
+                                    <span class="badge bg-primary">
+                                        {{ project.status }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {% if project.priority %}
+                                    <span class="badge bg-warning text-dark">
+                                        {{ project.priority }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                {{ project.deadline if project.deadline else "-" }}
+                            </td>
+
+                            <td>
+
+                                {% if project.github_url %}
+
+                                    <a href="{{ project.github_url }}"
+                                       target="_blank"
+                                       class="btn btn-sm btn-outline-success">
+
+                                        <i class="fa-brands fa-github"></i>
+                                        GitHub
+
+                                    </a>
+
+                                {% else %}
+
+                                    <span class="text-muted">-</span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td class="text-end">
+
+                                <div class="btn-group">
+
+                                    {% if project.project_file %}
+
+                                        <a href="{{ project.project_file }}"
+                                           target="_blank"
+                                           class="btn btn-sm btn-success">
+
+                                            <i class="fa-solid fa-download"></i>
+
+                                        </a>
+
+                                    {% endif %}
+
+                                    <a href="{{ url_for('team.edit_project', project_id=project.id) }}"
+                                       class="btn btn-sm btn-warning">
+
+                                        <i class="fa-solid fa-pen"></i>
+
+                                    </a>
+
+                                    <a href="{{ url_for('admin.delete_project', project_id=project.id) }}"
+                                       class="btn btn-sm btn-danger"
+                                       onclick="return confirm('Delete this project permanently?');">
+
+                                        <i class="fa-solid fa-trash"></i>
+
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
                         {% else %}
-                            -
-                        {% endif %}
-                    </td>
 
-                    <td>
-                        {% if project.creator %}
-                            {{ project.creator.username }}
-                        {% else %}
-                            Admin
-                        {% endif %}
-                    </td>
+                        <tr>
 
-                    <td>
-                        {% if project.status %}
-                            <span class="badge bg-primary">
-                                {{ project.status }}
-                            </span>
-                        {% else %}
-                            <span class="text-muted">-</span>
-                        {% endif %}
-                    </td>
+                            <td colspan="8" class="text-center py-5">
 
-                    <td>
-                        {% if project.priority %}
-                            <span class="badge bg-warning text-dark">
-                                {{ project.priority }}
-                            </span>
-                        {% else %}
-                            <span class="text-muted">-</span>
-                        {% endif %}
-                    </td>
+                                <i class="fa-solid fa-folder-open fa-3x mb-3 text-secondary"></i>
 
-                    <td>
-                        {% if project.deadline %}
-                            {{ project.deadline }}
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
+                                <h5>No Projects Found</h5>
 
-                    <td>
+                                <p class="text-muted">
+                                    No projects have been created yet.
+                                </p>
 
-                        {% if project.github_url %}
+                            </td>
 
-                            <a href="{{ project.github_url }}"
-                               target="_blank"
-                               class="btn btn-sm btn-outline-success">
+                        </tr>
 
-                                <i class="fa-brands fa-github"></i>
-                                GitHub
+                        {% endfor %}
 
-                            </a>
+                    </tbody>
 
-                        {% else %}
+                </table>
 
-                            <span class="text-muted">-</span>
+            </div>
 
-                        {% endif %}
-
-                    </td>
-
-                    <td class="text-end">
-
-                        {% if project.project_file %}
-
-                            <a href="{{ project.project_file }}"
-                               target="_blank"
-                               class="btn btn-sm btn-success">
-
-                                <i class="fa-solid fa-download"></i>
-                                Download
-
-                            </a>
-
-                        {% endif %}
-
-                        <a href="{{ url_for('admin.delete_project', project_id=project.id) }}"
-                           class="btn btn-sm btn-outline-danger"
-                           onclick="return confirm('Delete this project permanently?');">
-
-                            <i class="fa-solid fa-trash"></i>
-                            Delete
-
-                        </a>
-
-                    </td>
-
-                </tr>
-
-                {% else %}
-
-                <tr>
-
-                    <td colspan="8"
-                        class="text-center text-muted py-5">
-
-                        No projects have been created yet.
-
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
+        </div>
 
     </div>
 

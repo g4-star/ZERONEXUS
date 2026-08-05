@@ -1,6 +1,7 @@
 import os
+
 from werkzeug.utils import secure_filename
-from flask import current_app
+
 from flask import (
     render_template,
     abort,
@@ -8,7 +9,9 @@ from flask import (
     url_for,
     flash,
     session,
-    request
+    request,
+    jsonify,
+    current_app
 )
 
 from flask_login import (
@@ -16,7 +19,7 @@ from flask_login import (
     current_user
 )
 
-from app.extensions import db
+from app.extensions import db, limiter
 
 from app.auth.decorators import (
     member_required,
@@ -25,12 +28,9 @@ from app.auth.decorators import (
 
 from . import team_bp
 
-from .forms import (
-    CreateProjectForm,
-    CreateMeetingForm
-)
-
+from .forms import CreateProjectForm
 from .announcement_forms import CreateAnnouncementForm
+from .message_forms import MessageForm
 
 from app.models import (
     User,
@@ -38,21 +38,12 @@ from app.models import (
     Project,
     Meeting,
     Announcement,
-    TeamMessage
+    TeamMessage,
+    Notification
 )
-from .message_forms import MessageForm
-from flask import redirect, url_for
-from flask import render_template
-from flask_login import current_user, login_required
-from app.models import Team, User, Project
-from app.models import TeamMessage
-from flask import jsonify
-from app.services.project_upload_service import upload_project_file
-from app.auth.decorators import super_admin_required
-from app.extensions import limiter
+
 from app.forms.meeting import MeetingForm
-from app.models.meeting import Meeting
-from app.models.notification import Notification
+
 
 def require_active_team():
 
@@ -259,6 +250,8 @@ def dashboard():
         "team/dashboard.html",
         **context
     )
+
+
 # =====================================================
 # TEAM PROJECTS
 # =====================================================
@@ -278,7 +271,6 @@ def projects():
     ).order_by(
         Project.created_at.desc()
     ).all()
-
 
     return render_template(
         "team/projects.html",
@@ -304,9 +296,7 @@ def create_project():
     if current_user.team is None:
         abort(404)
 
-
     form = CreateProjectForm()
-
 
     if form.validate_on_submit():
 
@@ -320,7 +310,6 @@ def create_project():
 
             demo_url=form.demo_url.data,
 
-
             status=form.status.data,
 
             priority=form.priority.data,
@@ -329,7 +318,6 @@ def create_project():
 
             deadline=form.deadline.data,
 
-
             visibility="team",
 
             team_id=current_user.team.id,
@@ -337,20 +325,17 @@ def create_project():
             created_by=current_user.id
         )
 
-
         # ============================
         # ZIP UPLOAD
         # ============================
 
         uploaded_file = form.project_file.data
 
-
         if uploaded_file:
 
             filename = secure_filename(
                 uploaded_file.filename
             )
-
 
             upload_folder = os.path.join(
 
@@ -364,60 +349,49 @@ def create_project():
 
             )
 
-
             os.makedirs(
                 upload_folder,
                 exist_ok=True
             )
-
 
             filepath = os.path.join(
                 upload_folder,
                 filename
             )
 
-
             uploaded_file.save(
                 filepath
             )
-
 
             project.project_file = (
                 "uploads/projects/"
                 + filename
             )
 
-
             project.file_name = filename
-
 
             size = os.path.getsize(
                 filepath
             )
 
-
             project.file_size = (
                 f"{round(size / 1024,2)} KB"
             )
 
-
         db.session.add(project)
 
         db.session.commit()
-
 
         flash(
             "Project uploaded successfully.",
             "success"
         )
 
-
         return redirect(
             url_for(
                 "team.projects"
             )
         )
-
 
     return render_template(
         "team/create_project.html",
@@ -648,7 +622,8 @@ def create_meeting():
         form=form,
         team=team
     )
-    
+
+
 @team_bp.route(
     "/meetings/<int:meeting_id>/edit",
     methods=["GET", "POST"]
@@ -686,6 +661,7 @@ def edit_meeting(meeting_id):
         form=form,
         meeting=meeting
     )
+
 
 @team_bp.route(
     "/meetings/<int:meeting_id>/delete",
@@ -936,6 +912,7 @@ def messages_api():
         for m in messages
     ])
 
+
 # =====================================================
 # TEAM PROFILE
 # =====================================================
@@ -952,7 +929,8 @@ def profile():
         user=current_user,
         team=team
     )
-    
+
+
 # =====================================================
 # TEAM TASKS
 # =====================================================

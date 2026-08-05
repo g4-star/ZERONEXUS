@@ -1,31 +1,47 @@
-{% extends 'base.html' %}
+<div class="col-md-5 col-lg-4 w-100">
 
-{% block content %}
-<div class='row justify-content-center'>
-    <div class='col-md-5'>
-        <div class='card bg-black text-light border-info shadow-lg'>
-            <div class='card-body p-4'>
-                <h3 class='text-center text-info mb-4'>Admin Login</h3>
+    <div class="card bg-black text-light border-info shadow-lg rounded-4">
 
-                <form method='POST'>
-                    {{ form.hidden_tag() }}
+        <div class="card-body p-4 p-md-5">
 
-                    <div class='mb-3'>
-                        {{ form.username.label(class='form-label') }}
-                        {{ form.username(class='form-control bg-dark text-light border-secondary') }}
-                    </div>
+            <div class="text-center mb-4">
 
-                    <div class='mb-3'>
-                        {{ form.password.label(class='form-label') }}
-                        {{ form.password(class='form-control bg-dark text-light border-secondary') }}
-                    </div>
+                <div class="d-inline-flex align-items-center justify-content-center
+                            bg-info bg-gradient rounded-3 text-dark fw-bold mb-3"
+                     style="width:56px;height:56px;font-size:22px;">
+                    ZN
+                </div>
 
-                    <div class='d-grid'>
-                        {{ form.submit(class='btn btn-info') }}
-                    </div>
-                </form>
+                <h3 class="mb-1">Admin Login</h3>
+
+                <p class="text-muted small mb-0">
+                    ZeroNexus Admin Panel
+                </p>
+
             </div>
+
+            <form method="POST">
+
+                {{ form.hidden_tag() }}
+
+                <div class="mb-3">
+                    {{ form.username.label(class='form-label') }}
+                    {{ form.username(class='form-control bg-dark text-light border-secondary') }}
+                </div>
+
+                <div class="mb-4">
+                    {{ form.password.label(class='form-label') }}
+                    {{ form.password(class='form-control bg-dark text-light border-secondary') }}
+                </div>
+
+                <div class="d-grid">
+                    {{ form.submit(class='btn btn-info') }}
+                </div>
+
+            </form>
+
         </div>
+
     </div>
+
 </div>
-{% endblock %}

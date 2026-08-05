@@ -1,68 +1,57 @@
-{% extends 'admin/layout.html' %}
+{% extends "admin/layout.html" %}
+<form method="POST" action="{{ url_for('admin.settings') }}">
 
-{% block content %}
+    <!-- CSRF token -->
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-<h1 class='page-title mb-4'>Site Settings</h1>
+    <h5 class="text-info mb-3">Admin Contact</h5>
 
-<div class='panel-card p-4'>
+    <div class="mb-3">
+        <label class="form-label">Admin Email</label>
+        <input type="email"
+               name="contact_email"
+               value='{{ settings.contact_email or "" }}'
+               class="form-control"
+               required>
+    </div>
 
-    <form method='POST' action='{{ url_for("admin.settings") }}'>
+    <hr class="border-secondary">
 
-        <!-- CSRF token -->
-        <input type='hidden' name='csrf_token' value='{{ csrf_token() }}'>
+    <h5 class="text-info mb-3">Appearance</h5>
 
-        <h5 class='text-info mb-3'>Admin Contact</h5>
+    <div class="mb-3">
+        <label class="form-label">Mode</label>
 
-        <div class='mb-3'>
-            <label class='form-label'>Admin Email</label>
-            <input type='email'
-                   name='contact_email'
-                   value='{{ settings.contact_email or "" }}'
-                   class='form-control'
-                   required>
-        </div>
+        <select name="mode" class="form-select">
+            <option value="dark"
+                {% if settings.mode == 'dark' %}selected{% endif %}>
+                🌙 Dark Mode
+            </option>
 
-        <hr class='border-secondary'>
+            <option value="light"
+                {% if settings.mode == 'light' %}selected{% endif %}>
+                ☀️ Light Mode
+            </option>
+        </select>
+    </div>
 
-        <h5 class='text-info mb-3'>Appearance</h5>
+    <div class="mb-4">
+        <label class="form-label">Theme</label>
 
-        <div class='mb-3'>
-            <label class='form-label'>Mode</label>
+        <select name="theme_name" class="form-select">
 
-            <select name='mode' class='form-select'>
-                <option value='dark'
-                    {% if settings.mode == 'dark' %}selected{% endif %}>
-                    🌙 Dark Mode
-                </option>
+            {% for theme in themes %}
+            <option value="{{ theme }}"
+                {% if settings.theme_name == theme %}selected{% endif %}>
+                {{ theme.replace('-', ' ').title() }}
+            </option>
+            {% endfor %}
 
-                <option value='light'
-                    {% if settings.mode == 'light' %}selected{% endif %}>
-                    ☀️ Light Mode
-                </option>
-            </select>
-        </div>
+        </select>
+    </div>
 
-        <div class='mb-4'>
-            <label class='form-label'>Theme</label>
+    <button type="submit" class="btn btn-info">
+        Save Settings
+    </button>
 
-            <select name='theme_name' class='form-select'>
-
-                {% for theme in themes %}
-                <option value='{{ theme }}'
-                    {% if settings.theme_name == theme %}selected{% endif %}>
-                    {{ theme.replace('-', ' ').title() }}
-                </option>
-                {% endfor %}
-
-            </select>
-        </div>
-
-        <button type='submit' class='btn btn-info'>
-            Save Settings
-        </button>
-
-    </form>
-
-</div>
-
-{% endblock %}
+</form>

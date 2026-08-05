@@ -1,87 +1,27 @@
-{% extends "admin/layout.html" %}
-
-
-{% block content %}
-
-
-<div class="container mt-4">
-
-
-<h2>
-Create Team User
-</h2>
-
-
-
 <form method="POST">
-
 
     {{ form.hidden_tag() }}
 
-
-
     <div class="mb-3">
-
-        {{ form.full_name.label }}
-
-        {{ form.full_name(
-            class="form-control"
-        ) }}
-
+        {{ form.full_name.label(class="form-label") }}
+        {{ form.full_name(class="form-control") }}
     </div>
 
-
-
-
     <div class="mb-3">
-
-        {{ form.email.label }}
-
-        {{ form.email(
-            class="form-control"
-        ) }}
-
+        {{ form.email.label(class="form-label") }}
+        {{ form.email(class="form-control") }}
     </div>
 
-
-
-
     <div class="mb-3">
-
-        {{ form.role.label }}
-
-        {{ form.role(
-            class="form-select"
-        ) }}
-
+        {{ form.role.label(class="form-label") }}
+        {{ form.role(class="form-select") }}
     </div>
 
-
-
-
     <div class="mb-3">
-
-        {{ form.team_id.label }}
-
-        {{ form.team_id(
-            class="form-select"
-        ) }}
-
+        {{ form.team_id.label(class="form-label") }}
+        {{ form.team_id(class="form-select") }}
     </div>
 
-
-
-
-    {{ form.submit(
-        class="btn btn-success"
-    ) }}
-
-
+    {{ form.submit(class="btn btn-success") }}
 
 </form>
-
-
-</div>
-
-
-{% endblock %}

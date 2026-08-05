@@ -1,49 +1,37 @@
-{% extends 'admin/layout.html' %}
+<form method="POST">
 
-{% block content %}
+    {{ form.hidden_tag() }}
 
-<h1 class='page-title mb-4'>Edit Team</h1>
+    <div class="mb-3">
+        {{ form.name.label(class='form-label') }}
+        {{ form.name(class='form-control') }}
+    </div>
 
-<div class='panel-card'>
+    <div class="mb-3">
+        {{ form.slug.label(class='form-label') }}
+        {{ form.slug(class='form-control') }}
+    </div>
 
-    <form method='POST'>
+    <div class="mb-3">
+        {{ form.lead_name.label(class='form-label') }}
+        {{ form.lead_name(class='form-control') }}
+    </div>
 
-        {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.lead_role.label(class='form-label') }}
+        {{ form.lead_role(class='form-control') }}
+    </div>
 
-        <div class='mb-3'>
-            {{ form.name.label(class='form-label') }}
-            {{ form.name(class='form-control') }}
-        </div>
+    <div class="mb-3">
+        {{ form.short_description.label(class='form-label') }}
+        {{ form.short_description(class='form-control', rows='2') }}
+    </div>
 
-        <div class='mb-3'>
-            {{ form.slug.label(class='form-label') }}
-            {{ form.slug(class='form-control') }}
-        </div>
+    <div class="mb-3">
+        {{ form.description.label(class='form-label') }}
+        {{ form.description(class='form-control', rows='6') }}
+    </div>
 
-        <div class='mb-3'>
-            {{ form.lead_name.label(class='form-label') }}
-            {{ form.lead_name(class='form-control') }}
-        </div>
+    {{ form.submit(class='btn btn-info') }}
 
-        <div class='mb-3'>
-            {{ form.lead_role.label(class='form-label') }}
-            {{ form.lead_role(class='form-control') }}
-        </div>
-
-        <div class='mb-3'>
-            {{ form.short_description.label(class='form-label') }}
-            {{ form.short_description(class='form-control', rows='2') }}
-        </div>
-
-        <div class='mb-3'>
-            {{ form.description.label(class='form-label') }}
-            {{ form.description(class='form-control', rows='6') }}
-        </div>
-
-        {{ form.submit(class='btn btn-info') }}
-
-    </form>
-
-</div>
-
-{% endblock %}
+</form>

@@ -1,26 +1,17 @@
 {% extends "admin/layout.html" %}
+<h2 class="page-title mb-0">Announcements</h2>
 
-{% block content %}
-
-<div class="d-flex justify-content-between align-items-center mb-4">
-
-    <h2>Announcements</h2>
-
-    <a href="{{ url_for('admin.create_announcement') }}"
-       class="btn btn-primary">
-        + New Announcement
-    </a>
-
-</div>
-
-{% if announcements %}
+<a href="{{ url_for('admin.create_announcement') }}"
+   class="btn btn-primary">
+    + New Announcement
+</a>
+<div class="glass-card">
 
     <div class="table-responsive">
 
-        <table class="table table-hover align-middle">
+        <table class="table table-dark table-hover align-middle mb-0" data-searchable>
 
             <thead>
-
                 <tr>
                     <th>Title</th>
                     <th>Team</th>
@@ -30,7 +21,6 @@
                     <th>Created</th>
                     <th>Actions</th>
                 </tr>
-
             </thead>
 
             <tbody>
@@ -39,7 +29,9 @@
 
                     <tr>
 
-                        <td>{{ a.title }}</td>
+                        <td>
+                            <strong>{{ a.title }}</strong>
+                        </td>
 
                         <td>{{ a.team.name if a.team else '—' }}</td>
 
@@ -69,6 +61,10 @@
                                   action="{{ url_for('admin.toggle_pin_announcement', announcement_id=a.id) }}"
                                   class="d-inline">
 
+                                <input type="hidden"
+                                       name="csrf_token"
+                                       value="{{ csrf_token() }}">
+
                                 <button class="btn btn-sm btn-outline-warning">
                                     {% if a.pinned %}Unpin{% else %}Pin{% endif %}
                                 </button>
@@ -78,7 +74,11 @@
                             <form method="post"
                                   action="{{ url_for('admin.delete_announcement', announcement_id=a.id) }}"
                                   class="d-inline"
-                                  onsubmit="return confirm('Delete this announcement?');">
+                                  data-confirm="Delete this announcement?">
+
+                                <input type="hidden"
+                                       name="csrf_token"
+                                       value="{{ csrf_token() }}">
 
                                 <button class="btn btn-sm btn-outline-danger">
                                     Delete
@@ -98,13 +98,8 @@
 
     </div>
 
-{% else %}
-
-    <div class="alert alert-info">
-        No announcements yet.
-        <a href="{{ url_for('admin.create_announcement') }}">Create one</a>.
-    </div>
-
-{% endif %}
-
-{% endblock %}
+</div>
+<div class="alert alert-info">
+    No announcements yet.
+    <a href="{{ url_for('admin.create_announcement') }}">Create one</a>.
+</div>

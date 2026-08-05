@@ -2,88 +2,368 @@
 
 {% block content %}
 
-<div class='d-flex justify-content-between align-items-center mb-4'>
-    <div>
-        <h1 class='page-title'>Admin Dashboard</h1>
-        <p class='text-secondary mb-0'>Manage teams, members, projects, and public content.</p>
+<!-- ===================== Welcome Banner ===================== -->
+<section class="welcome-banner anim-fade-up">
+
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+
+        <div>
+            <h1 class="page-title">Admin Dashboard</h1>
+            <p class="page-subtitle mb-0">Manage teams, members, projects, and public content.</p>
+        </div>
+
+        <a href="{{ url_for('main.index') }}"
+           class="btn btn-outline-info"
+           target="_blank">
+            <i class="fa-solid fa-globe me-2"></i>
+            View Public Site
+        </a>
+
     </div>
-    <a href='{{ url_for("main.index") }}' class='btn btn-outline-info' target='_blank'>
-        🌐 View Public Site
-    </a>
+
+</section>
+
+<!-- ===================== Statistics Cards ===================== -->
+<div class="row g-4 mb-5 stagger">
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-folder-open"></i></div>
+            <div class="stat-number">{{ project_count }}</div>
+            <div class="stat-label">Projects</div>
+            <div class="stat-trend flat">Across all teams</div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="stat-number">{{ team_count }}</div>
+            <div class="stat-label">Teams</div>
+            <div class="stat-trend flat">Active groups</div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-number">{{ member_count }}</div>
+            <div class="stat-label">Members</div>
+            <div class="stat-trend flat">Onboarded</div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-newspaper"></i></div>
+            <div class="stat-number">0</div>
+            <div class="stat-label">Blog Posts</div>
+            <div class="stat-trend flat">Published content</div>
+        </div>
+    </div>
+
 </div>
 
-<div class='row g-4 mb-5'>
+<!-- ===================== Widgets Grid ===================== -->
+<div class="dash-grid stagger">
 
-    <div class='col-md-6 col-xl-3'>
-        <div class='stat-card'>
-            <div class='stat-icon'>📁</div>
-            <div class='stat-number'>{{ project_count }}</div>
-            <div class='stat-label'>Projects</div>
-        </div>
-    </div>
+    <!-- ===== Calendar Widget ===== -->
+    <div class="dash-span-4">
+        <div class="glass-card calendar-card">
 
-    <div class='col-md-6 col-xl-3'>
-        <div class='stat-card'>
-            <div class='stat-icon'>🛡</div>
-            <div class='stat-number'>{{ team_count }}</div>
-            <div class='stat-label'>Teams</div>
-        </div>
-    </div>
-
-    <div class='col-md-6 col-xl-3'>
-        <div class='stat-card'>
-            <div class='stat-icon'>👥</div>
-            <div class='stat-number'>{{ member_count }}</div>
-            <div class='stat-label'>Members</div>
-        </div>
-    </div>
-
-    <div class='col-md-6 col-xl-3'>
-        <div class='stat-card'>
-            <div class='stat-icon'>📝</div>
-            <div class='stat-number'>0</div>
-            <div class='stat-label'>Blog Posts</div>
-        </div>
-    </div>
-
-</div>
-
-<div class='row g-4'>
-
-    <div class='col-lg-6'>
-        <div class='panel-card'>
-            <div class='panel-header'>
-                <h5 class='mb-0'>Quick Actions</h5>
+            <div class="dash-panel-header">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="panel-icon"><i class="fa-solid fa-calendar-days"></i></span>
+                    <h5 class="mb-0">Calendar</h5>
+                </div>
             </div>
 
-            <div class='d-grid gap-3 mt-3'>
-                <a href='{{ url_for("admin.manage_teams") }}' class='btn btn-info'>
-                    ➕ Manage Teams
-                </a>
-                <a href='{{ url_for("admin.manage_members") }}' class='btn btn-outline-info'>
-                    ➕ Manage Members
-                </a>
-                <a href='#' class='btn btn-outline-info'>
-                    ➕ Add Project
-                </a>
+            <div class="calendar-head">
+                <button class="cal-nav cal-prev" type="button" aria-label="Previous month">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <span class="cal-title" id="calendarMonthLabel">—</span>
+                <button class="cal-nav cal-next" type="button" aria-label="Next month">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
             </div>
+
+            <div class="calendar-widget" id="calendarWidget"></div>
+
         </div>
     </div>
 
-    <div class='col-lg-6'>
-        <div class='panel-card'>
-            <div class='panel-header'>
-                <h5 class='mb-0'>Public Website</h5>
+    <!-- ===== Google Meet Widget ===== -->
+    <div class="dash-span-4">
+        <div class="glass-card meet-card">
+
+            <div class="dash-panel-header">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="panel-icon"><i class="fa-solid fa-video"></i></span>
+                    <h5 class="mb-0">Meetings</h5>
+                </div>
+                <span class="meet-badge">
+                    <span class="meet-dot"></span>
+                    Google Meet
+                </span>
             </div>
 
-            <p class='text-light mt-3'>
-                The public website displays all 6 cybersecurity groups, projects, and member portfolios.
-                Any changes you make here will appear publicly after saving.
-            </p>
+            <h6>Real-time collaboration</h6>
 
-            <a href='{{ url_for("main.index") }}' target='_blank' class='btn btn-info'>
-                Open Public Site
-            </a>
+            <div class="meet-meta">
+                Host and join team meetings right from ZeroNexus.
+            </div>
+
+            <div class="meet-actions">
+                <a href="{{ url_for('team.meetings') }}" class="meet-join">
+                    <i class="fa-solid fa-video me-2"></i>
+                    View Meetings
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== Online Users ===== -->
+    <div class="dash-span-4">
+        <div class="glass-card">
+
+            <div class="dash-panel-header">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="panel-icon"><i class="fa-solid fa-user-group"></i></span>
+                    <h5 class="mb-0">Online Users</h5>
+                </div>
+                <span class="panel-badge">Live</span>
+            </div>
+
+            <div class="online-list">
+
+                <div class="online-item">
+                    <div class="avatar-ring">
+                        <span class="avatar-fallback">{{ current_user.username[:2]|upper }}</span>
+                        <span class="status-dot"></span>
+                    </div>
+                    <div class="o-meta">
+                        <b>{{ current_user.username }}</b>
+                        <span>{{ current_user.role }}</span>
+                    </div>
+                    <span class="o-role">Online</span>
+                </div>
+
+            </div>
+
+            <small class="text-muted">{{ member_count }} members in workspace</small>
+
+        </div>
+    </div>
+
+    <!-- ===== Recent Activity ===== -->
+    <div class="dash-span-5">
+        <div class="glass-card">
+
+            <div class="dash-panel-header">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="panel-icon"><i class="fa-solid fa-clock-rotate-left"></i></span>
+                    <h5 class="mb-0">Recent Activity</h5>
+                </div>
+                <span class="panel-badge" id="activityDate">Today</span>
+            </div>
+
+            <div class="activity-list">
+
+                <div class="activity-item">
+                    <span class="a-icon"><i class="fa-solid fa-folder-open"></i></span>
+                    <div class="a-body">
+                        <b>Projects workspace</b>
+                        <p>{{ project_count }} project(s) currently managed</p>
+                    </div>
+                    <span class="a-time">Today</span>
+                </div>
+
+                <div class="activity-item">
+                    <span class="a-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                    <div class="a-body">
+                        <b>Teams overview</b>
+                        <p>{{ team_count }} team(s) being coordinated</p>
+                    </div>
+                    <span class="a-time">Today</span>
+                </div>
+
+                <div class="activity-item">
+                    <span class="a-icon"><i class="fa-solid fa-users"></i></span>
+                    <div class="a-body">
+                        <b>Member directory</b>
+                        <p>{{ member_count }} member profile(s) onboarded</p>
+                    </div>
+                    <span class="a-time">Today</span>
+                </div>
+
+                <div class="activity-item">
+                    <span class="a-icon"><i class="fa-solid fa-bullhorn"></i></span>
+                    <div class="a-body">
+                        <b>Broadcasts</b>
+                        <p>Announcements reach every team instantly</p>
+                    </div>
+                    <span class="a-time">Ready</span>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== Announcements Widget ===== -->
+    <div class="dash-span-7">
+        <div class="glass-card">
+
+            <div class="dash-panel-header">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="panel-icon"><i class="fa-solid fa-bullhorn"></i></span>
+                    <h5 class="mb-0">Announcements</h5>
+                </div>
+                <a href="{{ url_for('admin.manage_announcements') }}" class="panel-link">
+                    Manage
+                </a>
+            </div>
+
+            <div class="announce-list">
+
+                <div class="announce-item">
+                    <div class="a-top">
+                        <b>No announcements yet</b>
+                        <span class="announce-cat">Info</span>
+                    </div>
+                    <p>Broadcast updates, sprints, and alerts to your teams from the announcements page.</p>
+                </div>
+
+            </div>
+
+            <div class="mt-3">
+                <a href="{{ url_for('admin.create_announcement') }}"
+                   class="btn btn-outline-info btn-sm">
+                    <i class="fa-solid fa-plus me-2"></i>
+                    New Announcement
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== Projects Widget ===== -->
+    <div class="dash-span-7">
+        <div class="glass-card">
+
+            <div class="dash-panel-header">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="panel-icon"><i class="fa-solid fa-folder-open"></i></span>
+                    <h5 class="mb-0">Projects</h5>
+                </div>
+                <a href="{{ url_for('admin.manage_projects') }}" class="panel-link">
+                    Manage
+                </a>
+            </div>
+
+            <div class="proj-list">
+
+                <div class="proj-item">
+                    <span class="proj-icon"><i class="fa-solid fa-box-archive"></i></span>
+                    <div class="p-meta">
+                        <b>{{ project_count }} project(s) in workspace</b>
+                        <span>Published across all teams</span>
+                    </div>
+                    <span class="proj-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+
+            </div>
+
+            <div class="mt-3">
+                <a href="{{ url_for('admin.add_project') }}"
+                   class="btn btn-info btn-sm">
+                    <i class="fa-solid fa-cloud-arrow-up me-2"></i>
+                    Upload Project
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== Quick Actions ===== -->
+    <div class="dash-span-5">
+        <div class="glass-card">
+
+            <div class="dash-panel-header">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="panel-icon"><i class="fa-solid fa-bolt"></i></span>
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+
+                <a href="{{ url_for('admin.manage_teams') }}" class="qa-item">
+                    <span class="qa-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                    Manage Teams
+                    <span class="qa-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+                </a>
+
+                <a href="{{ url_for('admin.manage_members') }}" class="qa-item">
+                    <span class="qa-icon"><i class="fa-solid fa-users"></i></span>
+                    Manage Members
+                    <span class="qa-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+                </a>
+
+                <a href="{{ url_for('admin.add_project') }}" class="qa-item">
+                    <span class="qa-icon"><i class="fa-solid fa-folder-plus"></i></span>
+                    Add Project
+                    <span class="qa-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+                </a>
+
+                <a href="{{ url_for('admin.add_member') }}" class="qa-item">
+                    <span class="qa-icon"><i class="fa-solid fa-user-plus"></i></span>
+                    Add Member
+                    <span class="qa-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+                </a>
+
+                <a href="{{ url_for('admin.create_announcement') }}" class="qa-item">
+                    <span class="qa-icon"><i class="fa-solid fa-bullhorn"></i></span>
+                    New Announcement
+                    <span class="qa-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+                </a>
+
+                <a href="{{ url_for('admin.manage_messages') }}" class="qa-item">
+                    <span class="qa-icon"><i class="fa-solid fa-envelope"></i></span>
+                    View Messages
+                    <span class="qa-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== Public Website ===== -->
+    <div class="dash-span-12">
+        <div class="glass-card">
+
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+
+                <div>
+                    <h5 class="mb-1">Public Website</h5>
+                    <p class="text-muted mb-0">
+                        The public website displays all cybersecurity groups, projects, and member portfolios.
+                        Any changes you make here will appear publicly after saving.
+                    </p>
+                </div>
+
+                <a href="{{ url_for('main.index') }}"
+                   target="_blank"
+                   class="btn btn-info">
+                    <i class="fa-solid fa-globe me-2"></i>
+                    Open Public Site
+                </a>
+
+            </div>
+
         </div>
     </div>
 

@@ -1,131 +1,163 @@
-{% extends 'admin/layout.html' %}
+{% extends "admin/layout.html" %}
 
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="container-fluid">
 
-    <h1 class="page-title mb-0">
-        Manage Teams
-    </h1>
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-    <a href="{{ url_for('admin.create_team') }}"
-       class="btn btn-info">
-        ➕ Add Team
-    </a>
+        <div>
+            <h1 class="page-title mb-1">
+                <i class="fa-solid fa-shield-halved text-info me-2"></i>
+                Manage Teams
+            </h1>
 
-</div>
+            <p class="text-muted mb-0">
+                Create, manage and monitor all ZeroNexus teams.
+            </p>
+        </div>
 
+        <a href="{{ url_for('admin.create_team') }}"
+           class="btn btn-info">
 
-<div class="panel-card">
+            <i class="fa-solid fa-plus me-2"></i>
+            Add Team
 
-    <div class="table-responsive">
+        </a>
 
-        <table class="table table-dark align-middle">
+    </div>
 
-            <thead>
+    <!-- Teams Card -->
+    <div class="card shadow-sm border-0">
 
-                <tr>
+        <div class="card-body">
 
-                    <th>Lead</th>
+            <div class="table-responsive">
 
-                    <th>Team</th>
+                <table class="table table-dark table-hover align-middle mb-0" data-searchable>
 
-                    <th>Team Lead</th>
+                    <thead>
 
-                    <th>Members</th>
+                        <tr>
+                            <th style="width:80px;">Lead</th>
+                            <th>Team</th>
+                            <th>Team Lead</th>
+                            <th>Members</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
 
-                    <th class="text-end">
-                        Actions
-                    </th>
+                    </thead>
 
-                </tr>
+                    <tbody>
 
-            </thead>
+                    {% for team in teams %}
 
-            <tbody>
+                        <tr>
 
-                {% for team in teams %}
+                            <td>
 
-                <tr>
+                                {% if team.lead_image %}
 
-                    <td>
+                                    <img src="{{ url_for('static', filename=team.lead_image) }}"
+                                         alt="{{ team.name }}"
+                                         style="width:46px;height:46px;object-fit:cover;border-radius:50%;">
 
-                        <img
-                            src="{{ url_for('static', filename=team.lead_image) }}"
-                            class="table-avatar"
-                            alt="{{ team.name }}"
-                        >
+                                {% else %}
 
-                    </td>
+                                    <img src="{{ url_for('static', filename='img/placeholders/team_lead_placeholder.jpg') }}"
+                                         alt="{{ team.name }}"
+                                         style="width:46px;height:46px;object-fit:cover;border-radius:50%;">
 
-                    <td>
+                                {% endif %}
 
-                        <strong>{{ team.name }}</strong>
+                            </td>
 
-                    </td>
+                            <td>
 
-                    <td>
+                                <strong>{{ team.name }}</strong>
 
-                        {{ team.lead_name or "Not Assigned" }}
+                            </td>
 
-                    </td>
+                            <td>
 
-                    <td>
+                                {{ team.lead_name or "Not Assigned" }}
 
-                        {{ team.users|length }}
+                            </td>
 
-                    </td>
+                            <td>
 
-                    <td class="text-end">
+                                {{ team.users|length }}
 
-                        <!-- View Workspace -->
+                            </td>
 
-                        <a
-                            href="{{ url_for('admin.open_team', team_id=team.id) }}"
-                            class="btn btn-sm btn-success"
-                        >
-                            👁 View
-                        </a>
+                            <td class="text-end">
 
-                        <!-- Edit -->
+                                <div class="btn-group">
 
-                        <a
-                            href="{{ url_for('admin.edit_team', team_id=team.id) }}"
-                            class="btn btn-sm btn-outline-info"
-                        >
-                            ✏ Edit
-                        </a>
+                                    <a href="{{ url_for('admin.open_team', team_id=team.id) }}"
+                                       class="btn btn-sm btn-success">
 
-                        <!-- Delete -->
+                                        <i class="fa-solid fa-eye"></i>
 
-                        <a
-                            href="#"
-                            class="btn btn-sm btn-outline-danger disabled"
-                        >
-                            🗑 Delete
-                        </a>
+                                    </a>
 
-                    </td>
+                                    <a href="{{ url_for('admin.edit_team', team_id=team.id) }}"
+                                       class="btn btn-sm btn-warning">
 
-                </tr>
+                                        <i class="fa-solid fa-pen"></i>
 
-                {% else %}
+                                    </a>
 
-                <tr>
+                                    <a href="{{ url_for('admin.delete_team', team_id=team.id) }}"
+                                       class="btn btn-sm btn-danger"
+                                       onclick="return confirm('Delete {{ team.name }}?');">
 
-                    <td colspan="5" class="text-center text-muted py-4">
+                                        <i class="fa-solid fa-trash"></i>
 
-                        No teams found.
+                                    </a>
 
-                    </td>
+                                </div>
 
-                </tr>
+                            </td>
 
-                {% endfor %}
+                        </tr>
 
-            </tbody>
+                    {% else %}
 
-        </table>
+                        <tr>
+
+                            <td colspan="5" class="text-center py-5">
+
+                                <i class="fa-solid fa-users fa-3x text-secondary mb-3"></i>
+
+                                <h5>No Teams Found</h5>
+
+                                <p class="text-muted">
+                                    There are currently no teams.
+                                </p>
+
+                                <a href="{{ url_for('admin.create_team') }}"
+                                   class="btn btn-info">
+
+                                    <i class="fa-solid fa-plus me-2"></i>
+                                    Create First Team
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
 
     </div>
 

@@ -1,7 +1,28 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
-from flask_login import login_user, logout_user, login_required, current_user
-from app.models.admin_user import AdminUser
-from app.extensions import db
+from flask import (
+    Blueprint,
+    render_template,
+    redirect,
+    url_for,
+    flash,
+    request,
+    abort,
+    session,
+    current_app
+)
+from flask_login import (
+    login_user,
+    logout_user,
+    login_required,
+    current_user
+)
+
+from sqlalchemy import or_
+from werkzeug.utils import secure_filename
+
+import os
+import secrets
+import string
+
 from app.models import (
     Team,
     MemberProfile,
@@ -12,44 +33,24 @@ from app.models import (
     Announcement,
     User
 )
+from app.models.admin_user import AdminUser
+from app.extensions import db, limiter
 
 from .forms import AdminLoginForm
 from .member_forms import AddMemberForm
 from .user_forms import CreateUserForm
 from .team_forms import EditTeamForm
-from .announcement_forms import CreateAnnouncementForm
 
 from app.email import (
     send_member_welcome,
     send_member_invitation
 )
 
-from app.utils.permissions import (
-    super_admin_required
-)
-from flask import session
-from flask import (
-    render_template,
-    redirect,
-    url_for,
-    flash,
-    abort,
-    session
-)
 from app.auth.decorators import (
     super_admin_required
 )
-import os
 
-from werkzeug.utils import secure_filename
-
-from app.models import Project, Team
 from app.services.project_upload_service import upload_project_file
-from app.extensions import limiter
-
-from flask import current_app
-import secrets
-import string
 
 
 # ==========================================
@@ -99,13 +100,20 @@ def generate_username(full_name):
 
     return username
 
+
 @admin_bp.context_processor
-def inject_admin_settings():
+def inject_settings():
+    """Inject site settings into every template."""
     settings = SiteSetting.query.first()
-    return {'admin_settings': settings}
+    return {
+        "settings": settings,
+        "admin_settings": settings
+    }
 
-from sqlalchemy import or_
 
+# =====================================================
+# LOGIN
+# =====================================================
 
 @admin_bp.route("/login", methods=["GET", "POST"])
 @limiter.limit("5 per minute")
@@ -154,7 +162,7 @@ def login():
         "admin/login.html",
         form=form
     )
-    
+
 
 # =====================================================
 # ADMIN DASHBOARD
@@ -173,6 +181,7 @@ def dashboard():
         project_count=Project.query.count()
     )
 
+
 # =====================================================
 # CREATE TEAM
 # =====================================================
@@ -182,10 +191,95 @@ def dashboard():
 @super_admin_required
 @limiter.limit("5 per minute")
 def create_team():
+    """Create a new team."""
+
+    form = TeamForm()
+
+    if form.validate_on_submit():
+
+        team = Team(
+            name=form.name.data,
+            slug=form.slug.data,
+            lead_name=form.lead_name.data,
+            lead_role=form.lead_role.data,
+            short_description=form.short_description.data,
+            description=form.description.data,
+        )
+
+        db.session.add(team)
+        db.session.commit()
+
+        flash("Team created successfully.", "success")
+
+        return redirect(url_for("admin.manage_teams"))
 
     return render_template(
-        "admin/create_team.html"
+        "admin/create_team.html",
+        form=form
     )
+
+
+# =====================================================
+# EDIT TEAM
+# =====================================================
+
+@admin_bp.route("/teams/<int:team_id>/edit", methods=["GET", "POST"])
+@login_required
+@super_admin_required
+def edit_team(team_id):
+    """Edit an existing team."""
+
+    team = Team.query.get_or_404(team_id)
+
+    form = EditTeamForm(obj=team)
+
+    if form.validate_on_submit():
+
+        form.populate_obj(team)
+
+        db.session.commit()
+
+        flash(
+            "Team updated successfully.",
+            "success"
+        )
+
+        return redirect(
+            url_for("admin.manage_teams")
+        )
+
+    return render_template(
+        "admin/edit_team.html",
+        form=form,
+        team=team
+    )
+
+
+# =====================================================
+# DELETE TEAM
+# =====================================================
+
+@admin_bp.route("/teams/<int:team_id>/delete", methods=["POST"])
+@login_required
+@super_admin_required
+def delete_team(team_id):
+    """Delete a team."""
+
+    team = Team.query.get_or_404(team_id)
+
+    db.session.delete(team)
+    db.session.commit()
+
+    flash(
+        "Team deleted successfully.",
+        "success"
+    )
+
+    return redirect(
+        url_for("admin.manage_teams")
+    )
+
+
 # =====================================================
 # MANAGE TEAMS
 # =====================================================
@@ -194,10 +288,9 @@ def create_team():
 @login_required
 @super_admin_required
 def manage_teams():
+    """Display all teams."""
 
-    teams = Team.query.order_by(
-        Team.name.asc()
-    ).all()
+    teams = Team.query.order_by(Team.name.asc()).all()
 
     return render_template(
         "admin/teams.html",
@@ -213,13 +306,9 @@ def manage_teams():
 @login_required
 @super_admin_required
 def open_team(team_id):
+    """Open the selected team's dashboard."""
 
-    from flask import session
-
-    team = db.session.get(Team, team_id)
-
-    if team is None:
-        abort(404)
+    team = Team.query.get_or_404(team_id)
 
     session["active_team_id"] = team.id
 
@@ -230,53 +319,6 @@ def open_team(team_id):
 
     return redirect(
         url_for("team.dashboard")
-    )
-
-
-# =====================================================
-# EDIT TEAM
-# =====================================================
-
-@admin_bp.route(
-    "/teams/<int:team_id>/edit",
-    methods=["GET", "POST"]
-)
-@login_required
-@super_admin_required
-def edit_team(team_id):
-
-    team = db.session.get(Team, team_id)
-
-    if team is None:
-        abort(404)
-
-    form = EditTeamForm(obj=team)
-
-    if form.validate_on_submit():
-
-        team.name = form.name.data
-        team.slug = form.slug.data
-        team.short_description = form.short_description.data
-        team.description = form.description.data
-        team.lead_name = form.lead_name.data
-        team.lead_role = form.lead_role.data
-
-        db.session.commit()
-        print("AFTER COMMIT:", user.activation_token)
-
-        flash(
-            "Team updated successfully.",
-            "success"
-        )
-
-        return redirect(
-            url_for("admin.manage_teams")
-        )
-
-    return render_template(
-        "admin/edit_team.html",
-        form=form,
-        team=team
     )
 
 
@@ -304,164 +346,116 @@ def manage_members():
     )
 
 
+# =====================================================
+# ADD MEMBER
+# =====================================================
+
 @admin_bp.route("/members/add", methods=["GET", "POST"])
 @login_required
+@super_admin_required
 @limiter.limit("5 per minute")
 def add_member():
 
     form = AddMemberForm()
 
-    teams = Team.query.order_by(
-        Team.name.asc()
-    ).all()
-
-    form.team_id.choices = [
-        (team.id, team.name)
-        for team in teams
-    ]
+    teams = Team.query.order_by(Team.name.asc()).all()
+    form.team_id.choices = [(t.id, t.name) for t in teams]
 
     if form.validate_on_submit():
 
-        try:
-            # =====================================
-            # Prevent duplicate email addresses
-            # =====================================
-            existing_user = User.query.filter_by(
-                email=form.email.data
-            ).first()
+        existing = User.query.filter_by(
+            email=form.email.data
+        ).first()
 
-            if existing_user:
-                flash(
-                    "A user with this email already exists.",
-                    "warning"
-                )
-                return redirect(
-                    url_for("admin.add_member")
-                )
+        if existing:
 
-            # =====================================
-            # Create Public Member Profile
-            # =====================================
-            member = MemberProfile(
-                full_name=form.full_name.data,
-                role=form.role.data,
-                bio=form.bio.data,
-                linkedin_url=form.linkedin_url.data,
-                github_url=form.github_url.data,
-                portfolio_url=form.portfolio_url.data,
-                email=form.email.data,
-                whatsapp_number=form.whatsapp_number.data,
-                skills=form.skills.data,
-                team_id=form.team_id.data
+            flash(
+                "A user with this email already exists.",
+                "warning"
             )
-
-            db.session.add(member)
-
-            # =====================================
-            # Create Login Account
-            # =====================================
-            username = generate_username(
-                form.full_name.data
-            )
-
-            temporary_password = generate_temp_password()
-
-            user = User(
-                username=username,
-                email=form.email.data,
-                role=form.role.data,
-                team_id=form.team_id.data,
-                is_active=False,
-                must_change_password=True,
-                activation_token=secrets.token_urlsafe(48)
-            )
-
-            print("=" * 60)
-            print("NEW USER CREATED")
-            print("USERNAME:", user.username)
-            print("TOKEN:", user.activation_token)
-            print("ACTIVE:", user.is_active)
-            print("=" * 60)
-
-            user.set_password(
-                temporary_password
-            )
-
-            db.session.add(user)
-
-            print("BEFORE COMMIT:", user.activation_token)
-
-            # =====================================
-            # Link Profile to User
-            # =====================================
-            member.user = user
-
-            # =====================================
-            # Assign Team Lead
-            # =====================================
-            if user.role == "team_lead":
-
-                team = Team.query.get(user.team_id)
-
-                if team:
-                    team.team_admin = user
-
-            # =====================================
-            # Save Records
-            # =====================================
-            db.session.commit()
-
-            print("AFTER COMMIT:", user.activation_token)
-
-            # =====================================
-            # Send Invitation Email
-            # =====================================
-            try:
-                send_member_invitation(
-                    user,
-                    temporary_password
-                )
-
-                flash(
-                    "Member account created and invitation email sent.",
-                    "success"
-                )
-
-            except Exception as email_error:
-
-                current_app.logger.exception(
-                    "Invitation email failed"
-                )
-
-                print(email_error)
-
-                flash(
-                    "Member account was created successfully, but the invitation email could not be sent. The user can be activated later once the email service is working.",
-                    "warning"
-                )
 
             return redirect(
-                url_for("admin.manage_members")
+                url_for("admin.add_member")
             )
 
-        except Exception as e:
+        member = MemberProfile(
+            full_name=form.full_name.data,
+            role=form.role.data,
+            bio=form.bio.data,
+            linkedin_url=form.linkedin_url.data,
+            github_url=form.github_url.data,
+            portfolio_url=form.portfolio_url.data,
+            email=form.email.data,
+            whatsapp_number=form.whatsapp_number.data,
+            skills=form.skills.data,
+            team_id=form.team_id.data
+        )
 
-            db.session.rollback()
+        username = generate_username(
+            form.full_name.data
+        )
 
-            current_app.logger.exception(
-                "Member creation failed"
+        temp_password = generate_temp_password()
+
+        user = User(
+            username=username,
+            email=form.email.data,
+            role=form.role.data,
+            team_id=form.team_id.data,
+            is_active=False,
+            must_change_password=True,
+            activation_token=secrets.token_urlsafe(48)
+        )
+
+        user.set_password(temp_password)
+
+        member.user = user
+
+        if user.role == "team_lead":
+            team = Team.query.get(user.team_id)
+            if team:
+                team.team_admin = user
+
+        db.session.add(member)
+        db.session.add(user)
+        db.session.commit()
+
+        try:
+            send_member_invitation(
+                user,
+                temp_password
             )
 
             flash(
-                f"Error creating member: {e}",
-                "danger"
+                "Member account created successfully.",
+                "success"
             )
+
+        except Exception:
+
+            current_app.logger.exception(
+                "Failed sending invitation email."
+            )
+
+            flash(
+                "Member created, but invitation email failed.",
+                "warning"
+            )
+
+        return redirect(
+            url_for("admin.manage_members")
+        )
 
     return render_template(
         "admin/add_member.html",
         form=form
     )
-    
+
+
+# =====================================================
+# EDIT MEMBER
+# =====================================================
+
 @admin_bp.route('/members/<int:member_id>/edit', methods=['GET', 'POST'])
 def edit_member(member_id):
     from app.models.member_profile import MemberProfile
@@ -488,6 +482,10 @@ def edit_member(member_id):
     )
 
 
+# =====================================================
+# DELETE MEMBER
+# =====================================================
+
 @admin_bp.route(
     '/members/<int:member_id>/delete',
     methods=['POST']
@@ -499,10 +497,8 @@ def delete_member(member_id):
         member_id
     )
 
-
     # Get connected user account
     user = member.user
-
 
     try:
 
@@ -511,19 +507,15 @@ def delete_member(member_id):
 
             db.session.delete(user)
 
-
         # Delete public profile
         db.session.delete(member)
 
-
         db.session.commit()
-
 
         flash(
             "Member account deleted permanently.",
             "success"
         )
-
 
     except Exception as e:
 
@@ -534,13 +526,17 @@ def delete_member(member_id):
             "danger"
         )
 
-
     return redirect(
         url_for(
             'admin.manage_members'
         )
     )
-    
+
+
+# =====================================================
+# PROJECTS
+# =====================================================
+
 @admin_bp.route('/projects')
 @login_required
 def manage_projects():
@@ -550,6 +546,7 @@ def manage_projects():
         'admin/projects.html',
         projects=projects
     )
+
 
 # =====================================================
 # ADD PROJECT
@@ -567,7 +564,6 @@ def add_project():
 
     teams = Team.query.all()
 
-
     if request.method == "POST":
 
         try:
@@ -576,36 +572,13 @@ def add_project():
             # FORM DATA
             # =====================================
 
-            title = request.form.get(
-                "title"
-            )
-
-            description = request.form.get(
-                "description"
-            )
-
-            github_url = request.form.get(
-                "github_url"
-            )
-
-            demo_url = request.form.get(
-                "demo_url"
-            )
-
-            visibility = request.form.get(
-                "visibility",
-                "team"
-            )
-
-            team_id = request.form.get(
-                "team_id"
-            )
-
-
-            uploaded_file = request.files.get(
-                "project_file"
-            )
-
+            title = request.form.get("title")
+            description = request.form.get("description")
+            github_url = request.form.get("github_url")
+            demo_url = request.form.get("demo_url")
+            visibility = request.form.get("visibility", "team")
+            team_id = request.form.get("team_id")
+            uploaded_file = request.files.get("project_file")
 
             # =====================================
             # FILE DATA
@@ -615,18 +588,15 @@ def add_project():
             file_name = None
             file_size = None
 
-
             # =====================================
             # CLOUDINARY ZIP UPLOAD
             # =====================================
 
             if uploaded_file and uploaded_file.filename:
 
-
                 filename = secure_filename(
                     uploaded_file.filename
                 )
-
 
                 if not filename.lower().endswith(".zip"):
 
@@ -636,34 +606,22 @@ def add_project():
                     )
 
                     return redirect(
-                        url_for(
-                            "admin.add_project"
-                        )
+                        url_for("admin.add_project")
                     )
-
 
                 upload_result = upload_project_file(
                     uploaded_file
                 )
 
-
                 file_url = upload_result["url"]
-
                 file_name = filename
-
 
                 # Calculate size
                 uploaded_file.seek(0, os.SEEK_END)
-
                 size = uploaded_file.tell()
-
                 uploaded_file.seek(0)
-                
+
                 file_size = f"{round(size / 1024, 2)} KB"
-                                    
-                    
-
-
 
             # =====================================
             # VISIBILITY CONTROL
@@ -673,9 +631,8 @@ def add_project():
 
                 team_id = None
 
-
             elif visibility == "team" and not team_id:
-               
+
                 flash(
                     "Please select a team.",
                     "danger"
@@ -684,233 +641,143 @@ def add_project():
                 return redirect(
                     url_for("admin.add_project")
                 )
-                    
-
-
 
             # =====================================
             # CREATE PROJECT
             # =====================================
 
             project = Project(
-
                 title=title,
-
                 description=description,
-
                 github_url=github_url,
-
                 demo_url=demo_url,
-
-
                 project_file=file_url,
-
                 file_name=file_name,
-
                 file_size=file_size,
-
-
                 visibility=visibility,
-
                 team_id=team_id,
-
-
                 created_by=current_user.id
-
             )
 
-
-            db.session.add(
-                project
-            )
-
+            db.session.add(project)
             db.session.commit()
-
-
 
             flash(
                 "Project uploaded successfully.",
                 "success"
             )
 
-
             return redirect(
-                url_for(
-                    "admin.manage_projects"
-                )
+                url_for("admin.manage_projects")
             )
-
-
 
         except Exception as e:
 
-
             db.session.rollback()
-
 
             flash(
                 f"Project upload failed: {e}",
                 "danger"
             )
 
-
             return redirect(
-                url_for(
-                    "admin.add_project"
-                )
+                url_for("admin.add_project")
             )
-
-
 
     return render_template(
         "admin/add_project.html",
         teams=teams
     )
-    
+
+
+# =====================================================
+# EDIT PROJECT
+# =====================================================
+
 @login_required
 def edit_project(project_id):
-
 
     project = Project.query.get_or_404(
         project_id
     )
 
-
     teams = Team.query.all()
-
-
 
     if request.method == "POST":
 
+        project.title = request.form.get("title")
+        project.description = request.form.get("description")
+        project.github_url = request.form.get("github_url")
+        project.demo_url = request.form.get("demo_url")
+        project.visibility = request.form.get("visibility")
 
-        project.title = request.form.get(
-            "title"
-        )
-
-
-        project.description = request.form.get(
-            "description"
-        )
-
-
-        project.github_url = request.form.get(
-            "github_url"
-        )
-
-
-        project.demo_url = request.form.get(
-            "demo_url"
-        )
-
-
-        project.visibility = request.form.get(
-            "visibility"
-        )
-
-
-        team_id = request.form.get(
-            "team_id"
-        )
-
-
+        team_id = request.form.get("team_id")
 
         if project.visibility == "all_teams":
-
             project.team_id = None
-
         else:
-
             project.team_id = team_id
 
-
-
-        uploaded_file = request.files.get(
-            "project_file"
-        )
-
-
+        uploaded_file = request.files.get("project_file")
 
         if uploaded_file and uploaded_file.filename:
-
 
             filename = secure_filename(
                 uploaded_file.filename
             )
 
-
             upload_folder = os.path.join(
-
                 current_app.root_path,
-
                 "static",
-
                 "uploads",
-
                 "projects"
-
             )
-
 
             os.makedirs(
                 upload_folder,
                 exist_ok=True
             )
 
-
             save_path = os.path.join(
                 upload_folder,
                 filename
             )
 
-
-            uploaded_file.save(
-                save_path
-            )
-
+            uploaded_file.save(save_path)
 
             project.project_file = (
-                "uploads/projects/"
-                + filename
+                "uploads/projects/" + filename
             )
-
 
             project.file_name = filename
 
-
-            size = os.path.getsize(
-                save_path
-            )
-
+            size = os.path.getsize(save_path)
 
             project.file_size = (
                 f"{round(size/1024,2)} KB"
             )
 
-
-
         db.session.commit()
-
-
 
         flash(
             "Project updated successfully.",
             "success"
         )
 
-
         return redirect(
-            url_for(
-                "admin.manage_projects"
-            )
+            url_for("admin.manage_projects")
         )
-
-
 
     return render_template(
         "admin/edit_project.html",
         project=project,
         teams=teams
     )
+
+
+# =====================================================
+# DELETE PROJECT
+# =====================================================
 
 @admin_bp.route('/projects/<int:project_id>/delete')
 @login_required
@@ -924,6 +791,10 @@ def delete_project(project_id):
 
     return redirect(url_for('admin.manage_projects'))
 
+
+# =====================================================
+# BLOG
+# =====================================================
 
 @admin_bp.route('/blog')
 @login_required
@@ -961,7 +832,7 @@ def edit_blog_post(post_id):
         post.title = request.form.get('title')
         post.slug = request.form.get('slug')
         post.content = request.form.get('content')
-        post.is_published=True if request.form.get('is_published') else False
+        post.is_published = True if request.form.get('is_published') else False
 
         db.session.commit()
 
@@ -982,6 +853,11 @@ def delete_blog_post(post_id):
     flash('Blog post deleted.', 'success')
 
     return redirect(url_for('admin.manage_blog'))
+
+
+# =====================================================
+# SETTINGS
+# =====================================================
 
 @admin_bp.route('/settings', methods=['GET', 'POST'])
 @login_required
@@ -1018,23 +894,22 @@ def settings():
         settings=settings,
         themes=themes
     )
+
+
+# =====================================================
+# LOGOUT
+# =====================================================
+
 @admin_bp.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
 
-@admin_bp.context_processor
-def inject_settings():
-    from app.models import SiteSetting
 
-    return {
-        "settings": SiteSetting.query.first()
-    }
-    
-# =========================================================
+# =====================================================
 # CONTACT MESSAGES
-# =========================================================
+# =====================================================
 
 @admin_bp.route("/messages")
 @login_required
@@ -1050,9 +925,6 @@ def manage_messages():
     )
 
 
-# ---------------------------------------------------------
-# View Message
-# ---------------------------------------------------------
 @admin_bp.route("/messages/<int:message_id>")
 @login_required
 def view_message(message_id):
@@ -1069,9 +941,6 @@ def view_message(message_id):
     )
 
 
-# ---------------------------------------------------------
-# Mark as Read
-# ---------------------------------------------------------
 @admin_bp.route("/messages/<int:message_id>/read")
 @login_required
 def mark_message_read(message_id):
@@ -1089,9 +958,6 @@ def mark_message_read(message_id):
     )
 
 
-# ---------------------------------------------------------
-# Reply
-# ---------------------------------------------------------
 @admin_bp.route("/messages/<int:message_id>/reply")
 @login_required
 def reply_message(message_id):
@@ -1124,9 +990,6 @@ ZeroNexus Team
     )
 
 
-# ---------------------------------------------------------
-# Delete Message
-# ---------------------------------------------------------
 @admin_bp.route(
     "/messages/<int:message_id>/delete",
     methods=["POST"]
@@ -1148,7 +1011,12 @@ def delete_message(message_id):
     return redirect(
         url_for("admin.manage_messages")
     )
-    
+
+
+# =====================================================
+# USERS
+# =====================================================
+
 @admin_bp.route(
     "/users/add",
     methods=["GET", "POST"]
@@ -1158,11 +1026,9 @@ def add_user():
 
     form = CreateUserForm()
 
-
     teams = Team.query.order_by(
         Team.name.asc()
     ).all()
-
 
     form.team_id.choices = [
         (
@@ -1172,46 +1038,31 @@ def add_user():
         for team in teams
     ]
 
-
     if form.validate_on_submit():
 
         try:
 
             temporary_password = generate_temp_password()
 
-
             username = generate_username(
                 form.full_name.data
             )
 
-
             user = User(
-
                 username=username,
-
                 email=form.email.data,
-
                 role=form.role.data,
-
                 team_id=form.team_id.data,
-
                 is_active=False,
-
                 activation_token=secrets.token_urlsafe(48)
-
             )
-
 
             user.set_password(
                 temporary_password
             )
 
-
             db.session.add(user)
-
             db.session.commit()
-
-
 
             try:
 
@@ -1220,55 +1071,44 @@ def add_user():
                     temporary_password
                 )
 
-
                 flash(
                     "User created and invitation sent.",
                     "success"
                 )
 
-
             except Exception as email_error:
-
 
                 print(
                     f"Email error: {email_error}"
                 )
-
 
                 flash(
                     "User created but email failed.",
                     "warning"
                 )
 
-
             return redirect(
-                url_for(
-                    "admin.manage_users"
-                )
+                url_for("admin.manage_users")
             )
-
 
         except Exception as e:
 
-
             db.session.rollback()
-
 
             print(
                 f"User creation error: {e}"
             )
-
 
             flash(
                 f"Error creating user: {e}",
                 "danger"
             )
 
-
     return render_template(
         "admin/add_user.html",
         form=form
     )
+
 
 @admin_bp.route("/users")
 @login_required
@@ -1278,11 +1118,11 @@ def manage_users():
         User.created_at.desc()
     ).all()
 
-
     return render_template(
         "admin/users.html",
         users=users
     )
+
 
 # =====================================================
 # MANAGE ANNOUNCEMENTS
@@ -1320,13 +1160,9 @@ def manage_announcements():
 @super_admin_required
 def create_announcement():
 
-    form = CreateAnnouncementForm()
-
-    # Add "All Teams" option
     teams = Team.query.order_by(Team.name.asc()).all()
-    
+
     form = CreateAnnouncementForm(teams=teams)
-    
 
     if form.validate_on_submit():
 
