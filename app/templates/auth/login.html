@@ -1,67 +1,127 @@
 {% extends "base.html" %}
 
+{% block title %}
+ZeroNexus Login
+{% endblock %}
+
 {% block content %}
 
 <div class="container py-5">
 
-    <div class="row justify-content-center">
+    <div class="row justify-content-center align-items-center">
 
-        <div class="col-md-5">
+        <div class="col-lg-5 col-md-7">
 
-            <div class="card bg-dark text-light border-info shadow">
+            <div class="card border-0 shadow-lg">
 
-                <div class="card-body p-4">
+                <div class="card-body p-5">
 
-                    <h2 class="text-center text-info mb-4">
-                        <i class="bi bi-shield-lock"></i>
-                        ZeroNexus Login
-                    </h2>
+                    <div class="text-center mb-4">
 
+                        <div class="mb-3">
+                            <i class="bi bi-shield-lock-fill text-info"
+                               style="font-size:3rem;"></i>
+                        </div>
 
-                    <form method="POST">
+                        <h2 class="fw-bold">
+                            ZeroNexus Login
+                        </h2>
+
+                        <p class="text-muted mb-0">
+                            Sign in using the account created by your administrator.
+                        </p>
+
+                    </div>
+
+                    <form method="POST" novalidate>
 
                         {{ form.hidden_tag() }}
 
+                        <!-- Username -->
 
                         <div class="mb-3">
 
-                            {{ form.username.label(
-                                class="form-label"
-                            ) }}
+                            {{ form.username.label(class="form-label fw-semibold") }}
 
                             {{ form.username(
-                                class="form-control",
+                                class="form-control form-control-lg",
                                 placeholder="Username or Email"
                             ) }}
 
+                            {% if form.username.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.username.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
                         </div>
 
+                        <!-- Password -->
 
                         <div class="mb-3">
 
-                            {{ form.password.label(
-                                class="form-label"
-                            ) }}
+                            {{ form.password.label(class="form-label fw-semibold") }}
 
-                            {{ form.password(
-                                class="form-control",
-                                placeholder="Password"
-                            ) }}
+                            <div class="input-group">
+
+                                {{ form.password(
+                                    class="form-control form-control-lg",
+                                    id="password",
+                                    placeholder="Enter Password"
+                                ) }}
+
+                                <button
+                                    class="btn btn-outline-secondary"
+                                    type="button"
+                                    id="togglePassword">
+
+                                    <i class="bi bi-eye" id="toggleIcon"></i>
+
+                                </button>
+
+                            </div>
+
+                            {% if form.password.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
 
                         </div>
 
+                        <!-- Login Button -->
 
-                        <div class="d-grid">
+                        <div class="d-grid mt-4">
 
                             {{ form.submit(
-                                class="btn btn-info"
+                                class="btn btn-info btn-lg fw-bold"
                             ) }}
 
                         </div>
-
 
                     </form>
 
+                    <hr class="my-4">
+
+                    <div class="text-center">
+
+                        <small class="text-muted">
+
+                            Accounts are created by the
+                            <strong>ZeroNexus Administrator</strong>.
+
+                            <br>
+
+                            If you do not have login credentials,
+                            contact your Team Lead or Super Admin.
+
+                        </small>
+
+                    </div>
 
                 </div>
 
@@ -72,5 +132,40 @@
     </div>
 
 </div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const password = document.getElementById("password");
+    const toggle = document.getElementById("togglePassword");
+    const icon = document.getElementById("toggleIcon");
+
+    toggle.addEventListener("click", function () {
+
+        if (password.type === "password") {
+
+            password.type = "text";
+            icon.classList.remove("bi-eye");
+            icon.classList.add("bi-eye-slash");
+
+        } else {
+
+            password.type = "password";
+            icon.classList.remove("bi-eye-slash");
+            icon.classList.add("bi-eye");
+
+        }
+
+    });
+
+});
+
+</script>
 
 {% endblock %}
