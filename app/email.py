@@ -1,6 +1,7 @@
 from flask_mail import Message
 from flask import current_app
 from app.extensions import mail
+from app.brevo import send_email
 
 
 def send_member_welcome(member):
@@ -341,12 +342,7 @@ def send_contact_confirmation(contact_message):
     submits the ZeroNexus contact form.
     """
 
-    msg = Message(
-        subject="✅ Thank You for Contacting ZeroNexus",
-        recipients=[contact_message.email]
-    )
-
-    msg.html = f"""
+    html_content = f"""
     <!DOCTYPE html>
 
     <html>
@@ -467,16 +463,14 @@ def send_contact_confirmation(contact_message):
     try:
         print("=" * 60)
         print("Attempting to send contact confirmation email...")
-        print("SERVER :", current_app.config.get("MAIL_SERVER"))
-        print("PORT   :", current_app.config.get("MAIL_PORT"))
-        print("TLS    :", current_app.config.get("MAIL_USE_TLS"))
-        print("SSL    :", current_app.config.get("MAIL_USE_SSL"))
-        print("USER   :", current_app.config.get("MAIL_USERNAME"))
-        print("SENDER :", current_app.config.get("MAIL_DEFAULT_SENDER"))
+        print("RECIPIENT:", contact_message.email)
         print("=" * 60)
 
-        with mail.connect() as conn:
-            conn.send(msg)
+        send_email(
+            to_email=contact_message.email,
+            subject="✅ Thank You for Contacting ZeroNexus",
+            html_content=html_content
+        )
 
         print("✅ Contact confirmation email sent successfully!")
 
